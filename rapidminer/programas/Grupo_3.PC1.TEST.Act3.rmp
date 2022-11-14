@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="9.10.011">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="9.10.011" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="112" y="136">
+        <list key="text_directories">
+          <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/carnes"/>
+          <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pescados"/>
+          <parameter key="desayunos" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/desayunos"/>
+          <parameter key="pasta" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pasta"/>
+          <parameter key="postres" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/postres"/>
+          <parameter key="verduras" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/verduras"/>
+          <parameter key="otros" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/otros"/>
+        </list>
+        <parameter key="file_pattern" value="*"/>
+        <parameter key="extract_text_only" value="true"/>
+        <parameter key="use_file_extension_as_type" value="true"/>
+        <parameter key="content_type" value="txt"/>
+        <parameter key="encoding" value="SYSTEM"/>
+        <parameter key="create_word_vector" value="true"/>
+        <parameter key="vector_creation" value="TF-IDF"/>
+        <parameter key="add_meta_information" value="true"/>
+        <parameter key="keep_text" value="false"/>
+        <parameter key="prune_method" value="none"/>
+        <parameter key="prune_below_percent" value="3.0"/>
+        <parameter key="prune_above_percent" value="30.0"/>
+        <parameter key="prune_below_rank" value="0.05"/>
+        <parameter key="prune_above_rank" value="0.95"/>
+        <parameter key="datamanagement" value="double_sparse_array"/>
+        <parameter key="data_management" value="auto"/>
+        <process expanded="true">
+          <operator activated="true" class="text:tokenize" compatibility="9.4.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
+            <parameter key="mode" value="non letters"/>
+            <parameter key="characters" value=".:"/>
+            <parameter key="language" value="English"/>
+            <parameter key="max_token_length" value="3"/>
+          </operator>
+          <operator activated="true" class="text:transform_cases" compatibility="9.4.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
+            <parameter key="transform_to" value="lower case"/>
+          </operator>
+          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="9.4.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
+            <parameter key="file" value="C:/Users/rober/ProyectoComputacion1/EatEaser/rapidminer/stop_words_spanish.txt"/>
+            <parameter key="case_sensitive" value="false"/>
+            <parameter key="encoding" value="SYSTEM"/>
+          </operator>
+          <operator activated="true" class="text:stem_snowball" compatibility="9.4.000" expanded="true" height="68" name="Stem (Snowball)" width="90" x="447" y="34">
+            <parameter key="language" value="Spanish"/>
+          </operator>
+          <connect from_port="document" to_op="Tokenize" to_port="document"/>
+          <connect from_op="Tokenize" from_port="document" to_op="Transform Cases" to_port="document"/>
+          <connect from_op="Transform Cases" from_port="document" to_op="Filter Stopwords (Dictionary)" to_port="document"/>
+          <connect from_op="Filter Stopwords (Dictionary)" from_port="document" to_op="Stem (Snowball)" to_port="document"/>
+          <connect from_op="Stem (Snowball)" from_port="document" to_port="document 1"/>
+          <portSpacing port="source_document" spacing="0"/>
+          <portSpacing port="sink_document 1" spacing="0"/>
+          <portSpacing port="sink_document 2" spacing="0"/>
+        </process>
+      </operator>
+      <operator activated="false" class="store" compatibility="9.10.011" expanded="true" height="68" name="Store" width="90" x="447" y="136">
+        <parameter key="repository_entry" value="//PC1/modelo"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="Retrieve" width="90" x="112" y="34">
+        <parameter key="repository_entry" value="//PC1/modelo"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="313" y="34">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <connect from_op="Process Documents from Files" from_port="example set" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Retrieve" from_port="output" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Apply Model" from_port="labelled data" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
