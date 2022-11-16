@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="112" y="34">
+      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="45" y="34">
         <list key="text_directories">
           <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/carnes"/>
           <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pescados"/>
@@ -65,6 +65,9 @@
           <portSpacing port="sink_document 1" spacing="0"/>
           <portSpacing port="sink_document 2" spacing="0"/>
         </process>
+      </operator>
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="112" y="187">
+        <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
       <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
         <parameter key="split_on_batch_attribute" value="false"/>
@@ -175,7 +178,6 @@
           <portSpacing port="source_training set" spacing="0"/>
           <portSpacing port="sink_model" spacing="0"/>
           <portSpacing port="sink_through 1" spacing="0"/>
-          <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="390" y="288">prueba y capturas con todos los arboles de decision</description>
         </process>
         <process expanded="true">
           <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="45" y="34">
@@ -222,11 +224,12 @@
           <portSpacing port="sink_performance 2" spacing="0"/>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Store" width="90" x="380" y="34">
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="380" y="34">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
       <connect from_op="Process Documents from Files" from_port="example set" to_op="Cross Validation" to_port="example set"/>
-      <connect from_op="Cross Validation" from_port="model" to_op="Store" to_port="input"/>
+      <connect from_op="Process Documents from Files" from_port="word list" to_op="DiccionarioPalabras" to_port="input"/>
+      <connect from_op="Cross Validation" from_port="model" to_op="Modelo" to_port="input"/>
       <connect from_op="Cross Validation" from_port="performance 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
