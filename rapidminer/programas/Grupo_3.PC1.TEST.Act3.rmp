@@ -12,13 +12,13 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="112" y="34">
+      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="45" y="34">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="45" y="136">
+      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="136">
         <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
-      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="179" y="136">
+      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="313" y="136">
         <list key="text_directories">
           <parameter key="testing" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/testing"/>
         </list>
@@ -64,9 +64,13 @@
           <portSpacing port="source_document" spacing="0"/>
           <portSpacing port="sink_document 1" spacing="0"/>
           <portSpacing port="sink_document 2" spacing="0"/>
+          <description align="center" color="yellow" colored="false" height="90" resized="false" width="115" x="29" y="110">Creamos un vector con todas las palabras separadas</description>
+          <description align="center" color="yellow" colored="false" height="125" resized="false" width="127" x="429" y="111">Cortamos todas las palabras para normalizarlas y quitarnos los problemas de sufijos.</description>
+          <description align="center" color="yellow" colored="false" height="219" resized="true" width="136" x="158" y="110">Convertimos todas las palabras a minuscula para evitar palabras semejantes con alguna letra en mayuscula, ya que sino se comportarian como palabras,o tokens, diferentes.</description>
+          <description align="center" color="yellow" colored="false" height="128" resized="true" width="93" x="315" y="127">Eliminamos las palabras que no aportan informaci&amp;#243;n util.</description>
         </process>
       </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="313" y="34">
+      <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="447" y="34">
         <list key="application_parameters"/>
         <parameter key="create_view" value="false"/>
       </operator>
@@ -77,6 +81,10 @@
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
+      <description align="center" color="yellow" colored="false" height="143" resized="true" width="115" x="34" y="114">Recuperamos el modelo generado en el entrenamiento, el cual se encentra en local.</description>
+      <description align="center" color="yellow" colored="false" height="169" resized="true" width="103" x="168" y="216">Recuperamos el vector de palabras generado en el entrenamiento, el cual se encentra en local.</description>
+      <description align="center" color="yellow" colored="false" height="146" resized="true" width="136" x="437" y="125">Aplicamos el modelo entrenado a los documentos nuevos los cuales no sabemos que informaci&amp;#243;n contienen.</description>
+      <description align="center" color="yellow" colored="false" height="283" resized="true" width="148" x="283" y="231">Carga de los documentos nuevos, los cuales no sabemos que contienen.&lt;br/&gt;&lt;br/&gt;Para comprobar que el modelo funciona le pasamos documentos que si sabemos nosotros donde tendrian que ir pero que el modelo tendra que clasificar sin conocer previamente.</description>
     </process>
   </operator>
 </process>

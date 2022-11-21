@@ -16,11 +16,11 @@
         <list key="text_directories">
           <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/carnes"/>
           <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pescados"/>
-          <parameter key="desayunos" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/desayunos"/>
           <parameter key="pasta" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pasta"/>
-          <parameter key="postres" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/postres"/>
           <parameter key="verduras" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/verduras"/>
-          <parameter key="otros" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/otros"/>
+          <parameter key="arroz" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/arroz"/>
+          <parameter key="marisco" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/marisco"/>
+          <parameter key="platosMenores" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/platosMenores"/>
         </list>
         <parameter key="file_pattern" value="*"/>
         <parameter key="extract_text_only" value="true"/>
@@ -64,9 +64,13 @@
           <portSpacing port="source_document" spacing="0"/>
           <portSpacing port="sink_document 1" spacing="0"/>
           <portSpacing port="sink_document 2" spacing="0"/>
+          <description align="center" color="yellow" colored="false" height="90" resized="true" width="115" x="36" y="117">Creamos un vector con todas las palabras separadas</description>
+          <description align="center" color="yellow" colored="false" height="230" resized="true" width="134" x="159" y="112">Convertimos todas las palabras a minuscula para evitar palabras semejantes con alguna letra en mayuscula, ya que sino se comportarian como palabras,o tokens, diferentes.</description>
+          <description align="center" color="yellow" colored="false" height="125" resized="true" width="94" x="311" y="127">Eliminamos las palabras que no aportan informaci&amp;#243;n util.</description>
+          <description align="center" color="yellow" colored="false" height="125" resized="true" width="127" x="427" y="118">Cortamos todas las palabras para normalizarlas y quitarnos los problemas de sufijos.</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="112" y="187">
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="340">
         <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
       <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
@@ -78,9 +82,9 @@
         <parameter key="local_random_seed" value="1992"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="9.10.011" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
+          <operator activated="false" class="concurrency:parallel_decision_tree" compatibility="9.10.011" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
             <parameter key="criterion" value="gain_ratio"/>
-            <parameter key="maximal_depth" value="10"/>
+            <parameter key="maximal_depth" value="5"/>
             <parameter key="apply_pruning" value="true"/>
             <parameter key="confidence" value="0.1"/>
             <parameter key="apply_prepruning" value="true"/>
@@ -89,7 +93,7 @@
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="number_of_prepruning_alternatives" value="3"/>
           </operator>
-          <operator activated="false" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="45" y="136">
+          <operator activated="false" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="246" y="136">
             <parameter key="activation" value="Rectifier"/>
             <enumeration key="hidden_layer_sizes">
               <parameter key="hidden_layer_sizes" value="50"/>
@@ -127,8 +131,8 @@
             <list key="expert_parameters"/>
             <list key="expert_parameters_"/>
           </operator>
-          <operator activated="false" class="concurrency:parallel_random_forest" compatibility="9.10.011" expanded="true" height="103" name="Random Forest" width="90" x="45" y="238">
-            <parameter key="number_of_trees" value="100"/>
+          <operator activated="false" class="concurrency:parallel_random_forest" compatibility="9.10.011" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
+            <parameter key="number_of_trees" value="80"/>
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="maximal_depth" value="10"/>
             <parameter key="apply_pruning" value="false"/>
@@ -146,8 +150,8 @@
             <parameter key="local_random_seed" value="1992"/>
             <parameter key="enable_parallel_execution" value="true"/>
           </operator>
-          <operator activated="false" class="random_tree" compatibility="9.10.011" expanded="true" height="82" name="Random Tree" width="90" x="178" y="238">
-            <parameter key="criterion" value="gain_ratio"/>
+          <operator activated="false" class="random_tree" compatibility="9.10.011" expanded="true" height="82" name="Random Tree" width="90" x="246" y="442">
+            <parameter key="criterion" value="gini_index"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="minimal_leaf_size" value="2"/>
             <parameter key="minimal_gain" value="0.1"/>
@@ -161,23 +165,84 @@
             <parameter key="use_local_random_seed" value="false"/>
             <parameter key="local_random_seed" value="1992"/>
           </operator>
-          <operator activated="false" class="decision_tree_multiway" compatibility="9.10.011" expanded="true" height="82" name="Decision Tree (Multiway)" width="90" x="178" y="136">
+          <operator activated="false" class="decision_tree_multiway" compatibility="9.10.011" expanded="true" height="82" name="Decision Tree (Multiway)" width="90" x="447" y="136">
             <process expanded="true">
               <portSpacing port="source_training set" spacing="0"/>
               <portSpacing port="sink_model" spacing="0"/>
             </process>
           </operator>
-          <operator activated="false" class="id3" compatibility="9.10.011" expanded="true" height="82" name="ID3" width="90" x="179" y="340">
-            <parameter key="criterion" value="gain_ratio"/>
+          <operator activated="false" class="id3" compatibility="9.10.011" expanded="true" height="82" name="ID3" width="90" x="45" y="391">
+            <parameter key="criterion" value="accuracy"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="minimal_leaf_size" value="2"/>
             <parameter key="minimal_gain" value="0.01"/>
           </operator>
-          <connect from_port="training set" to_op="Decision Tree" to_port="training set"/>
-          <connect from_op="Decision Tree" from_port="model" to_port="model"/>
+          <operator activated="false" class="logistic_regression" compatibility="9.10.011" expanded="true" height="103" name="Logistic Regression (SVM)" width="90" x="45" y="799">
+            <parameter key="kernel_type" value="dot"/>
+            <parameter key="kernel_gamma" value="1.0"/>
+            <parameter key="kernel_sigma1" value="1.0"/>
+            <parameter key="kernel_sigma2" value="0.0"/>
+            <parameter key="kernel_sigma3" value="2.0"/>
+            <parameter key="kernel_shift" value="1.0"/>
+            <parameter key="kernel_degree" value="2.0"/>
+            <parameter key="kernel_a" value="1.0"/>
+            <parameter key="kernel_b" value="0.0"/>
+            <parameter key="kernel_cache" value="200"/>
+            <parameter key="C" value="1.0"/>
+            <parameter key="convergence_epsilon" value="0.001"/>
+            <parameter key="max_iterations" value="100000"/>
+            <parameter key="scale" value="true"/>
+            <parameter key="calculate_weights" value="true"/>
+            <parameter key="return_optimization_performance" value="true"/>
+          </operator>
+          <operator activated="false" class="bagging" compatibility="9.10.011" expanded="true" height="82" name="Bagging" width="90" x="313" y="748">
+            <parameter key="sample_ratio" value="0.9"/>
+            <parameter key="iterations" value="10"/>
+            <parameter key="average_confidences" value="true"/>
+            <parameter key="use_local_random_seed" value="false"/>
+            <parameter key="local_random_seed" value="1992"/>
+            <process expanded="true">
+              <portSpacing port="source_training set" spacing="0"/>
+              <portSpacing port="sink_model" spacing="0"/>
+            </process>
+          </operator>
+          <operator activated="true" class="k_nn" compatibility="9.10.011" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
+            <parameter key="k" value="10"/>
+            <parameter key="weighted_vote" value="true"/>
+            <parameter key="measure_types" value="MixedMeasures"/>
+            <parameter key="mixed_measure" value="MixedEuclideanDistance"/>
+            <parameter key="nominal_measure" value="NominalDistance"/>
+            <parameter key="numerical_measure" value="EuclideanDistance"/>
+            <parameter key="divergence" value="GeneralizedIDivergence"/>
+            <parameter key="kernel_type" value="radial"/>
+            <parameter key="kernel_gamma" value="1.0"/>
+            <parameter key="kernel_sigma1" value="1.0"/>
+            <parameter key="kernel_sigma2" value="0.0"/>
+            <parameter key="kernel_sigma3" value="2.0"/>
+            <parameter key="kernel_degree" value="3.0"/>
+            <parameter key="kernel_shift" value="1.0"/>
+            <parameter key="kernel_a" value="1.0"/>
+            <parameter key="kernel_b" value="0.0"/>
+          </operator>
+          <operator activated="false" class="decision_stump" compatibility="9.10.011" expanded="true" height="82" name="Decision Stump" width="90" x="313" y="1054">
+            <parameter key="criterion" value="gain_ratio"/>
+            <parameter key="minimal_leaf_size" value="1"/>
+          </operator>
+          <connect from_port="training set" to_op="k-NN" to_port="training set"/>
+          <connect from_op="k-NN" from_port="model" to_port="model"/>
           <portSpacing port="source_training set" spacing="0"/>
           <portSpacing port="sink_model" spacing="0"/>
           <portSpacing port="sink_through 1" spacing="0"/>
+          <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="10" y="920">Solo datos numericos&lt;br/&gt;&lt;br/&gt;NO SIRVE</description>
+          <description align="center" color="yellow" colored="false" height="265" resized="false" width="180" x="10" y="490">No datos numericos.&lt;br&gt;&lt;br&gt;Construye un &amp;#225;rbol de decisiones a partir de un conjunto fijo de ejemplos.&lt;br&gt;&lt;br&gt;El &amp;#225;rbol resultante se utiliza para clasificar futuras muestras.&lt;br&gt;&lt;br&gt;uso de ExampleSets para inyeccion de informacion&lt;br&gt;&lt;br/&gt;NO SIRVE</description>
+          <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="413" y="560">Conjunto de un cierto n&amp;#250;mero de &amp;#225;rboles aleatorios&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
+          <description align="center" color="yellow" colored="false" height="193" resized="false" width="180" x="411" y="236">Utiliza un subproceso el cual genera un arbol de decision mediante entrenamiento&lt;br&gt;&lt;br&gt;Hay que investigar el process para usarlo&lt;br&gt;&lt;br&gt;SE NECESITA PROCESS INTERNO</description>
+          <description align="center" color="yellow" colored="false" height="193" resized="false" width="180" x="208" y="535">Proviene del Decision tree&lt;br&gt;&lt;br&gt;Diferencia:&lt;br&gt;Para cada divisi&amp;#243;n solo est&amp;#225; disponible un subconjunto aleatorio de atributos&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
+          <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="213" y="252">red neuronal artificial&lt;br&gt;&lt;br&gt;permiten una alta precisi&amp;#243;n predictiva&lt;br/&gt;&lt;br/&gt;MUY LENTO</description>
+          <description align="center" color="yellow" colored="false" height="157" resized="false" width="180" x="274" y="849">aprendizaje autom&amp;#225;tico para mejorar los modelos de clasificaci&amp;#243;n y regresi&amp;#243;n&lt;br&gt;&lt;br&gt;precisi&amp;#243;n de clasificaci&amp;#243;n&lt;br&gt;&lt;br&gt;SE NECESITA PORCESS INTERNO</description>
+          <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="10" y="158">crea nodos que representa una regla de divisi&amp;#243;n para un atributo espec&amp;#237;fico.&lt;br/&gt;&lt;br/&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
+          <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="13" y="1151">EL MEJOR POR AHORA&lt;br&gt;&lt;br&gt;coge el doc que esta clasificando y lo comprueba con los k elementos mas cercanos a el</description>
+          <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="273" y="1151">LENTO Y POCA PRECISION&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
         </process>
         <process expanded="true">
           <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="45" y="34">
@@ -224,16 +289,25 @@
           <portSpacing port="sink_performance 2" spacing="0"/>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="380" y="34">
+      <operator activated="false" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="514" y="187">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
+      <connect from_port="input 1" to_op="Process Documents from Files" to_port="word list"/>
       <connect from_op="Process Documents from Files" from_port="example set" to_op="Cross Validation" to_port="example set"/>
       <connect from_op="Process Documents from Files" from_port="word list" to_op="DiccionarioPalabras" to_port="input"/>
-      <connect from_op="Cross Validation" from_port="model" to_op="Modelo" to_port="input"/>
+      <connect from_op="Cross Validation" from_port="model" to_port="result 2"/>
+      <connect from_op="Cross Validation" from_port="example set" to_port="result 3"/>
       <connect from_op="Cross Validation" from_port="performance 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
+      <description align="center" color="yellow" colored="false" height="103" resized="true" width="111" x="34" y="137">Carga de los documentso por sus diferentes categorias.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="138" y="418">Guardamos en local el vector de palabras resultante tras hacer la carga de documentos.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="475" y="267">Guardamos en local el modelo reultante tras realizar la validacion cruzada con el algoritmo que hayamos elegido.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="201" y="192">Obenemos el modelo, usando el algoritmo elegido para entrenarlo mediante todos los documentos.</description>
     </process>
   </operator>
 </process>
