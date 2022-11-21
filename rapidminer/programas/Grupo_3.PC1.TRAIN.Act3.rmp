@@ -64,9 +64,13 @@
           <portSpacing port="source_document" spacing="0"/>
           <portSpacing port="sink_document 1" spacing="0"/>
           <portSpacing port="sink_document 2" spacing="0"/>
+          <description align="center" color="yellow" colored="false" height="90" resized="true" width="115" x="36" y="117">Creamos un vector con todas las palabras separadas</description>
+          <description align="center" color="yellow" colored="false" height="230" resized="true" width="134" x="159" y="112">Convertimos todas las palabras a minuscula para evitar palabras semejantes con alguna letra en mayuscula, ya que sino se comportarian como palabras,o tokens, diferentes.</description>
+          <description align="center" color="yellow" colored="false" height="125" resized="true" width="94" x="311" y="127">Eliminamos las palabras que no aportan informaci&amp;#243;n util.</description>
+          <description align="center" color="yellow" colored="false" height="125" resized="true" width="127" x="427" y="118">Cortamos todas las palabras para normalizarlas y quitarnos los problemas de sufijos.</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="112" y="187">
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="340">
         <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
       <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
@@ -203,7 +207,7 @@
             </process>
           </operator>
           <operator activated="true" class="k_nn" compatibility="9.10.011" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
-            <parameter key="k" value="5"/>
+            <parameter key="k" value="10"/>
             <parameter key="weighted_vote" value="true"/>
             <parameter key="measure_types" value="MixedMeasures"/>
             <parameter key="mixed_measure" value="MixedEuclideanDistance"/>
@@ -285,17 +289,25 @@
           <portSpacing port="sink_performance 2" spacing="0"/>
         </process>
       </operator>
-      <operator activated="false" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="447" y="187">
+      <operator activated="false" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="514" y="187">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
+      <connect from_port="input 1" to_op="Process Documents from Files" to_port="word list"/>
       <connect from_op="Process Documents from Files" from_port="example set" to_op="Cross Validation" to_port="example set"/>
       <connect from_op="Process Documents from Files" from_port="word list" to_op="DiccionarioPalabras" to_port="input"/>
       <connect from_op="Cross Validation" from_port="model" to_port="result 2"/>
+      <connect from_op="Cross Validation" from_port="example set" to_port="result 3"/>
       <connect from_op="Cross Validation" from_port="performance 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
       <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
+      <description align="center" color="yellow" colored="false" height="103" resized="true" width="111" x="34" y="137">Carga de los documentso por sus diferentes categorias.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="138" y="418">Guardamos en local el vector de palabras resultante tras hacer la carga de documentos.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="475" y="267">Guardamos en local el modelo reultante tras realizar la validacion cruzada con el algoritmo que hayamos elegido.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="201" y="192">Obenemos el modelo, usando el algoritmo elegido para entrenarlo mediante todos los documentos.</description>
     </process>
   </operator>
 </process>
