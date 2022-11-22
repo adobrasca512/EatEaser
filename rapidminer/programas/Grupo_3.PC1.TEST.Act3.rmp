@@ -20,7 +20,7 @@
       </operator>
       <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="313" y="136">
         <list key="text_directories">
-          <parameter key="testing" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/testing"/>
+          <parameter key="testing" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Testing"/>
         </list>
         <parameter key="file_pattern" value="*"/>
         <parameter key="extract_text_only" value="true"/>
