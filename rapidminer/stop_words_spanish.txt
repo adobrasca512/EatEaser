@@ -274,6 +274,7 @@ ningunas
 ninguno
 ningunos
 no
+nombre
 nos
 nosotras
 nosotros
