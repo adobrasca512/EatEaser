@@ -14,13 +14,14 @@
     <process expanded="true">
       <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="45" y="34">
         <list key="text_directories">
-          <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/carnes"/>
-          <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pescados"/>
-          <parameter key="pasta" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/pasta"/>
-          <parameter key="verduras" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/verduras"/>
-          <parameter key="arroz" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/arroz"/>
-          <parameter key="marisco" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/marisco"/>
-          <parameter key="platosMenores" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/platosMenores"/>
+          <parameter key="arroz" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Arroz"/>
+          <parameter key="bebidas" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Bebidas"/>
+          <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Carnes"/>
+          <parameter key="marisco" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Marisco"/>
+          <parameter key="pasta" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Pasta"/>
+          <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Pescados"/>
+          <parameter key="platosMenores" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Platos Menores"/>
+          <parameter key="verduras" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Verduras"/>
         </list>
         <parameter key="file_pattern" value="*"/>
         <parameter key="extract_text_only" value="true"/>
@@ -84,7 +85,7 @@
         <process expanded="true">
           <operator activated="false" class="concurrency:parallel_decision_tree" compatibility="9.10.011" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
             <parameter key="criterion" value="gain_ratio"/>
-            <parameter key="maximal_depth" value="5"/>
+            <parameter key="maximal_depth" value="7"/>
             <parameter key="apply_pruning" value="true"/>
             <parameter key="confidence" value="0.1"/>
             <parameter key="apply_prepruning" value="true"/>
@@ -131,8 +132,8 @@
             <list key="expert_parameters"/>
             <list key="expert_parameters_"/>
           </operator>
-          <operator activated="false" class="concurrency:parallel_random_forest" compatibility="9.10.011" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
-            <parameter key="number_of_trees" value="80"/>
+          <operator activated="true" class="concurrency:parallel_random_forest" compatibility="9.10.011" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
+            <parameter key="number_of_trees" value="100"/>
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="maximal_depth" value="10"/>
             <parameter key="apply_pruning" value="false"/>
@@ -206,7 +207,7 @@
               <portSpacing port="sink_model" spacing="0"/>
             </process>
           </operator>
-          <operator activated="true" class="k_nn" compatibility="9.10.011" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
+          <operator activated="false" class="k_nn" compatibility="9.10.011" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
             <parameter key="k" value="10"/>
             <parameter key="weighted_vote" value="true"/>
             <parameter key="measure_types" value="MixedMeasures"/>
@@ -228,8 +229,8 @@
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="minimal_leaf_size" value="1"/>
           </operator>
-          <connect from_port="training set" to_op="k-NN" to_port="training set"/>
-          <connect from_op="k-NN" from_port="model" to_port="model"/>
+          <connect from_port="training set" to_op="Random Forest" to_port="training set"/>
+          <connect from_op="Random Forest" from_port="model" to_port="model"/>
           <portSpacing port="source_training set" spacing="0"/>
           <portSpacing port="sink_model" spacing="0"/>
           <portSpacing port="sink_through 1" spacing="0"/>
@@ -238,7 +239,7 @@
           <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="413" y="560">Conjunto de un cierto n&amp;#250;mero de &amp;#225;rboles aleatorios&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
           <description align="center" color="yellow" colored="false" height="193" resized="false" width="180" x="411" y="236">Utiliza un subproceso el cual genera un arbol de decision mediante entrenamiento&lt;br&gt;&lt;br&gt;Hay que investigar el process para usarlo&lt;br&gt;&lt;br&gt;SE NECESITA PROCESS INTERNO</description>
           <description align="center" color="yellow" colored="false" height="193" resized="false" width="180" x="208" y="535">Proviene del Decision tree&lt;br&gt;&lt;br&gt;Diferencia:&lt;br&gt;Para cada divisi&amp;#243;n solo est&amp;#225; disponible un subconjunto aleatorio de atributos&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
-          <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="213" y="252">red neuronal artificial&lt;br&gt;&lt;br&gt;permiten una alta precisi&amp;#243;n predictiva&lt;br/&gt;&lt;br/&gt;MUY LENTO</description>
+          <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="212" y="252">red neuronal artificial&lt;br&gt;&lt;br&gt;permiten una alta precisi&amp;#243;n predictiva&lt;br&gt;&lt;br&gt;MUY LENTO&lt;br/&gt;RESULTADO ACEPTABLE</description>
           <description align="center" color="yellow" colored="false" height="157" resized="false" width="180" x="274" y="849">aprendizaje autom&amp;#225;tico para mejorar los modelos de clasificaci&amp;#243;n y regresi&amp;#243;n&lt;br&gt;&lt;br&gt;precisi&amp;#243;n de clasificaci&amp;#243;n&lt;br&gt;&lt;br&gt;SE NECESITA PORCESS INTERNO</description>
           <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="10" y="158">crea nodos que representa una regla de divisi&amp;#243;n para un atributo espec&amp;#237;fico.&lt;br/&gt;&lt;br/&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
           <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="13" y="1151">EL MEJOR POR AHORA&lt;br&gt;&lt;br&gt;coge el doc que esta clasificando y lo comprueba con los k elementos mas cercanos a el</description>
