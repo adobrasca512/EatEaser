@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><process version="9.10.011">
+<?xml version="1.0" encoding="UTF-8"?><process version="10.0.000">
   <context>
     <input/>
     <output/>
     <macros/>
   </context>
-  <operator activated="true" class="process" compatibility="9.10.011" expanded="true" name="Process">
+  <operator activated="true" class="process" compatibility="10.0.000" expanded="true" name="Process">
     <parameter key="logverbosity" value="init"/>
     <parameter key="random_seed" value="2001"/>
     <parameter key="send_mail" value="never"/>
@@ -12,15 +12,15 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="45" y="34">
-        <parameter key="repository_entry" value="//PC1/modelo"/>
+      <operator activated="true" class="retrieve" compatibility="10.0.000" expanded="true" height="68" name="Modelo" width="90" x="45" y="34">
+        <parameter key="repository_entry" value="../modelo"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="136">
-        <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
+      <operator activated="true" class="retrieve" compatibility="10.0.000" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="136">
+        <parameter key="repository_entry" value="../diccionarioPalabras"/>
       </operator>
-      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="313" y="136">
+      <operator activated="true" class="text:process_document_from_file" compatibility="10.0.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="313" y="136">
         <list key="text_directories">
-          <parameter key="testing" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Testing"/>
+          <parameter key="testing" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Testing"/>
         </list>
         <parameter key="file_pattern" value="*"/>
         <parameter key="extract_text_only" value="true"/>
@@ -39,21 +39,21 @@
         <parameter key="datamanagement" value="double_sparse_array"/>
         <parameter key="data_management" value="auto"/>
         <process expanded="true">
-          <operator activated="true" class="text:tokenize" compatibility="9.4.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
+          <operator activated="true" class="text:tokenize" compatibility="10.0.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
             <parameter key="mode" value="non letters"/>
             <parameter key="characters" value=".:"/>
             <parameter key="language" value="English"/>
             <parameter key="max_token_length" value="3"/>
           </operator>
-          <operator activated="true" class="text:transform_cases" compatibility="9.4.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
+          <operator activated="true" class="text:transform_cases" compatibility="10.0.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
             <parameter key="transform_to" value="lower case"/>
           </operator>
-          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="9.4.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
-            <parameter key="file" value="C:/Users/rober/ProyectoComputacion1/EatEaser/rapidminer/stop_words_spanish.txt"/>
+          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="10.0.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
+            <parameter key="file" value="C:/Users/Carlow/Jupyter/EatEaser/rapidminer/stop_words_spanish.txt"/>
             <parameter key="case_sensitive" value="false"/>
             <parameter key="encoding" value="SYSTEM"/>
           </operator>
-          <operator activated="true" class="text:stem_snowball" compatibility="9.4.000" expanded="true" height="68" name="Stem (Snowball)" width="90" x="447" y="34">
+          <operator activated="true" class="text:stem_snowball" compatibility="10.0.000" expanded="true" height="68" name="Stem (Snowball)" width="90" x="447" y="34">
             <parameter key="language" value="Spanish"/>
           </operator>
           <connect from_port="document" to_op="Tokenize" to_port="document"/>
@@ -70,7 +70,7 @@
           <description align="center" color="yellow" colored="false" height="128" resized="true" width="93" x="315" y="127">Eliminamos las palabras que no aportan informaci&amp;#243;n util.</description>
         </process>
       </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="447" y="34">
+      <operator activated="true" class="apply_model" compatibility="10.0.000" expanded="true" height="82" name="Apply Model" width="90" x="447" y="34">
         <list key="application_parameters"/>
         <parameter key="create_view" value="false"/>
       </operator>

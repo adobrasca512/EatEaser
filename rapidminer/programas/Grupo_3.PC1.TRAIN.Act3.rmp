@@ -84,18 +84,18 @@
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
           <operator activated="false" class="concurrency:parallel_decision_tree" compatibility="10.0.000" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
-            <parameter key="criterion" value="gain_ratio"/>
+            <parameter key="criterion" value="accuracy"/>
             <parameter key="maximal_depth" value="7"/>
             <parameter key="apply_pruning" value="true"/>
             <parameter key="confidence" value="0.1"/>
             <parameter key="apply_prepruning" value="true"/>
             <parameter key="minimal_gain" value="0.01"/>
-            <parameter key="minimal_leaf_size" value="2"/>
+            <parameter key="minimal_leaf_size" value="3"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="number_of_prepruning_alternatives" value="3"/>
           </operator>
           <operator activated="false" class="h2o:deep_learning" compatibility="10.0.000" expanded="true" height="103" name="Deep Learning" width="90" x="246" y="136">
-            <parameter key="activation" value="Rectifier"/>
+            <parameter key="activation" value="Tanh"/>
             <enumeration key="hidden_layer_sizes">
               <parameter key="hidden_layer_sizes" value="50"/>
               <parameter key="hidden_layer_sizes" value="50"/>
@@ -134,7 +134,7 @@
           </operator>
           <operator activated="false" class="concurrency:parallel_random_forest" compatibility="10.0.000" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
             <parameter key="number_of_trees" value="100"/>
-            <parameter key="criterion" value="least_square"/>
+            <parameter key="criterion" value="gini_index"/>
             <parameter key="maximal_depth" value="10"/>
             <parameter key="apply_pruning" value="false"/>
             <parameter key="confidence" value="0.1"/>
@@ -154,7 +154,7 @@
           <operator activated="false" class="random_tree" compatibility="10.0.000" expanded="true" height="82" name="Random Tree" width="90" x="246" y="442">
             <parameter key="criterion" value="gini_index"/>
             <parameter key="minimal_size_for_split" value="4"/>
-            <parameter key="minimal_leaf_size" value="2"/>
+            <parameter key="minimal_leaf_size" value="3"/>
             <parameter key="minimal_gain" value="0.1"/>
             <parameter key="maximal_depth" value="20"/>
             <parameter key="confidence" value="0.25"/>
@@ -244,6 +244,7 @@
           <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="10" y="158">crea nodos que representa una regla de divisi&amp;#243;n para un atributo espec&amp;#237;fico.&lt;br/&gt;&lt;br/&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
           <description align="center" color="yellow" colored="false" height="203" resized="true" width="194" x="13" y="1151">EL MEJOR POR AHORA&lt;br&gt;&lt;br&gt;coge el doc que esta clasificando y lo comprueba con los k elementos mas cercanos a el&lt;br&gt;RESULTADO:&lt;br&gt;con K = 15 MEJORES RESULTADOS</description>
           <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="273" y="1151">LENTO Y POCA PRECISION&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
+          <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="292" y="104">Type your comment</description>
         </process>
         <process expanded="true">
           <operator activated="true" class="apply_model" compatibility="10.0.000" expanded="true" height="82" name="Apply Model" width="90" x="45" y="34">
