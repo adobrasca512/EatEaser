@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><process version="9.10.011">
+<?xml version="1.0" encoding="UTF-8"?><process version="10.0.000">
   <context>
     <input/>
     <output/>
     <macros/>
   </context>
-  <operator activated="true" class="process" compatibility="9.10.011" expanded="true" name="Process">
+  <operator activated="true" class="process" compatibility="10.0.000" expanded="true" name="Process">
     <parameter key="logverbosity" value="init"/>
     <parameter key="random_seed" value="2001"/>
     <parameter key="send_mail" value="never"/>
@@ -12,16 +12,16 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="45" y="34">
+      <operator activated="true" class="text:process_document_from_file" compatibility="10.0.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="45" y="34">
         <list key="text_directories">
-          <parameter key="arroz" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Arroz"/>
-          <parameter key="bebidas" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Bebidas"/>
-          <parameter key="carnes" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Carnes"/>
-          <parameter key="marisco" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Marisco"/>
-          <parameter key="pasta" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Pasta"/>
-          <parameter key="pescados" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Pescados"/>
-          <parameter key="platosMenores" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Platos Menores"/>
-          <parameter key="verduras" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Verduras"/>
+          <parameter key="arroz" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Arroz"/>
+          <parameter key="bebidas" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Bebidas"/>
+          <parameter key="carnes" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Carnes"/>
+          <parameter key="marisco" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Marisco"/>
+          <parameter key="pasta" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Pasta"/>
+          <parameter key="pescados" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Pescados"/>
+          <parameter key="platosMenores" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Platos Menores"/>
+          <parameter key="verduras" value="C:/Users/Carlow/Jupyter/EatEaser/recetastextos/Carpeta Verduras"/>
         </list>
         <parameter key="file_pattern" value="*"/>
         <parameter key="extract_text_only" value="true"/>
@@ -40,21 +40,21 @@
         <parameter key="datamanagement" value="double_sparse_array"/>
         <parameter key="data_management" value="auto"/>
         <process expanded="true">
-          <operator activated="true" class="text:tokenize" compatibility="9.4.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
+          <operator activated="true" class="text:tokenize" compatibility="10.0.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
             <parameter key="mode" value="non letters"/>
             <parameter key="characters" value=".:"/>
             <parameter key="language" value="English"/>
             <parameter key="max_token_length" value="3"/>
           </operator>
-          <operator activated="true" class="text:transform_cases" compatibility="9.4.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
+          <operator activated="true" class="text:transform_cases" compatibility="10.0.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
             <parameter key="transform_to" value="lower case"/>
           </operator>
-          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="9.4.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
-            <parameter key="file" value="C:/Users/rober/ProyectoComputacion1/EatEaser/rapidminer/stop_words_spanish.txt"/>
+          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="10.0.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
+            <parameter key="file" value="C:/Users/Carlow/Jupyter/EatEaser/rapidminer/stop_words_spanish.txt"/>
             <parameter key="case_sensitive" value="false"/>
             <parameter key="encoding" value="SYSTEM"/>
           </operator>
-          <operator activated="true" class="text:stem_snowball" compatibility="9.4.000" expanded="true" height="68" name="Stem (Snowball)" width="90" x="447" y="34">
+          <operator activated="true" class="text:stem_snowball" compatibility="10.0.000" expanded="true" height="68" name="Stem (Snowball)" width="90" x="447" y="34">
             <parameter key="language" value="Spanish"/>
           </operator>
           <connect from_port="document" to_op="Tokenize" to_port="document"/>
@@ -71,10 +71,10 @@
           <description align="center" color="yellow" colored="false" height="125" resized="true" width="127" x="427" y="118">Cortamos todas las palabras para normalizarlas y quitarnos los problemas de sufijos.</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="340">
+      <operator activated="true" class="store" compatibility="10.0.000" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="340">
         <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
-      <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
+      <operator activated="true" class="concurrency:cross_validation" compatibility="10.0.000" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
         <parameter key="split_on_batch_attribute" value="false"/>
         <parameter key="leave_one_out" value="false"/>
         <parameter key="number_of_folds" value="10"/>
@@ -83,7 +83,7 @@
         <parameter key="local_random_seed" value="1992"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="false" class="concurrency:parallel_decision_tree" compatibility="9.10.011" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
+          <operator activated="false" class="concurrency:parallel_decision_tree" compatibility="10.0.000" expanded="true" height="103" name="Decision Tree" width="90" x="45" y="34">
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="maximal_depth" value="7"/>
             <parameter key="apply_pruning" value="true"/>
@@ -94,7 +94,7 @@
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="number_of_prepruning_alternatives" value="3"/>
           </operator>
-          <operator activated="false" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="246" y="136">
+          <operator activated="false" class="h2o:deep_learning" compatibility="10.0.000" expanded="true" height="103" name="Deep Learning" width="90" x="246" y="136">
             <parameter key="activation" value="Rectifier"/>
             <enumeration key="hidden_layer_sizes">
               <parameter key="hidden_layer_sizes" value="50"/>
@@ -132,7 +132,7 @@
             <list key="expert_parameters"/>
             <list key="expert_parameters_"/>
           </operator>
-          <operator activated="false" class="concurrency:parallel_random_forest" compatibility="9.10.011" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
+          <operator activated="false" class="concurrency:parallel_random_forest" compatibility="10.0.000" expanded="true" height="103" name="Random Forest" width="90" x="447" y="442">
             <parameter key="number_of_trees" value="100"/>
             <parameter key="criterion" value="least_square"/>
             <parameter key="maximal_depth" value="10"/>
@@ -151,7 +151,7 @@
             <parameter key="local_random_seed" value="1992"/>
             <parameter key="enable_parallel_execution" value="true"/>
           </operator>
-          <operator activated="false" class="random_tree" compatibility="9.10.011" expanded="true" height="82" name="Random Tree" width="90" x="246" y="442">
+          <operator activated="false" class="random_tree" compatibility="10.0.000" expanded="true" height="82" name="Random Tree" width="90" x="246" y="442">
             <parameter key="criterion" value="gini_index"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="minimal_leaf_size" value="2"/>
@@ -166,19 +166,19 @@
             <parameter key="use_local_random_seed" value="false"/>
             <parameter key="local_random_seed" value="1992"/>
           </operator>
-          <operator activated="false" class="decision_tree_multiway" compatibility="9.10.011" expanded="true" height="82" name="Decision Tree (Multiway)" width="90" x="514" y="799">
+          <operator activated="false" class="decision_tree_multiway" compatibility="10.0.000" expanded="true" height="82" name="Decision Tree (Multiway)" width="90" x="514" y="799">
             <process expanded="true">
               <portSpacing port="source_training set" spacing="0"/>
               <portSpacing port="sink_model" spacing="0"/>
             </process>
           </operator>
-          <operator activated="false" class="id3" compatibility="9.10.011" expanded="true" height="82" name="ID3" width="90" x="45" y="391">
+          <operator activated="false" class="id3" compatibility="10.0.000" expanded="true" height="82" name="ID3" width="90" x="45" y="391">
             <parameter key="criterion" value="accuracy"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="minimal_leaf_size" value="2"/>
             <parameter key="minimal_gain" value="0.01"/>
           </operator>
-          <operator activated="false" class="logistic_regression" compatibility="9.10.011" expanded="true" height="103" name="Logistic Regression (SVM)" width="90" x="45" y="799">
+          <operator activated="false" class="logistic_regression" compatibility="10.0.000" expanded="true" height="103" name="Logistic Regression (SVM)" width="90" x="45" y="799">
             <parameter key="kernel_type" value="dot"/>
             <parameter key="kernel_gamma" value="1.0"/>
             <parameter key="kernel_sigma1" value="1.0"/>
@@ -196,7 +196,7 @@
             <parameter key="calculate_weights" value="true"/>
             <parameter key="return_optimization_performance" value="true"/>
           </operator>
-          <operator activated="false" class="bagging" compatibility="9.10.011" expanded="true" height="82" name="Bagging" width="90" x="313" y="748">
+          <operator activated="false" class="bagging" compatibility="10.0.000" expanded="true" height="82" name="Bagging" width="90" x="313" y="748">
             <parameter key="sample_ratio" value="0.9"/>
             <parameter key="iterations" value="10"/>
             <parameter key="average_confidences" value="true"/>
@@ -207,7 +207,7 @@
               <portSpacing port="sink_model" spacing="0"/>
             </process>
           </operator>
-          <operator activated="true" class="k_nn" compatibility="9.10.011" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
+          <operator activated="true" class="k_nn" compatibility="10.0.000" expanded="true" height="82" name="k-NN" width="90" x="45" y="1054">
             <parameter key="k" value="15"/>
             <parameter key="weighted_vote" value="true"/>
             <parameter key="measure_types" value="MixedMeasures"/>
@@ -225,7 +225,7 @@
             <parameter key="kernel_a" value="1.0"/>
             <parameter key="kernel_b" value="0.0"/>
           </operator>
-          <operator activated="false" class="decision_stump" compatibility="9.10.011" expanded="true" height="82" name="Decision Stump" width="90" x="313" y="1054">
+          <operator activated="false" class="decision_stump" compatibility="10.0.000" expanded="true" height="82" name="Decision Stump" width="90" x="313" y="1054">
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="minimal_leaf_size" value="1"/>
           </operator>
@@ -242,15 +242,15 @@
           <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="212" y="252">red neuronal artificial&lt;br&gt;&lt;br&gt;permiten una alta precisi&amp;#243;n predictiva&lt;br&gt;&lt;br&gt;MUY LENTO&lt;br/&gt;RESULTADO ACEPTABLE</description>
           <description align="center" color="yellow" colored="false" height="157" resized="false" width="180" x="274" y="849">aprendizaje autom&amp;#225;tico para mejorar los modelos de clasificaci&amp;#243;n y regresi&amp;#243;n&lt;br&gt;&lt;br&gt;precisi&amp;#243;n de clasificaci&amp;#243;n&lt;br&gt;&lt;br&gt;SE NECESITA PORCESS INTERNO</description>
           <description align="center" color="yellow" colored="false" height="139" resized="false" width="180" x="10" y="158">crea nodos que representa una regla de divisi&amp;#243;n para un atributo espec&amp;#237;fico.&lt;br/&gt;&lt;br/&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
-          <description align="center" color="yellow" colored="false" height="175" resized="false" width="180" x="13" y="1151">EL MEJOR POR AHORA&lt;br&gt;&lt;br&gt;coge el doc que esta clasificando y lo comprueba con los k elementos mas cercanos a el&lt;br&gt;RESULTADO:&lt;br&gt;con K = 15 MEJORES RESULTADOS</description>
+          <description align="center" color="yellow" colored="false" height="203" resized="true" width="194" x="13" y="1151">EL MEJOR POR AHORA&lt;br&gt;&lt;br&gt;coge el doc que esta clasificando y lo comprueba con los k elementos mas cercanos a el&lt;br&gt;RESULTADO:&lt;br&gt;con K = 15 MEJORES RESULTADOS</description>
           <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="273" y="1151">LENTO Y POCA PRECISION&lt;br&gt;&lt;br&gt;TIENE BAJA PRECIOSION POR FALTA DE MUCHOS DOCUMENTOS</description>
         </process>
         <process expanded="true">
-          <operator activated="true" class="apply_model" compatibility="9.10.011" expanded="true" height="82" name="Apply Model" width="90" x="45" y="34">
+          <operator activated="true" class="apply_model" compatibility="10.0.000" expanded="true" height="82" name="Apply Model" width="90" x="45" y="34">
             <list key="application_parameters"/>
             <parameter key="create_view" value="false"/>
           </operator>
-          <operator activated="true" class="performance_classification" compatibility="9.10.011" expanded="true" height="82" name="Performance" width="90" x="179" y="34">
+          <operator activated="true" class="performance_classification" compatibility="10.0.000" expanded="true" height="82" name="Performance" width="90" x="179" y="34">
             <parameter key="main_criterion" value="first"/>
             <parameter key="accuracy" value="true"/>
             <parameter key="classification_error" value="false"/>
@@ -291,7 +291,7 @@
           <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="104" y="195">K-NN&lt;br/&gt;RANDOM FOREST&lt;br/&gt;DEEP LEARNING&lt;br/&gt;DECISION TREE&lt;br/&gt;RANDOM TREE&lt;br/&gt;DECISION STUMP</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="514" y="187">
+      <operator activated="true" class="store" compatibility="10.0.000" expanded="true" height="68" name="Modelo" width="90" x="514" y="187">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
       <connect from_port="input 1" to_op="Process Documents from Files" to_port="word list"/>
