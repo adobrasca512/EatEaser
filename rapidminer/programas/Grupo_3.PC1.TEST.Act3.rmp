@@ -81,9 +81,9 @@
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
-      <description align="center" color="yellow" colored="false" height="143" resized="true" width="115" x="34" y="114">Recuperamos el modelo generado en el entrenamiento, el cual se encentra en local.</description>
-      <description align="center" color="yellow" colored="false" height="169" resized="true" width="103" x="168" y="216">Recuperamos el vector de palabras generado en el entrenamiento, el cual se encentra en local.</description>
-      <description align="center" color="yellow" colored="false" height="146" resized="true" width="136" x="437" y="125">Aplicamos el modelo entrenado a los documentos nuevos los cuales no sabemos que informaci&amp;#243;n contienen.</description>
+      <description align="center" color="yellow" colored="false" height="143" resized="true" width="115" x="37" y="112">Recuperamos el modelo generado en el entrenamiento, el cual se encentra en local.</description>
+      <description align="center" color="yellow" colored="false" height="169" resized="true" width="103" x="169" y="218">Recuperamos el vector de palabras generado en el entrenamiento, el cual se encentra en local.</description>
+      <description align="center" color="yellow" colored="false" height="146" resized="true" width="136" x="440" y="123">Aplicamos el modelo entrenado a los documentos nuevos los cuales no sabemos que informaci&amp;#243;n contienen.</description>
       <description align="center" color="yellow" colored="false" height="283" resized="true" width="148" x="283" y="231">Carga de los documentos nuevos, los cuales no sabemos que contienen.&lt;br/&gt;&lt;br/&gt;Para comprobar que el modelo funciona le pasamos documentos que si sabemos nosotros donde tendrian que ir pero que el modelo tendra que clasificar sin conocer previamente.</description>
     </process>
   </operator>

@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="45" y="34">
+      <operator activated="true" class="text:process_document_from_file" compatibility="9.4.000" expanded="true" height="82" name="Process Documents from Files" width="90" x="112" y="34">
         <list key="text_directories">
           <parameter key="arroz" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Arroz"/>
           <parameter key="bebidas" value="C:/Users/rober/ProyectoComputacion1/EatEaser/recetastextos/Carpeta Bebidas"/>
@@ -71,10 +71,10 @@
           <description align="center" color="yellow" colored="false" height="125" resized="true" width="127" x="427" y="118">Cortamos todas las palabras para normalizarlas y quitarnos los problemas de sufijos.</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="179" y="340">
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="DiccionarioPalabras" width="90" x="246" y="187">
         <parameter key="repository_entry" value="//PC1/diccionarioPalabras"/>
       </operator>
-      <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="246" y="34">
+      <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.011" expanded="true" height="145" name="Cross Validation" width="90" x="313" y="34">
         <parameter key="split_on_batch_attribute" value="false"/>
         <parameter key="leave_one_out" value="false"/>
         <parameter key="number_of_folds" value="10"/>
@@ -291,7 +291,7 @@
           <description align="center" color="yellow" colored="false" height="121" resized="false" width="180" x="104" y="195">K-NN&lt;br/&gt;RANDOM FOREST&lt;br/&gt;DEEP LEARNING&lt;br/&gt;DECISION TREE&lt;br/&gt;RANDOM TREE&lt;br/&gt;DECISION STUMP</description>
         </process>
       </operator>
-      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="514" y="187">
+      <operator activated="true" class="store" compatibility="9.10.011" expanded="true" height="68" name="Modelo" width="90" x="514" y="136">
         <parameter key="repository_entry" value="//PC1/modelo"/>
       </operator>
       <connect from_port="input 1" to_op="Process Documents from Files" to_port="word list"/>
@@ -305,10 +305,10 @@
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
       <portSpacing port="sink_result 3" spacing="0"/>
-      <description align="center" color="yellow" colored="false" height="103" resized="true" width="111" x="34" y="137">Carga de los documentso por sus diferentes categorias.</description>
-      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="138" y="418">Guardamos en local el vector de palabras resultante tras hacer la carga de documentos.</description>
-      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="475" y="267">Guardamos en local el modelo reultante tras realizar la validacion cruzada con el algoritmo que hayamos elegido.</description>
-      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="201" y="192">Obenemos el modelo, usando el algoritmo elegido para entrenarlo mediante todos los documentos.</description>
+      <description align="center" color="yellow" colored="false" height="103" resized="true" width="111" x="98" y="129">Carga de los documentso por sus diferentes categorias.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="163" y="265">Guardamos en local el vector de palabras resultante tras hacer la carga de documentos.</description>
+      <description align="center" color="yellow" colored="false" height="105" resized="false" width="180" x="473" y="215">Guardamos en local el modelo reultante tras realizar la validacion cruzada con el algoritmo que hayamos elegido.</description>
+      <description align="center" color="yellow" colored="false" height="185" resized="true" width="97" x="357" y="191">Obenemos el modelo, usando el algoritmo elegido para entrenarlo mediante todos los documentos.</description>
     </process>
   </operator>
 </process>
