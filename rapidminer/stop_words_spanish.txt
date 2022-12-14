@@ -475,5 +475,11 @@ vuestros
 y
 ya
 yo
-
+www
+http
+https
+youtube
+watch
+enlace
+com
 
