@@ -634,7 +634,7 @@ class Test(QWidget):
 
         self.setLayout(self.layout)
         self.ver = QButtonGroup()
-        self.ver.idClicked.connect(self.info.ver_)
+        self.ver.buttonClicked[int].connect(self.info.ver_)
 
 
 
@@ -764,18 +764,39 @@ class Test(QWidget):
 
             # le añado todos los que esten en listbox
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' + str(self.total_archivos) + ' archivos\n')
-class Aplicacion(QWidget):
+class Aplicacion(QMainWindow):
     def __init__(self):
-        super().__init__()
-        self.layout=QGridLayout()
+        super(Aplicacion, self).__init__()
 
+        self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        self.widget = QWidget()  # Widget that contains the collection of Vertical Box
+        self.vbox = QVBoxLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+
+        for i in range(1, 50):
+            object = QLabel("TextLabel: " + str(i))
+            self.vbox.addWidget(object)
+
+        self.widget.setLayout(self.vbox)
+
+        # Scroll Area Properties
+        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.widget)
+
+        self.setCentralWidget(self.scroll)
+
+        self.setGeometry(600, 100, 1000, 900)
+        self.setWindowTitle('Scroll Area Demonstration')
+        self.show()
+        """
         scategorias='border:1px solid black;border-radius:100px;background-color:white;background-image:url("imagenes/carne.jpg");'
 
 
         self.lytcategorias=QGridLayout()
 
 
-        self.btncarnes=QPushButton()
+        self.btncarnes=QPushButton() 
         self.btnplatos=QPushButton()
         self.btnbebidas=QPushButton()
         self.btnmarisco=QPushButton()
@@ -867,17 +888,17 @@ class Aplicacion(QWidget):
         #self.informacion.setLayout(self.featured_items)
 
         #self.informacion.setWidgetResizable(True)
-        #self.informacion.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        #self.informacion.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)"""
         """for i,element in enumerate(ws.listaNombres):
             self.featured_items.addWidget(QLabel(element),i,0,3,2)
             self.featured_items.addWidget(QLabel(element), i, 1,3,2)"""
 
-        #self.informacion.setWidget(self)
+        """#self.informacion.setWidget(self)
 
         #self.layout.addWidget(self.informacion)
-        self.layout.addLayout(self.featured_items, 4, 0, 1, 5)
+        self.layout.addLayout(self.featured_items, 4, 0, 1, 5)"""
 
-        self.setLayout(self.layout)
+
 
 
 import requests
