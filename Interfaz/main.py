@@ -198,7 +198,7 @@ class Train(QWidget):
         #combobox de ruta
         self.cbcategoria=QComboBox()
         self.cbcategoria.setFixedSize(800,40)
-        self.cbcategoria.addItems(os.listdir('C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/'))
+        self.cbcategoria.addItems(os.listdir('recetastextos/'))
         self.cbcategoria.setStyleSheet(scbcategoria)
         #botones de ruta
         self.anadir = QPushButton()
@@ -371,7 +371,7 @@ class Train(QWidget):
             #verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
-                size = len(os.listdir('C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/' + i))
+                size = len(os.listdir('recetastextos/' + i))
 
                 self.total_archivos = size + self.total_archivos
                 texto=i + ': ' + str(size) + ' archivos\n'
@@ -424,12 +424,12 @@ class Train(QWidget):
         # recorremos cada file del nuevo directorio
         for file_name in os.listdir(r):
             source = r +'/'+ file_name
-            destination = 'C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/'+ultimo+'/' + file_name
+            destination = 'recetastextos/'+ultimo+'/' + file_name
             print('se va al destino',destination)
             #si existe el archivo de source lo movemos al destino
 
-            if os.path.exists('C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/'+ultimo)==False:
-                os.makedirs('C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/'+ultimo)
+            if os.path.exists('recetastextos/'+ultimo)==False:
+                os.makedirs('recetastextos/'+ultimo)
                 shutil.move(source, destination)
                 print('Moved:', file_name)
             else:
@@ -438,7 +438,7 @@ class Train(QWidget):
                 print('Moved:', file_name)
         #actualizamos el combobox
         self.cbcategoria.clear()
-        self.cbcategoria.addItems(os.listdir('C:/Users/adobr/Downloads/EatEaser-pruebasRober (1)/EatEaser-pruebasRober/recetastextos/'))
+        self.cbcategoria.addItems(os.listdir('recetastextos/'))
     def aniadir_directorio(self):
         r=QFileDialog.getExistingDirectory(self, "Select Directory",directory=os.getcwd())
         print(r)
