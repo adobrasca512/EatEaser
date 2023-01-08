@@ -24,6 +24,7 @@ class Index(QWidget):
         # lado izquierdo del grid
         self.izqlayout = QGridLayout()
         self.setWindowTitle("Eat Easer Main page")
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
         self.label = QLabel()
         self.pixmap = QPixmap('imagenes/imagen.jpg')
         self.label.setPixmap(self.pixmap)
@@ -170,6 +171,8 @@ class Index(QWidget):
 class Train(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Eat Easer Train page")
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
         #variables globales
         self.seleccionados = []
         self.checkboxes = []
@@ -455,6 +458,8 @@ class Train(QWidget):
 class Test(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Eat Easer Test page")
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
         # variables globales
         self.nombrecarpeta=''
         self.info=self.Informacion()
