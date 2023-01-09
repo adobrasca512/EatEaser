@@ -34,7 +34,17 @@
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="btnpasta">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btncarne">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="text">
             <string>PushButton</string>
            </property>
@@ -54,7 +64,7 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="ptnmarisco">
            <property name="text">
             <string>PushButton</string>
            </property>
@@ -89,7 +99,7 @@
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="btnverdura">
            <property name="text">
             <string>PushButton</string>
            </property>
@@ -116,7 +126,7 @@
           </widget>
          </item>
          <item row="0" column="6">
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="btnarroz">
            <property name="text">
             <string>PushButton</string>
            </property>
@@ -129,11 +139,15 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="btncarne">
-           <property name="styleSheet">
-            <string notr="true"/>
+         <item row="1" column="7">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>TextLabel</string>
            </property>
+          </widget>
+         </item>
+         <item row="0" column="7">
+          <widget class="QPushButton" name="btnpescado">
            <property name="text">
             <string>PushButton</string>
            </property>

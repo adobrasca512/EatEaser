@@ -1227,6 +1227,25 @@ class App(QtWidgets.QMainWindow):
     def __init__(self):
         super(App, self).__init__()  # Call the inherited classes __init__ method
         uic.loadUi('app.ui', self)  # Load the .ui file
+        # self.btncarnes.setIconSize(QSize(200, 200))
+        self.btnplatos.setText('da')
+        self.btnplatos.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/platos.jpg);border-radius:100px;}QPushButton:hover{border:4px solid black;}")
+        self.btnplatos.setFixedSize(200, 200)
+        self.btnverdura.setStyleSheet("border-image:url(imagenes/verdura.jpg);border-radius:100px")
+        self.btnverdura.setFixedSize(200, 200)
+        self.btnarroz.setStyleSheet("border-image:url(imagenes/arroz.jpg);border-radius:100px")
+        self.btnarroz.setFixedSize(200, 200)
+        self.btnpasta.setStyleSheet("border-image:url(imagenes/pasta.jpg);border-radius:100px")
+        self.btnpasta.setFixedSize(200, 200)
+        self.btnmarisco.setStyleSheet("border-image:url(imagenes/marisco.jpg);border-radius:100px")
+        self.btnmarisco.setFixedSize(200, 200)
+        self.btnpescado.setStyleSheet("border-image:url(imagenes/pescado.jpg);border-radius:100px")
+        self.btnpescado.setFixedSize(200, 200)
+        self.btnbebidas.setStyleSheet("border-image:url(imagenes/bebida.jpg);border-radius:100px")
+        self.btnbebidas.setFixedSize(200, 200)
+        self.btncarnes.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
+        self.btncarnes.setFixedSize(200, 200)
         self.show()
 
 if __name__=='__main__':
