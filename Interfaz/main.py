@@ -3,7 +3,7 @@ import sys
 import shutil
 import urllib.request
 
-from PyQt5 import QtCore, QtWidgets, QtGui, Qt
+from PyQt5 import QtCore, QtWidgets, QtGui, Qt, uic
 from PyQt5.QtCore import QSize
 
 
@@ -772,13 +772,47 @@ class Test(QWidget):
 class Aplicacion(QMainWindow):
     def __init__(self):
         super(Aplicacion, self).__init__()
-
+        #STYLESHEETS
+        smenu='background-color:transparent;'
+        stitulo='line-height: 0.9;font-family:"Bookman Old Style";font-size:24px;font-style:italic;margin:30px;'
+        sdescripcion='font-family:"NSimSun";font-size:16px;color:gray;margin:30px;'
+        scategorias='font-family:"Rage Italic";font-size:32px;'
+        sqline='font-family:"Bookman Old Style";font-size:24px;border:1px solid black;border-radius:12px'
+        sbusqueda = 'border:1px solid transparent;background-color:transparent;'
         self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
         self.widget = QWidget()  # Widget that contains the collection of Vertical Box
-        self.layout = QVBoxLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+        self.layout = QGridLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+        self.menubar=QGridLayout()
 
+        logo=QPushButton()
+
+        logo.setStyleSheet(smenu+"border-image:url(imagenes/chef-Logo.png)")
+        logo.setFixedSize(150, 150)
+        self.menubar.addWidget(logo,0,0)
+
+        self.layout.addLayout(self.menubar, 0, 0)
+        self.cabecera=QGridLayout()
+        self.layout.addLayout(self.cabecera,1,0)
+        titulo=QLabel('Aplicacion Eateaser')
+        descripcion=QLabel('Realiza busquedas de recetas por categorias, dando click en el buscador o directamente en las categorias.')
+        titulo.setStyleSheet(stitulo)
+        descripcion.setStyleSheet(sdescripcion)
+        self.cabecera.addWidget(titulo,0,0,QtCore.Qt.AlignCenter)
+        self.cabecera.addWidget(descripcion, 1, 0,QtCore.Qt.AlignCenter)
+        self.lybarrabusqueda=QGridLayout()
+
+        self.busqueda=QLineEdit()
+        self.btnbuscar=QPushButton()
+        self.busqueda.setFixedSize(600,40)
+        self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
+        self.btnbuscar.setFixedSize(40, 40)
+        self.busqueda.setPlaceholderText('Buscar...')
+        self.busqueda.setStyleSheet(sqline)
+        self.btnbuscar.setStyleSheet(sbusqueda)
+        self.lybarrabusqueda.addWidget( self.busqueda,0,1,QtCore.Qt.AlignVCenter)
+        self.lybarrabusqueda.addWidget( self.btnbuscar, 0, 2,1,1,QtCore.Qt.AlignLeft)
+        self.layout.addLayout(self.lybarrabusqueda,2,0)
         self.lytcategorias = QGridLayout()
-
         self.btncarnes = QPushButton()
         self.btnplatos = QPushButton()
         self.btnbebidas = QPushButton()
@@ -807,7 +841,7 @@ class Aplicacion(QMainWindow):
         self.btnbebidas.setFixedSize(200, 200)
         self.btncarnes.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
         self.btncarnes.setFixedSize(200, 200)
-        self.lytcategorias.addWidget(self.btncarnes, 0, 0, 1, 1)
+        self.lytcategorias.addWidget(self.btncarnes, 0, 0)
         self.lytcategorias.addWidget(self.btnpescado, 0, 1)
         self.lytcategorias.addWidget(self.btnverdura, 0, 2)
         self.lytcategorias.addWidget(self.btnmarisco, 0, 3)
@@ -815,35 +849,54 @@ class Aplicacion(QMainWindow):
         self.lytcategorias.addWidget(self.btnbebidas, 0, 5)
         self.lytcategorias.addWidget(self.btnplatos, 0, 6)
         self.lytcategorias.addWidget(self.btnarroz, 0, 7)
-        self.lytcategorias.addWidget(QLabel('Carnes'), 1, 0, 1, 1, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Pescados'), 1, 1, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Verduras'), 1, 2, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Marisco'), 1, 3, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Pasta'), 1, 4, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Bebidas'), 1, 5, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Platos Menores'), 1, 6, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Arroz'), 1, 7, QtCore.Qt.AlignCenter)
-        self.layout.addLayout(self.lytcategorias)
+        carnes=QLabel('Carnes')
+        carnes.setStyleSheet(scategorias)
+        pescados = QLabel('Pescados')
+        pescados.setStyleSheet(scategorias)
+        verduras = QLabel('Verduras')
+        verduras.setStyleSheet(scategorias)
+        marisco = QLabel('Marisco')
+        marisco.setStyleSheet(scategorias)
+        pasta = QLabel('Pasta')
+        pasta.setStyleSheet(scategorias)
+        bebidas = QLabel('Bebidas')
+        bebidas.setStyleSheet(scategorias)
+        platos = QLabel('Platos Menores')
+        platos.setStyleSheet(scategorias)
+        arroz = QLabel('Arroz')
+        arroz.setStyleSheet(scategorias)
+        self.lytcategorias.addWidget(carnes, 1, 0, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(pescados, 1, 1, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(verduras, 1, 2, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(marisco, 1, 3, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(pasta, 1, 4, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(bebidas, 1, 5, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(platos, 1, 6, QtCore.Qt.AlignCenter)
+        self.lytcategorias.addWidget(arroz, 1, 7, QtCore.Qt.AlignCenter)
 
-        self.discover = QGridLayout()
+        self.layout.addLayout(self.lytcategorias, 5, 0)
         self.ldiscover = QLabel('Discover new favorites')
-        self.discover.addWidget(self.ldiscover)
+
         self.discover_items = QGridLayout()
+        self.layout.addLayout(self.discover_items,6, 0)
 
-        self.layout.addLayout(self.discover)
+
         ws = WebScraping()
-        driver = ws.conexionPaginaWebAhorraMas("pimiento")
+        driver = ws.conexionPaginaWebAhorraMas("cebolla")
         cont = 0
-
+        ldiscover=QLabel('Descubre \nlos favoritos')
+        ldiscover.setStyleSheet(stitulo+';margin-top:30px;')
+        self.discover_items.addWidget(ldiscover, 0, 0)
+        self.discover_items.setVerticalSpacing(0)
         for i, element in enumerate(ws.listaNombres):
             # si la columna ya va a mas de uno
             if (cont == 4):
                 break
             else:
-                nombre = QLabel(element)
+                nombre = QLabel('\t'+element)
                 nombre.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;')
-                precio = QLabel(ws.listaPrecios[i])
-                precio.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;')
+                precio = QLabel('\t'+ws.listaPrecios[i])
+                precio.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;font-weight:bold;')
                 # imagen=QPushButton()
 
                 data = urllib.request.urlopen(ws.listaImagenes[i]).read()
@@ -851,31 +904,67 @@ class Aplicacion(QMainWindow):
                 # imagen.setStyleSheet('border-image:url('+ws.listaImagenes[i]+');')
                 image = QtGui.QImage()
                 image.loadFromData(data)
-
+                print(image)
                 lbl = QLabel()
                 pix = QtGui.QPixmap(image)
 
-                lbl.setPixmap(pix.scaled(350, 200))
+                lbl.setPixmap(pix)
                 lbl.setScaledContents(True)
+
                 # imagen.setFixedSize(100,100)
-                self.discover_items.addWidget(lbl, 0, i)
-                self.discover_items.addWidget(nombre, 1, i)
-                self.discover_items.addWidget(precio, 2, i)
+                print(i)
+                self.discover_items.addWidget(lbl, 1, i)
+                self.discover_items.addWidget(nombre, 2, i)
+                self.discover_items.addWidget(precio, 3, i)
+
+
             cont = cont + 1
-        self.layout.addLayout(self.discover_items)
-        self.featured = QGridLayout()
-        # self.featured.addWidget(self.informacion,0,1,4,1)
         self.featured_items = QGridLayout()
+        self.imagenes = QVBoxLayout()
+        self.datos = QGridLayout()
+        self.textos=QVBoxLayout()
+        self.featured_items.addLayout(self.datos, 0, 0)
+        self.featured_items.addLayout(self.imagenes, 0, 1)
+        self.featured_items.addLayout(self.textos, 0, 2)
+        lbfeatured = QLabel('Nuestra seleccion de Lidl')
+        lbfeatured.setStyleSheet(stitulo)
+        #self.featured_items.addWidget(lbfeatured,0,0)
+        self.layout.addLayout(self.featured_items, 7, 0)
 
-        # self.informacion.setLayout(self.featured_items)
+        l2 = QLabel('sdf')
+        l2.setStyleSheet('background-color:red;')
+        self.textos.addWidget(l2)
+        self.datos.setHorizontalSpacing(0)
 
-        # self.informacion.setWidgetResizable(True)
-        # self.informacion.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)"""
-        for i in range(1, 50):
-            object = QLabel("TextLabel: " + str(i))
-            self.vbox.addWidget(object)
+        j=1
+        k=0
+        n=0
+        for i, element in enumerate(ws.listaNombres):
+            l = QLabel('sdf')
+            l.setStyleSheet('background-color:black;')
+            lbl=QLabel(element)
+            lbl.setStyleSheet('background-color:white;')
+            self.datos.addWidget(lbl,i,1)
+            bt = QPushButton('Boton')
+            bt.setFixedSize(400,400)
+            print('columna: 0','fila:',str(j))
+            self.datos.addWidget(bt, i, 0,QtCore.Qt.AlignTop)
+            data = urllib.request.urlopen(ws.listaImagenes[i]).read()
+            image = QtGui.QImage()
+            image.loadFromData(data)
 
+            ft = QLabel()
+            ft.setStyleSheet('border-radius: 50%;')
+            pix = QtGui.QPixmap(image)
+            ft.setScaledContents(True)
+            ft.setPixmap(pix)
 
+            self.datos.addWidget(ft,i,2)
+
+            j=j+2
+            k=k+2
+            n=n+1
+        self.setStyleSheet('background-color:#f6f3ee;')
         self.widget.setLayout(self.layout)
 
         # Scroll Area Properties
@@ -886,7 +975,7 @@ class Aplicacion(QMainWindow):
 
         self.setCentralWidget(self.scroll)
 
-        self.setGeometry(600, 100, 1000, 900)
+
         self.setWindowTitle('Scroll Area Demonstration')
         self.show()
         """
@@ -1134,12 +1223,17 @@ class WebScraping:
                 print("-----------------------------------")
                 i += 1
 
+class App(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(App, self).__init__()  # Call the inherited classes __init__ method
+        uic.loadUi('app.ui', self)  # Load the .ui file
+        self.show()
 
 if __name__=='__main__':
     app=QApplication(sys.argv)
 
 
-    gui=Index()
+    gui=App()
     gui.showMaximized()
     gui.show()
 
