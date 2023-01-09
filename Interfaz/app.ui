@@ -24,19 +24,124 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="2" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_5" rowstretch="0,0">
-         <item row="0" column="1">
-          <widget class="QPushButton" name="btnplatos">
+       <item row="5" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="2">
+          <widget class="QLabel" name="fvimagen_3">
            <property name="text">
-            <string>PushButton</string>
+            <string>TextLabel</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="4">
+         <item row="0" column="3">
+          <widget class="QLabel" name="fvimagen_4">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="fvimagen_2">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="fvimagen_1">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="label_23">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="label_24">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="font">
+            <font>
+             <family>Bookman Old Style</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Descubre los favoritos</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridcategorias" rowstretch="0,0">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btnplatos">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
           <widget class="QPushButton" name="btnpasta">
            <property name="text">
-            <string>PushButton</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -46,7 +151,7 @@
             <string notr="true"/>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -59,56 +164,93 @@
             </font>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Platos Menores</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="ptnmarisco">
-           <property name="text">
-            <string>PushButton</string>
+         <item row="1" column="7" alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_13">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="6" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>TextLabel</string>
+            <string>Marisco</string>
            </property>
           </widget>
          </item>
          <item row="1" column="5" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="label_10">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Arroz</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="4" alignment="Qt::AlignHCenter">
+         <item row="1" column="3" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_8">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Pasta</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="QPushButton" name="btnpescado">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="6" alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_12">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Pescado</string>
            </property>
           </widget>
          </item>
          <item row="1" column="2" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_6">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Bebidas</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
+         <item row="0" column="4">
           <widget class="QPushButton" name="btnverdura">
            <property name="text">
-            <string>PushButton</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
           <widget class="QPushButton" name="btnbebidas">
            <property name="text">
-            <string>PushButton</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -121,35 +263,34 @@
             </font>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Carne</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="6">
+         <item row="0" column="5">
           <widget class="QPushButton" name="btnarroz">
            <property name="text">
-            <string>PushButton</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="7">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item row="0" column="7">
-          <widget class="QPushButton" name="btnpescado">
+          <widget class="QPushButton" name="btnmarisco">
            <property name="text">
-            <string>PushButton</string>
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4" alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_9">
+           <property name="font">
+            <font>
+             <family>Rage Italic</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Vegetales</string>
            </property>
           </widget>
          </item>
@@ -223,19 +364,40 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_6">
+       <item row="2" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout_10">
+         <property name="leftMargin">
+          <number>300</number>
+         </property>
+         <property name="topMargin">
+          <number>50</number>
+         </property>
+         <property name="rightMargin">
+          <number>300</number>
+         </property>
+         <property name="bottomMargin">
+          <number>50</number>
+         </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_11">
+          <widget class="QLineEdit" name="busqueda">
+           <property name="styleSheet">
+            <string notr="true">background-color:transparent;
+border:1px solid black;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btnbuscar">
+           <property name="styleSheet">
+            <string notr="true">background-color:transparent;
+</string>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_8"/>
        </item>
       </layout>
      </widget>
