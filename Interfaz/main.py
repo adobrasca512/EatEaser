@@ -978,115 +978,6 @@ class Aplicacion(QMainWindow):
 
         self.setWindowTitle('Scroll Area Demonstration')
         self.show()
-        """
-        scategorias='border:1px solid black;border-radius:100px;background-color:white;background-image:url("imagenes/carne.jpg");'
-
-
-        self.lytcategorias=QGridLayout()
-
-
-        self.btncarnes=QPushButton() 
-        self.btnplatos=QPushButton()
-        self.btnbebidas=QPushButton()
-        self.btnmarisco=QPushButton()
-        self.btnpasta=QPushButton()
-        self.btnverdura=QPushButton()
-        self.btnarroz=QPushButton()
-        self.btnpescado=QPushButton()
-        #self.btncarnes.setIcon(QIcon('imagenes/carne.jpg'))
-
-        #self.btncarnes.setIconSize(QSize(200, 200))
-        self.btnplatos.setStyleSheet("QPushButton{border-image:url(imagenes/platos.jpg);border-radius:100px;}QPushButton:hover{border:4px solid black;}")
-        self.btnplatos.setFixedSize(200, 200)
-        self.btnverdura.setStyleSheet("border-image:url(imagenes/verdura.jpg);border-radius:100px")
-        self.btnverdura.setFixedSize(200, 200)
-        self.btnarroz.setStyleSheet("border-image:url(imagenes/arroz.jpg);border-radius:100px")
-        self.btnarroz.setFixedSize(200, 200)
-        self.btnpasta.setStyleSheet("border-image:url(imagenes/pasta.jpg);border-radius:100px")
-        self.btnpasta.setFixedSize(200, 200)
-        self.btnmarisco.setStyleSheet("border-image:url(imagenes/marisco.jpg);border-radius:100px")
-        self.btnmarisco.setFixedSize(200, 200)
-        self.btnpescado.setStyleSheet("border-image:url(imagenes/pescado.jpg);border-radius:100px")
-        self.btnpescado.setFixedSize(200, 200)
-        self.btnbebidas.setStyleSheet("border-image:url(imagenes/bebida.jpg);border-radius:100px")
-        self.btnbebidas.setFixedSize(200, 200)
-        self.btncarnes.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
-        self.btncarnes.setFixedSize(200,200)
-        self.lytcategorias.addWidget(self.btncarnes,0,0,1,1)
-        self.lytcategorias.addWidget(self.btnpescado,0,1)
-        self.lytcategorias.addWidget(self.btnverdura,0,2)
-        self.lytcategorias.addWidget(self.btnmarisco,0,3)
-        self.lytcategorias.addWidget(self.btnpasta,0,4)
-        self.lytcategorias.addWidget(self.btnbebidas,0,5)
-        self.lytcategorias.addWidget(self.btnplatos,0,6)
-        self.lytcategorias.addWidget(self.btnarroz,0,7)
-        self.lytcategorias.addWidget(QLabel('Carnes'), 1, 0, 1, 1,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Pescados'), 1, 1,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Verduras'), 1, 2,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Marisco'), 1, 3,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Pasta'), 1, 4,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Bebidas'), 1, 5,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Platos Menores'), 1, 6,QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(QLabel('Arroz'), 1, 7,QtCore.Qt.AlignCenter)
-        self.layout.addLayout(self.lytcategorias,0,0,1,2)
-        self.informacion=QScrollArea()
-        self.discover=QGridLayout()
-        self.ldiscover=QLabel('Discover new favorites')
-        self.discover.addWidget(self.ldiscover)
-        self.discover_items=QGridLayout()
-
-        self.layout.addLayout(self.discover, 3, 0, 1, 1)
-
-
-        ws = WebScraping()
-        driver = ws.conexionPaginaWebAhorraMas("pimiento")
-        cont=0
-
-        for i,element in enumerate(ws.listaNombres):
-            #si la columna ya va a mas de uno
-            if(cont==4):
-                break
-            else:
-                nombre=QLabel(element)
-                nombre.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;')
-                precio = QLabel(ws.listaPrecios[i])
-                precio.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;')
-                #imagen=QPushButton()
-
-                data = urllib.request.urlopen(ws.listaImagenes[i]).read()
-
-                #imagen.setStyleSheet('border-image:url('+ws.listaImagenes[i]+');')
-                image = QtGui.QImage()
-                image.loadFromData(data)
-
-                lbl =QLabel()
-                pix=QtGui.QPixmap(image)
-
-                lbl.setPixmap(pix.scaled(350,200))
-                lbl.setScaledContents(True)
-                #imagen.setFixedSize(100,100)
-                self.discover_items.addWidget(lbl,0,i)
-                self.discover_items.addWidget(nombre,1,i)
-                self.discover_items.addWidget(precio, 2, i)
-            cont=cont+1
-        self.layout.addLayout(self.discover_items, 3, 1, 1, 1)
-        self.featured=QGridLayout()
-        #self.featured.addWidget(self.informacion,0,1,4,1)
-        self.featured_items=QGridLayout()
-
-        #self.informacion.setLayout(self.featured_items)
-
-        #self.informacion.setWidgetResizable(True)
-        #self.informacion.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)"""
-        """for i,element in enumerate(ws.listaNombres):
-            self.featured_items.addWidget(QLabel(element),i,0,3,2)
-            self.featured_items.addWidget(QLabel(element), i, 1,3,2)"""
-
-        """#self.informacion.setWidget(self)
-
-        #self.layout.addWidget(self.informacion)
-        self.layout.addLayout(self.featured_items, 4, 0, 1, 5)"""
-
 
 
 
@@ -1227,6 +1118,39 @@ class App(QtWidgets.QMainWindow):
     def __init__(self):
         super(App, self).__init__()  # Call the inherited classes __init__ method
         uic.loadUi('app.ui', self)  # Load the .ui file
+        # self.btncarnes.setIconSize(QSize(200, 200))
+
+
+        self.btnplatos= self.findChild(QtWidgets.QPushButton, 'btnplatos')
+        self.btnplatos.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/platos.jpg);border-radius:100px;}QPushButton:hover{border:4px solid black;}")
+        self.btnplatos.setFixedSize(200, 200)
+        self.btnverdura= self.findChild(QtWidgets.QPushButton, 'btnverdura')
+        self.btnverdura.setStyleSheet("border-image:url(imagenes/verdura.jpg);border-radius:100px")
+        self.btnverdura.setFixedSize(200, 200)
+        self.btnarroz= self.findChild(QtWidgets.QPushButton, 'btnarroz')
+        self.btnarroz.setStyleSheet("border-image:url(imagenes/arroz.jpg);border-radius:100px")
+        self.btnarroz.setFixedSize(200, 200)
+        self.btnpasta = self.findChild(QtWidgets.QPushButton, 'btnpasta')
+        self.btnpasta.setStyleSheet("border-image:url(imagenes/pasta.jpg);border-radius:100px")
+        self.btnpasta.setFixedSize(200, 200)
+        self.btnmarisco = self.findChild(QtWidgets.QPushButton, 'btnmarisco')
+        self.btnmarisco.setStyleSheet("border-image:url(imagenes/marisco.jpg);border-radius:100px")
+        self.btnmarisco.setFixedSize(200, 200)
+        self.btnpescado = self.findChild(QtWidgets.QPushButton, 'btnpescado')
+        self.btnpescado.setStyleSheet("border-image:url(imagenes/pescado.jpg);border-radius:100px")
+        self.btnpescado.setFixedSize(200, 200)
+        self.btnbebidas = self.findChild(QPushButton, 'btnbebidas')
+        self.btnbebidas.setStyleSheet("border-image:url(imagenes/bebida.jpg);border-radius:100px")
+        self.btnbebidas.setFixedSize(200, 200)
+        self.btncarne = self.findChild(QPushButton, 'btncarne')
+        self.btncarne.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
+        self.btncarne.setFixedSize(200, 200)
+        self.busqueda = self.findChild(QLineEdit, 'busqueda')
+        self.btnbuscar = self.findChild(QPushButton, 'btnbuscar')
+        self.busqueda.setStyleSheet("border-radius:10px;border:1px solid black;background-color:transparent;")
+        self.busqueda.setFixedSize(1000,50)
+        self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
         self.show()
 
 if __name__=='__main__':
