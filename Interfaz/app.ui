@@ -24,9 +24,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1197</y>
+         <y>-1241</y>
          <width>865</width>
-         <height>1798</height>
+         <height>1826</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -35,7 +35,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>1000</height>
+            <height>1500</height>
            </size>
           </property>
           <property name="frameShape">
@@ -1564,6 +1564,25 @@ color:red;
                    <property name="text">
                     <string>Obten los textos relacionados a nuestras recetas personalizadas.</string>
                    </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="frame_18">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_3">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_21">
+                      <property name="text">
+                       <string>TextLabel</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                 </layout>

@@ -24,7 +24,7 @@ class Index(QWidget):
         # lado izquierdo del grid
         self.izqlayout = QGridLayout()
         self.setWindowTitle("Eat Easer Main page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         self.label = QLabel()
         self.pixmap = QPixmap('imagenes/imagen.jpg')
         self.label.setPixmap(self.pixmap)
@@ -97,7 +97,7 @@ class Index(QWidget):
                 'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
         self.test.clicked.connect(lambda :self.menuClicked('Fase de Testeo','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
                 'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.app.clicked.connect(lambda :self.menuClicked('Aplicacion','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
+        self.app.clicked.connect(lambda :self.menuClicked('Aplicación','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
                 'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
         self.acceder.clicked.connect(self.openTrain)
 
@@ -133,6 +133,8 @@ class Index(QWidget):
         self.abajo_grid.setContentsMargins(100,0,100,0)
 
         self.apagar_widgets(False)
+    def setWidgets(self):
+        pass
     def apagar_widgets(self,boolean):
         self.carlos.setVisible(boolean)
         self.juancar.setVisible(boolean)
@@ -168,6 +170,12 @@ class Index(QWidget):
             self.gui.show()
             self.gui.showMaximized()
             self.close()
+        if self.state=='Aplicación':
+            self.gui = App()
+            self.gui.show()
+            self.gui.showMaximized()
+            self.close()
+
 class Train(QWidget):
     def __init__(self):
         super().__init__()
@@ -790,7 +798,9 @@ class WebScraping:
         self.listaPrecios = []
         self.listaURL=[]
     def conexionPaginaWebLidl(self):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
         urlLidl = "https://recetas.lidl.es/"
         driver.get(urlLidl)
         time.sleep(0.5)
@@ -1003,9 +1013,7 @@ class App(QtWidgets.QMainWindow):
 
 if __name__=='__main__':
     app=QApplication(sys.argv)
-
-
-    gui=App()
+    gui=Index()
     gui.showMaximized()
     gui.show()
 
