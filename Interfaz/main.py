@@ -10,7 +10,170 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 
+import glob
+import os
+import re
+import requests
+import pathlib
+import sys
+import logging
+import json
+import joblib
+import warnings
+import math
+import random
+import multiprocessing
+from random import shuffle
+import subprocess
+import time
 
+
+def install(package):
+    subprocess.check_call([os.sys.executable, "-m", "pip", "install", package])
+
+
+
+try:
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.action_chains import ActionChains
+except ModuleNotFoundError:
+    install("selenium")
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.action_chains import ActionChains
+
+try:
+    from webdriver_manager.chrome import ChromeDriverManager
+except ModuleNotFoundError:
+    install("webdriver_manager")
+    from webdriver_manager.chrome import ChromeDriverManager
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    install("pandas")
+    import pandas as pd
+try:
+    from pytube import YouTube
+    from pytube import Playlist
+except ModuleNotFoundError:
+    install("pytube")
+    from pytube import YouTube
+    from pytube import Playlist
+try:
+    import speech_recognition as sr
+except ModuleNotFoundError:
+    install("SpeechRecognition")
+    import speech_recognition as sr
+try:
+    from pydub import AudioSegment
+    from pydub.silence import split_on_silence
+except:
+    install("pydub")
+    from pydub import AudioSegment
+    from pydub.silence import split_on_silence
+try:
+    import moviepy.editor as mp
+except:
+    install("moviepy")
+    import moviepy.editor as mp
+try:
+    from bs4 import BeautifulSoup
+except:
+    install("beautifulsoup4")
+    from bs4 import BeautifulSoup
+try:
+    from nltk.stem import PorterStemmer
+    from nltk.tokenize import word_tokenize
+except:
+    install("nltk")
+    from nltk.stem import PorterStemmer
+    from nltk.tokenize import word_tokenize
+try:
+    import pyrebase
+except:
+    install("pyrebase4")
+    import pyrebase
+try:   
+    import nltk
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    from nltk.stem.rslp import RSLPStemmer
+    nltk.download('rslp')
+except:
+    install("nltk")
+    import nltk
+    #nltk.download('punkt')
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    from nltk.stem.rslp import RSLPStemmer
+    nltk.download('rslp')
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import accuracy_score
+    from sklearn.model_selection import ParameterGrid
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn import svm
+    from sklearn.model_selection import cross_val_score
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.datasets import make_blobs
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.model_selection import RandomizedSearchCV
+    from sklearn.model_selection import KFold
+except ModuleNotFoundError:
+    install("scikit-learn")
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import accuracy_score
+    from sklearn.model_selection import ParameterGrid
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn import svm
+    from sklearn.model_selection import cross_val_score
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.datasets import make_blobs
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.model_selection import RandomizedSearchCV
+    from sklearn.model_selection import KFold
+try:
+    import numpy as np
+    from scipy import stats
+except ModuleNotFoundError:
+    install("numpy")
+    import numpy as np
+    from scipy import stats
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    install("tensorflow")
+    import tensorflow as tf
+try:
+    from keras.models import Sequential
+    from keras import layers
+except ModuleNotFoundError:
+    install("keras")
+    from keras.models import Sequential
+    from keras import layers
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    install("matplotlib")
+    import matplotlib.pyplot as plt
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    install("seaborn")
+    import seaborn as sns
 
 
 
@@ -1773,19 +1936,6 @@ class Test(QWidget):
 
 
 
-
-import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-
-import time
-
-
 class WebScraping:
     def __init__(self,kw):
         self.keyword=kw
@@ -2087,6 +2237,4 @@ if __name__=='__main__':
 
 
     sys.exit(app.exec_())
-
-
 
