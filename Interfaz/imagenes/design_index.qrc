@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="imagenes">
+    <file>fondo.jpg</file>
+    <file>carlos.jpeg</file>
+    <file>juancar.jpeg</file>
+    <file>rober.jpeg</file>
+    <file>adi.jpeg</file>
+  </qresource>
+</RCC>

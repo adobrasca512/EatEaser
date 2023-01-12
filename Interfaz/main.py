@@ -2,138 +2,87 @@ import os
 import sys
 import shutil
 import urllib.request
-
-from PyQt5 import QtCore, QtWidgets, QtGui, Qt, uic
+import joblib
+#imports de la interfaz
+from PyQt5 import QtCore, QtWidgets, QtGui, uic
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
-import time
-from PyQt5.QtGui import QPixmap, QFont, QFontDatabase, QIcon, QImage
-from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, \
-    QWidget, QSizePolicy, QComboBox, QLayout, QFormLayout, QLineEdit, QButtonGroup, QRadioButton, QCheckBox, \
-    QFileDialog, QMessageBox, QTableWidget, QAbstractItemView, QTableWidgetItem, QHeaderView, QScrollArea
-
-
-class Index(QWidget):
+class Index(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
-        self.state='main'
-        # Layout grande
-        self.layout = QHBoxLayout()
-
-        # lado izquierdo del grid
-        self.izqlayout = QGridLayout()
-        self.setWindowTitle("Eat Easer Main page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
-        self.label = QLabel()
-        self.pixmap = QPixmap('imagenes/imagen.jpg')
-        self.label.setPixmap(self.pixmap)
-        self.label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.izqlayout.addWidget(self.label,0,0)
-        # lado derecho del grid
-        self.derlayout = QGridLayout()
-        self.der_grid = QGridLayout()
-
-        #Stylesheets
-        botones_menu = "QPushButton{ color :black;background-color:white;border:3px solid white;font-weight:lighter;font-size:22px;font-family:'Bahnschrift Light';letter-spacing:3px;}QPushButton:hover {color:gray}"
-        stitulo="margin:0,0,0,0;white-space: normal;color:black;font-size:34px;font-weight:bold;text-transform:upperrcase;text-align: center;"
-        sdescripcion="color:gray;font-size:24px;font-weight:light;text-transform:lowercase;text-align: center;"
-        sacceder="QPushButton{border:1px solid white;background-color:white;font-size:18px;font-family:'Bahnschrift Light';}QPushButton:hover{font-weight:bold}"
-        sfuente_1="font-family:'Bahnschrift Light';letter-spacing:3px;"
-        snombres = "font-size:24px;font-family:'Bahnschrift Light';letter-spacing:3px;"
-        #botones menu
-        self.about = QtWidgets.QPushButton("About", self)
-        self.app = QtWidgets.QPushButton("Application", self)
-        self.train = QtWidgets.QPushButton("Train", self)
-        self.test = QtWidgets.QPushButton("Test", self)
-        #botones menu estilizados
-        self.about.setStyleSheet(botones_menu)
-        self.train.setStyleSheet(botones_menu)
-        self.test.setStyleSheet(botones_menu)
-        self.app.setStyleSheet(botones_menu)
-        #grid de arriba añadimos menu
-        self.arriba_grid = QGridLayout()
-        self.arriba_grid.addWidget(self.about, 0, 0)
-        self.arriba_grid.addWidget(self.train, 0, 1)
-        self.arriba_grid.addWidget(self.test, 0, 2)
-        self.arriba_grid.addWidget(self.app, 0, 3)
-        #grid del medio
-        self.medio_grid = QGridLayout()
-        self.abajo_grid = QGridLayout()
-        #titulo del main
-        self.titulo = QLabel(self)
-        self.titulo.setText("Bienvenido al Startup de Eateaser")
-        self.titulo.setStyleSheet(sfuente_1+stitulo)
-        #descripcion del main
-        self.descripcion = QLabel(self)
-        self.descripcion.setText("Selecciona una opción del menú y descubre sobre ello.")
-        self.descripcion.setStyleSheet(sfuente_1+sdescripcion)
-        #Boton oculto de acceder
-        self.acceder=QPushButton('Acceder')
-        self.acceder.setVisible(False)
-        self.acceder.setIcon(QIcon('imagenes/up-arrow.png'))
-        self.acceder.setStyleSheet(sacceder)
-        #agrid del medio aniadimos titulo, descripcion y boton
-        self.medio_grid.addWidget(self.titulo,0,0,1,1,QtCore.Qt.AlignHCenter)
-        self.medio_grid.addWidget(self.descripcion,1,0,1,1,QtCore.Qt.AlignHCenter)
-        self.medio_grid.addWidget(self.acceder, 2, 0,2,1, QtCore.Qt.AlignHCenter)
-        #grid derecho aniadimos todos los grids
-        self.der_grid = QGridLayout()
-        self.der_grid.addLayout(self.arriba_grid, 0, 0)
-        self.der_grid.addLayout(self.medio_grid, 1, 0)
-        self.der_grid.addLayout(self.abajo_grid,2,0)
-        self.derlayout.addLayout(self.der_grid, 2, 0,3,0)
-        # añadimos todo
-        self.layout.addLayout(self.izqlayout,20)
-        self.layout.addLayout(self.derlayout,20)
-        self.setLayout(self.layout)
-        #configuraciones de la pagina
-        self.setStyleSheet("background-color :  white")
-        self.showMaximized()
-        #acciones de botones
-        self.about.clicked.connect(lambda :self.menuClicked('Startup Eateaser','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',False,True))
-        self.train.clicked.connect(lambda :self.menuClicked('Fase de Entrenamiento','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.test.clicked.connect(lambda :self.menuClicked('Fase de Testeo','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.app.clicked.connect(lambda :self.menuClicked('Aplicacion','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.acceder.clicked.connect(self.openTrain)
-
-        #about informacion botones imagenes
-        self.juancar = QPushButton()
-        self.adi = QPushButton()
-        self.carlos = QPushButton()
-        self.rober = QPushButton()
-        #personalizamos los botones acontinuacion
-        self.personalizar_boton( self.juancar, 'juancar.jpeg')
+        super(Index, self).__init__()
+        # Cargamos el .ui file
+        uic.loadUi('index.ui', self)
+        #cargamos widgets
+        self.setWidgets()
+        #activamos botones
+        self.activarBotones()
+    #Aqui se declaran los widgets
+    def setWidgets(self):
+        self.about = self.findChild(QtWidgets.QPushButton, 'about')
+        self.app = self.findChild(QtWidgets.QPushButton, 'app')
+        self.train = self.findChild(QtWidgets.QPushButton, 'train')
+        self.test = self.findChild(QtWidgets.QPushButton, 'test')
+        self.downloads = self.findChild(QtWidgets.QPushButton, 'downloads')
+        self.titulo = self.findChild(QLabel, 'titulo')
+        self.descripcion = self.findChild(QLabel, 'descripcion')
+        self.acceder = self.findChild(QtWidgets.QPushButton, 'acceder')
+        self.icono = self.findChild(QtWidgets.QPushButton, 'icono')
+        self.ljuancar = self.findChild(QLabel, 'ljuan')
+        self.ladi = self.findChild(QLabel, 'ladi')
+        self.lcarlos = self.findChild(QLabel, 'lcarlos')
+        self.lrober = self.findChild(QLabel, 'lrober')
+        self.juancar = self.findChild(QtWidgets.QPushButton, 'juan')
+        self.adi = self.findChild(QtWidgets.QPushButton, 'adi')
+        self.carlos = self.findChild(QtWidgets.QPushButton, 'carlos')
+        self.rober = self.findChild(QtWidgets.QPushButton, 'rober')
+        self.personalizar_boton(self.juancar, 'juancar.jpeg')
         self.personalizar_boton(self.adi, 'adi.jpeg')
         self.personalizar_boton(self.carlos, 'carlos.jpeg')
         self.personalizar_boton(self.rober, 'rober.jpeg')
-        #labels personalizadas
-        self.ljuancar = QLabel('Juan\nCarlos')
-        self.ladi = QLabel('Adilem\nDobras')
-        self.lcarlos = QLabel('Carlos\nGonzales')
-        self.lrober = QLabel('Roberto\nEchevarria')
-        #estilizamos las labels
-        self.ladi.setStyleSheet(snombres)
-        self.ljuancar.setStyleSheet(snombres)
-        self.lrober.setStyleSheet(snombres)
-        self.lcarlos.setStyleSheet(snombres)
-        #grid de abajo aniadimos widgets
-        self.abajo_grid.addWidget(self.juancar, 0, 0)
-        self.abajo_grid.addWidget(self.adi, 0, 1)
-        self.abajo_grid.addWidget(self.carlos, 0, 2)
-        self.abajo_grid.addWidget(self.rober, 0, 3)
-        self.abajo_grid.addWidget(self.ljuancar, 1, 0)
-        self.abajo_grid.addWidget(self.ladi, 1, 1)
-        self.abajo_grid.addWidget(self.lcarlos, 1, 2)
-        self.abajo_grid.addWidget(self.lrober, 1, 3,1,1)
-        self.abajo_grid.setContentsMargins(100,0,100,0)
-
+        self.acceder.setVisible(False)
+        self.icono.setVisible(False)
         self.apagar_widgets(False)
-    def apagar_widgets(self,boolean):
+    #aqui ponemos los eventos de los botones
+    def activarBotones(self):
+        self.about.clicked.connect(lambda: self.menuClicked('Startup Eateaser',
+                                                            'Compañia encargada para sugerirte las mejores recetas Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facilpara conocer la clasificacion de \n'
+                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            False, True, ''))
+        self.train.clicked.connect(lambda: self.menuClicked('Fase de Entrenamiento',
+                                                            'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil para conocer la clasificacion de \n'
+                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            True, False, 'train.png'))
+        self.test.clicked.connect(lambda: self.menuClicked('Fase de Testeo',
+                                                           'Compañia encargada para sugerirte las mejores recetas.\Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
+                                                           'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                           True, False, 'test.png'))
+        self.app.clicked.connect(lambda: self.menuClicked('Aplicación',
+                                                          'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
+                                                          'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                          True, False, 'app.png'))
+        self.downloads.clicked.connect(lambda: self.menuClicked('Descargar',
+                                                                'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
+                                                                'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                                True, False, 'descarga.png'))
+        self.acceder.clicked.connect(self.openTrain)
+    def menuClicked(self, titulo, descripcion, acceder, widgets,dir):
+        self.titulo.setText(titulo)
+        self.descripcion.setText(descripcion)
+        self.acceder.setVisible(acceder)
+        self.apagar_widgets(widgets)
+        self.state = titulo
+        if(widgets==False):
+            self.icono.setVisible(True)
+            self.icono.setIcon(QIcon('imagenes/' + dir))
+            self.icono.setIconSize(QSize(200, 200))
+            self.icono.setStyleSheet('background-color:transparent;')
+        else:
+            self.icono.setVisible(False)
+
+    def apagar_widgets(self, boolean):
         self.carlos.setVisible(boolean)
         self.juancar.setVisible(boolean)
         self.adi.setVisible(boolean)
@@ -143,138 +92,204 @@ class Index(QWidget):
         self.ljuancar.setVisible(boolean)
         self.lcarlos.setVisible(boolean)
 
-
-    def personalizar_boton(self,boton,nombre):
-        boton.setIcon(QIcon('imagenes/'+nombre))
+    def personalizar_boton(self, boton, nombre):
+        boton.setIcon(QIcon('imagenes/' + nombre))
         boton.setIconSize(QSize(200, 200))
-        boton.setFixedSize(200, 200)
-        boton.setStyleSheet('border-radius:12px;')
-    def menuClicked(self,titulo,descripcion,acceder,widgets):
-        self.titulo.setText(titulo)
-        self.descripcion.setText(descripcion)
-        self.acceder.setVisible(acceder)
-        self.apagar_widgets(widgets)
-        self.state = titulo
+        boton.setStyleSheet('background-color:transparent;')
     def openTrain(self):
         if self.state=='Fase de Entrenamiento':
-
             self.gui = Train()
             self.gui.show()
             self.gui.showMaximized()
             self.close()
         if self.state=='Fase de Testeo':
-
             self.gui = Test()
             self.gui.show()
             self.gui.showMaximized()
+            self.close()
+        if self.state=='Aplicación':
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.gui = App()
+            self.gui.show()
+            self.gui.showMaximized()
+            QApplication.restoreOverrideCursor()
             self.close()
 class Train(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Eat Easer Train page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         #variables globales
+        self.setWidgets()
+        self.setLayouts()
+        self.stylesheet()
+        self.addlayout_to_layouts()
+        self.addwindgets_to_layouts()
+        self.activarBotones()
+
+    def setLayouts(self):
+        # layout grande
+        self.layout = QGridLayout()
+        # partes del layout grande
+        self.izqlayout = QGridLayout()
+        self.derlayout = QGridLayout()
+        # grid de la ruta
+        self.rutalayout = QGridLayout()
+        # grid de algoritmos
+        self.algoritmolayout = QGridLayout()
+        # grjd guardar
+        self.guardar = QGridLayout()
+        self.seleccionlayout = QHBoxLayout()
+        self.grafico = QVBoxLayout()
+        self.setLayout(self.layout)
+
+
+    def setWidgets(self):
         self.seleccionados = []
         self.checkboxes = []
-
-        #layout grande
-        self.layout = QGridLayout()
-        #partes del layout grande
-        self.izqlayout=QGridLayout()
-        self.derlayout = QGridLayout()
-        #stylesheet
-        scategoria="font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%;padding:5px;"
-        scbcategoria="color :black;background-color:white;border-bottom:3px solid black;font-weight:lighter;font-size:22px;font-family:'Bahnschrift Light';letter-spacing:3px;"
-        sbtnruta='QPushButton{background-color:transparent;border:1px solid transparent}QPushButton:hover{border:1px solid black;border-radius:12px;}'
-        sbotones = 'QPushButton{border:transparent;background-color:transparent;}QPushButton:hover{border:2px solid black;border-radius:12px;}'
-        salgoritmo="font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%"
-        sbtnalgoritmo = 'QPushButton{color:white;border-radius:12px;background-color:black;margin:0;font-family:"Bahnschrift Light";font-size:24px;}QPushButton:hover{color:black;background-color:transparent;border:2px solid black;}'
-        sform="font-family:'Bahnschrift Light';font-style:italic;font-size:24px;letter-spacing:3px;padding:0%"
-        sinfo='background-color:white;border-radius:12px;border:1px white;'
-        stextos_derecha = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;'
-        sretorno='font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;color:white;background-color:black;'
-        #grid de la ruta
-        self.rutalayout= QGridLayout()
-        #labels de ruta
-        self.lcategoria=QLabel('Selecciona la categoria')
-        self.lcategoria.setStyleSheet(scategoria)
-        #combobox de ruta
-        self.cbcategoria=QComboBox()
-        self.cbcategoria.setFixedSize(800,40)
+        self.varableSeleccionCarpetaGuardarModelo = ""
+        # labels de ruta
+        self.lcategoria = QLabel('Selecciona la categoria')
+        # combobox de ruta
+        self.cbcategoria = QComboBox()
+        self.cbcategoria.setFixedSize(800, 40)
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
-        self.cbcategoria.setStyleSheet(scbcategoria)
-        #botones de ruta
+        # zona derecha del layout labels
+        self.linfo = QPushButton()
+        self.ltitulo = QLabel('Nombre Algoritmo')
+        self.ldescrip = QLabel('Descripcion Algoritmo')
+        self.vista = QLabel('Vista Algoritmo')
+        self.fondo = QLabel()
+        # estilizar labels
+        self.linfo.setIcon(QIcon('imagenes/informacion.png'))
+        self.linfo.setFixedSize(QtCore.QSize(400, 80))
+        size = QSize(50, 50)
+        self.linfo.setIconSize(size)
+        # labels algoritmo
+        self.lalgoritmo = QLabel('Algoritmo:')
+        # botones de algorimos
+        self.btn_knn = QPushButton('K-NN')
+        self.btn_rf = QPushButton('Random-Forest')
+        self.btn_rn = QPushButton('Red Neuronal')
+        self.btnalgoritmo = QPushButton()
+        # estilizamos botones
+        self.btn_knn.setFixedSize(QtCore.QSize(400, 80))
+        self.btn_rf.setFixedSize(QtCore.QSize(400, 80))
+        self.btn_rn.setFixedSize(QtCore.QSize(400, 80))
+        # grid del grafico
+        self.layout13 = QLabel('d')
+        size = QSize(50, 50)
+        self.btnalgoritmo.setIconSize(size)
+        self.btnalgoritmo.setIcon(QIcon('imagenes/boton-de-play.png'))
+        self.btnalgoritmo.setFixedSize(QtCore.QSize(80, 80))
+        # botones de ruta
         self.anadir = QPushButton()
         self.anadir.setIcon(QIcon('imagenes/cargar.png'))
         self.anadir.setFixedSize(QtCore.QSize(40, 40))
         self.nuevo = QPushButton()
         self.nuevo.setIcon(QIcon('imagenes/add.png'))
         self.nuevo.setFixedSize(QtCore.QSize(40, 40))
-        # estilizamos los botones
-        self.nuevo.setStyleSheet(sbtnruta)
-        self.anadir.setStyleSheet(sbtnruta)
-        #aniadimos al layout de ruta
-        self.rutalayout.addWidget(self.lcategoria, 0, 0, 1, 1)
-        self.rutalayout.addWidget(self.cbcategoria,0,1,1,1)
-        self.rutalayout.addWidget(self.anadir, 0, 2, 1, 1)
-        self.rutalayout.addWidget(self.nuevo,0,3,1,1)
-
-
-
-        #grid de algoritmos
-        self.algoritmolayout = QGridLayout()
-        #labels algoritmo
-        self.lalgoritmo = QLabel('Algoritmo:')
-        self.lalgoritmo.setStyleSheet(salgoritmo)
-        #botones de algorimos
-        self.btn_knn=QPushButton('K-NN')
-        self.btn_rf = QPushButton('Random-Forest')
-        self.btn_rn = QPushButton('Red Neuronal')
-        self.btnalgoritmo = QPushButton()
-        #estilizamos botones
-        self.btn_knn.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rf.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rn.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_knn.setStyleSheet(sbtnalgoritmo)
-        self.btn_rf.setStyleSheet(sbtnalgoritmo)
-        self.btn_rn.setStyleSheet(sbtnalgoritmo)
-        size = QSize(50, 50)
-        self.btnalgoritmo.setIconSize(size)
-        self.btnalgoritmo.setStyleSheet(sbotones)
-        self.btnalgoritmo.setIcon(QIcon('imagenes/boton-de-play.png'))
-        self.btnalgoritmo.setFixedSize(QtCore.QSize(80, 80))
-
-        #aniadimos al grid de algoritmos
-        self.algoritmolayout.addWidget(self.lalgoritmo,0,0,1,4)
-        self.algoritmolayout.addWidget(self.btn_knn,1,0,2,1)
-        self.algoritmolayout.addWidget(self.btn_rf,1,1,2,1)
-        self.algoritmolayout.addWidget(self.btn_rn,1,2,2,1)
-        self.algoritmolayout.addWidget(self.btnalgoritmo,1,3,2,1)
-
-        #grjd guardar
-        self.guardar=QGridLayout()
-        self.seleccionlayout=QHBoxLayout()
-
-        #botones de grid guardar
-        self.borrar =QPushButton()
+        # botones de grid guardar
+        self.borrar = QPushButton()
         self.path_btn = QPushButton('')
         self.btn_guardar = QPushButton()
-
-        #estilizamos botones
+        # estilizamos botones
         self.borrar.setFixedSize(QtCore.QSize(80, 80))
         self.borrar.setIcon(QIcon('imagenes/delete.png'))
         self.path_btn.setIcon(QIcon('imagenes/lupa.png'))
         self.btn_guardar.setIcon(QIcon('imagenes/guardar-el-archivo.png'))
+        # form del grid guardar
+        self.formguardar = QLineEdit()
+        self.lform = QLabel("Guardar modelo:")
+        # boton de retorno izquierdo
+        self.retorno = QPushButton(u"\u2190" + ' Main Page/ Entrenamiento')
+
+    def stylesheet(self):
+        # stylesheet
+        scategoria = "font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%;padding:5px;"
+        scbcategoria = "color :black;background-color:white;border-bottom:3px solid black;font-weight:lighter;font-size:22px;font-family:'Bahnschrift Light';letter-spacing:3px;"
+        sbtnruta = 'QPushButton{background-color:transparent;border:1px solid transparent}QPushButton:hover{border:1px solid black;border-radius:12px;}'
+        sbotones = 'QPushButton{border:transparent;background-color:transparent;}QPushButton:hover{border:2px solid black;border-radius:12px;}'
+        salgoritmo = "font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%"
+        sbtnalgoritmo = 'QPushButton{color:white;border-radius:12px;background-color:black;margin:0;font-family:"Bahnschrift Light";font-size:24px;}QPushButton:hover{color:black;background-color:transparent;border:2px solid black;}'
+        sform = "font-family:'Bahnschrift Light';font-style:italic;font-size:24px;letter-spacing:3px;padding:0%"
+        sinfo = 'background-color:white;border-radius:12px;border:1px white;'
+        stextos_derecha = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;'
+        sretorno = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;color:white;background-color:black;'
+        # estilizamos los botones
+        self.btnalgoritmo.setStyleSheet(sbotones)
+        self.btn_knn.setStyleSheet(sbtnalgoritmo)
+        self.btn_rf.setStyleSheet(sbtnalgoritmo)
+        self.btn_rn.setStyleSheet(sbtnalgoritmo)
+        self.nuevo.setStyleSheet(sbtnruta)
+        self.anadir.setStyleSheet(sbtnruta)
+        self.cbcategoria.setStyleSheet(scbcategoria)
+        self.lcategoria.setStyleSheet(scategoria)
+        # estilizamos zona derecha
+        self.ltitulo.setStyleSheet(stextos_derecha)
+        self.ldescrip.setStyleSheet(stextos_derecha)
+        self.vista.setStyleSheet(stextos_derecha)
+        self.fondo.setStyleSheet(sinfo)
+        self.linfo.setStyleSheet(sinfo)
+        self.lalgoritmo.setStyleSheet(salgoritmo)
+        self.retorno.setStyleSheet(sretorno)
         self.btn_guardar.setStyleSheet(sbotones)
         self.path_btn.setStyleSheet(sbotones)
-
-        #aniadimos a la seleccion
-        self.seleccionlayout.addWidget(self.borrar,1,QtCore.Qt.AlignLeft)
-
+        self.lform.setStyleSheet(sform)
+        self.layout13.setStyleSheet('background-color:white')
+    def addlayout_to_layouts(self):
+        # aniadimos los layouts al total
+        self.layout.addLayout(self.izqlayout, 0, 0)
+        self.layout.addLayout(self.derlayout, 0, 1)
+        self.layout.setColumnStretch(0, 3)
+        self.layout.setColumnStretch(1, 1)
+        # aniadimos los layouts al lado izq
+        self.izqlayout.addLayout(self.rutalayout, 1, 0)
+        self.izqlayout.addLayout(self.algoritmolayout, 2, 0)
+        self.izqlayout.addLayout(self.seleccionlayout, 3, 0)
+        self.izqlayout.addLayout(self.grafico, 4, 0)
+        self.izqlayout.addLayout(self.guardar, 5, 0)
+        # estilizamos los layouts
+        self.izqlayout.setRowStretch(0, 1)
+        self.izqlayout.setRowStretch(1, 1)
+        self.izqlayout.setRowStretch(2, 1)
+        self.izqlayout.setRowStretch(3, 1)
+        self.izqlayout.setRowStretch(4, 2)
+        self.izqlayout.setRowStretch(5, 1)
+    def addwindgets_to_layouts(self):
+        # aniadimos al layout de ruta
+        self.rutalayout.addWidget(self.lcategoria, 0, 0, 1, 1)
+        self.rutalayout.addWidget(self.cbcategoria, 0, 1, 1, 1)
+        self.rutalayout.addWidget(self.anadir, 0, 2, 1, 1)
+        self.rutalayout.addWidget(self.nuevo, 0, 3, 1, 1)
+        # aniadimos widgets en lado derecho
+        self.derlayout.addWidget(self.fondo, 0, 0, 6, 1)
+        self.derlayout.addWidget(self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.rowStretch(1)
+        # aniadimos los widgets a guardar
+        self.guardar.addWidget(self.lform, 0, 0, 1, 1)
+        self.guardar.addWidget(self.formguardar, 0, 1, 1, 1)
+        self.guardar.addWidget(self.btn_guardar, 0, 2)
+        self.guardar.addWidget(self.path_btn, 0, 3)
+        # aniadimos al grid de algoritmos
+        self.algoritmolayout.addWidget(self.lalgoritmo, 0, 0, 1, 4)
+        self.algoritmolayout.addWidget(self.btn_knn, 1, 0, 2, 1)
+        self.algoritmolayout.addWidget(self.btn_rf, 1, 1, 2, 1)
+        self.algoritmolayout.addWidget(self.btn_rn, 1, 2, 2, 1)
+        self.algoritmolayout.addWidget(self.btnalgoritmo, 1, 3, 2, 1)
+        # aniadimos a la seleccion
+        self.seleccionlayout.addWidget(self.borrar, 1, QtCore.Qt.AlignLeft)
+        self.grafico.addWidget(self.layout13)
+        self.izqlayout.addWidget(self.retorno, 0, 0)
+    def activarBotones(self):
         # eventos de botones
         self.anadir.clicked.connect(self.aniadir_boton)
         self.borrar.clicked.connect(self.eliminar_boton)
         self.path_btn.clicked.connect(self.aniadir_directorio)
+        self.btn_guardar.clicked.connect(self.guardarModelo)
         self.btn_knn.clicked.connect(
             lambda: self.informacion('Algoritmo K-NN', 'Este algoritmo hace esto y esto y esto'))
         self.btn_rn.clicked.connect(
@@ -283,78 +298,7 @@ class Train(QWidget):
             lambda: self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
-        #form del grid guardar
-        self.formguardar = QLineEdit()
-        self.lform=QLabel("Guardar modelo:")
-        self.lform.setStyleSheet(sform)
-
-        #aniadimos los widgets a guardar
-        self.guardar.addWidget(self.lform, 0, 0, 1, 1)
-        self.guardar.addWidget(self.formguardar, 0, 1, 1, 1)
-        self.guardar.addWidget(self.btn_guardar, 0, 2)
-        self.guardar.addWidget(self.path_btn, 0, 3)
-
-
-        # grid del grafico
-        self.layout13 = QLabel('d')
-        self.layout13.setStyleSheet('background-color:white')
-        self.grafico = QVBoxLayout()
-        self.grafico.addWidget(self.layout13)
-
-        #boton de retorno izquierdo
-        self.retorno=QPushButton(u"\u2190"+' Main Page/ Entrenamiento')
-        self.retorno.setStyleSheet(sretorno)
         self.retorno.clicked.connect(self.volver)
-        #aniadimos los layouts al lado izq
-        self.izqlayout.addWidget(self.retorno, 0, 0)
-        self.izqlayout.addLayout(self.rutalayout,1,0)
-        self.izqlayout.addLayout(self.algoritmolayout,2,0)
-        self.izqlayout.addLayout(self.seleccionlayout,3, 0)
-        self.izqlayout.addLayout(self.grafico,4, 0)
-        self.izqlayout.addLayout(self.guardar,5,0)
-        #estilizamos los layouts
-        self.izqlayout.setRowStretch(0, 1)
-        self.izqlayout.setRowStretch(1, 1)
-        self.izqlayout.setRowStretch(2, 1)
-        self.izqlayout.setRowStretch(3, 1)
-        self.izqlayout.setRowStretch(4, 2)
-        self.izqlayout.setRowStretch(5, 1)
-
-        #zona derecha del layout labels
-        self.linfo=QPushButton()
-        self.ltitulo=QLabel('Nombre Algoritmo')
-        self.ldescrip = QLabel('Descripcion Algoritmo')
-        self.vista = QLabel('Vista Algoritmo')
-        self.fondo = QLabel()
-        #estilizar labels
-        self.linfo.setIcon(QIcon('imagenes/informacion.png'))
-        self.linfo.setStyleSheet(sinfo)
-        self.linfo.setFixedSize(QtCore.QSize(400, 80))
-        size = QSize(50, 50)
-        self.linfo.setIconSize(size)
-        self.fondo.setStyleSheet(sinfo)
-
-        #aniadimos widgets en lado derecho
-        self.derlayout.addWidget(self.fondo,0,0,6,1)
-        self.derlayout.addWidget(self.linfo,0,0,1,1,QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ltitulo, 1, 0, 1, 1,QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ldescrip, 2, 0, 1, 1,QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.vista, 3, 0, 3, 1,QtCore.Qt.AlignHCenter)
-        self.derlayout.rowStretch(1)
-
-        #aniadimos los layouts al total
-        self.layout.addLayout(self.izqlayout,0,0)
-        self.layout.addLayout(self.derlayout,0,1)
-        self.layout.setColumnStretch(0,3)
-        self.layout.setColumnStretch(1, 1)
-
-        #estilizamos zona derecha
-        self.ltitulo.setStyleSheet(stextos_derecha)
-        self.ldescrip.setStyleSheet(stextos_derecha)
-        self.vista.setStyleSheet(stextos_derecha)
-
-        self.setLayout(self.layout)
-
     def informacion(self,titulo,descripcion):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
@@ -444,13 +388,23 @@ class Train(QWidget):
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
     def aniadir_directorio(self):
         r=QFileDialog.getExistingDirectory(self, "Select Directory",directory=os.getcwd())
-        print(r)
-        self.formguardar.setPlaceholderText(r)
+        self.varableSeleccionCarpetaGuardarModelo=r
     def volver(self):
         self.gui = Index()
         self.gui.show()
         self.gui.showMaximized()
         self.close()
+
+    def guardarModelo(self, modeloEntrenado):
+        if(self.varableSeleccionCarpetaGuardarModelo==""):
+            print("no hay ruta")
+        elif(self.formguardar.text()==""):
+            print("no hay nombre de archivo")
+        else:
+            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + "/" + self.formguardar.text() + ".pkl"
+            joblib.dump(modeloEntrenado, rutaGuardarModelo)
+            print(rutaGuardarModelo)
+
 
 
 
@@ -463,6 +417,7 @@ class Test(QWidget):
         # variables globales
         self.nombrecarpeta=''
         self.info=self.Informacion()
+        self.varableRutaModeloEntrenado=""
 
         # layout grande
         self.layout = QGridLayout()
@@ -550,7 +505,8 @@ class Test(QWidget):
 
 
         # eventos de botones
-
+        self.path_btn.clicked.connect(self.recuperarRutaModeloEntrenado)
+        self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
         self.formguardar = QLineEdit()
@@ -642,6 +598,15 @@ class Test(QWidget):
         self.ver.buttonClicked[int].connect(self.info.ver_)
 
 
+    def recuperarRutaModeloEntrenado(self):
+        r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+        self.varableRutaModeloEntrenado=r[0]
+    def recuperarModeloEntrenado(self):
+        if(self.varableRutaModeloEntrenado!=""):
+            print('--------------------------')
+            modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
+            #print(modelo_entrenado)
+            #print(modelo_entrenado.score(x_train, y_train))
 
     class Informacion(QWidget):
         def __init__(self):
@@ -769,215 +734,7 @@ class Test(QWidget):
 
             # le añado todos los que esten en listbox
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' + str(self.total_archivos) + ' archivos\n')
-class Aplicacion(QMainWindow):
-    def __init__(self):
-        super(Aplicacion, self).__init__()
-        #STYLESHEETS
-        smenu='background-color:transparent;'
-        stitulo='line-height: 0.9;font-family:"Bookman Old Style";font-size:24px;font-style:italic;margin:30px;'
-        sdescripcion='font-family:"NSimSun";font-size:16px;color:gray;margin:30px;'
-        scategorias='font-family:"Rage Italic";font-size:32px;'
-        sqline='font-family:"Bookman Old Style";font-size:24px;border:1px solid black;border-radius:12px'
-        sbusqueda = 'border:1px solid transparent;background-color:transparent;'
-        self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
-        self.widget = QWidget()  # Widget that contains the collection of Vertical Box
-        self.layout = QGridLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
-        self.menubar=QGridLayout()
 
-        logo=QPushButton()
-
-        logo.setStyleSheet(smenu+"border-image:url(imagenes/chef-Logo.png)")
-        logo.setFixedSize(150, 150)
-        self.menubar.addWidget(logo,0,0)
-
-        self.layout.addLayout(self.menubar, 0, 0)
-        self.cabecera=QGridLayout()
-        self.layout.addLayout(self.cabecera,1,0)
-        titulo=QLabel('Aplicacion Eateaser')
-        descripcion=QLabel('Realiza busquedas de recetas por categorias, dando click en el buscador o directamente en las categorias.')
-        titulo.setStyleSheet(stitulo)
-        descripcion.setStyleSheet(sdescripcion)
-        self.cabecera.addWidget(titulo,0,0,QtCore.Qt.AlignCenter)
-        self.cabecera.addWidget(descripcion, 1, 0,QtCore.Qt.AlignCenter)
-        self.lybarrabusqueda=QGridLayout()
-
-        self.busqueda=QLineEdit()
-        self.btnbuscar=QPushButton()
-        self.busqueda.setFixedSize(600,40)
-        self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
-        self.btnbuscar.setFixedSize(40, 40)
-        self.busqueda.setPlaceholderText('Buscar...')
-        self.busqueda.setStyleSheet(sqline)
-        self.btnbuscar.setStyleSheet(sbusqueda)
-        self.lybarrabusqueda.addWidget( self.busqueda,0,1,QtCore.Qt.AlignVCenter)
-        self.lybarrabusqueda.addWidget( self.btnbuscar, 0, 2,1,1,QtCore.Qt.AlignLeft)
-        self.layout.addLayout(self.lybarrabusqueda,2,0)
-        self.lytcategorias = QGridLayout()
-        self.btncarnes = QPushButton()
-        self.btnplatos = QPushButton()
-        self.btnbebidas = QPushButton()
-        self.btnmarisco = QPushButton()
-        self.btnpasta = QPushButton()
-        self.btnverdura = QPushButton()
-        self.btnarroz = QPushButton()
-        self.btnpescado = QPushButton()
-        # self.btncarnes.setIcon(QIcon('imagenes/carne.jpg'))
-
-        # self.btncarnes.setIconSize(QSize(200, 200))
-        self.btnplatos.setStyleSheet(
-            "QPushButton{border-image:url(imagenes/platos.jpg);border-radius:100px;}QPushButton:hover{border:4px solid black;}")
-        self.btnplatos.setFixedSize(200, 200)
-        self.btnverdura.setStyleSheet("border-image:url(imagenes/verdura.jpg);border-radius:100px")
-        self.btnverdura.setFixedSize(200, 200)
-        self.btnarroz.setStyleSheet("border-image:url(imagenes/arroz.jpg);border-radius:100px")
-        self.btnarroz.setFixedSize(200, 200)
-        self.btnpasta.setStyleSheet("border-image:url(imagenes/pasta.jpg);border-radius:100px")
-        self.btnpasta.setFixedSize(200, 200)
-        self.btnmarisco.setStyleSheet("border-image:url(imagenes/marisco.jpg);border-radius:100px")
-        self.btnmarisco.setFixedSize(200, 200)
-        self.btnpescado.setStyleSheet("border-image:url(imagenes/pescado.jpg);border-radius:100px")
-        self.btnpescado.setFixedSize(200, 200)
-        self.btnbebidas.setStyleSheet("border-image:url(imagenes/bebida.jpg);border-radius:100px")
-        self.btnbebidas.setFixedSize(200, 200)
-        self.btncarnes.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
-        self.btncarnes.setFixedSize(200, 200)
-        self.lytcategorias.addWidget(self.btncarnes, 0, 0)
-        self.lytcategorias.addWidget(self.btnpescado, 0, 1)
-        self.lytcategorias.addWidget(self.btnverdura, 0, 2)
-        self.lytcategorias.addWidget(self.btnmarisco, 0, 3)
-        self.lytcategorias.addWidget(self.btnpasta, 0, 4)
-        self.lytcategorias.addWidget(self.btnbebidas, 0, 5)
-        self.lytcategorias.addWidget(self.btnplatos, 0, 6)
-        self.lytcategorias.addWidget(self.btnarroz, 0, 7)
-        carnes=QLabel('Carnes')
-        carnes.setStyleSheet(scategorias)
-        pescados = QLabel('Pescados')
-        pescados.setStyleSheet(scategorias)
-        verduras = QLabel('Verduras')
-        verduras.setStyleSheet(scategorias)
-        marisco = QLabel('Marisco')
-        marisco.setStyleSheet(scategorias)
-        pasta = QLabel('Pasta')
-        pasta.setStyleSheet(scategorias)
-        bebidas = QLabel('Bebidas')
-        bebidas.setStyleSheet(scategorias)
-        platos = QLabel('Platos Menores')
-        platos.setStyleSheet(scategorias)
-        arroz = QLabel('Arroz')
-        arroz.setStyleSheet(scategorias)
-        self.lytcategorias.addWidget(carnes, 1, 0, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(pescados, 1, 1, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(verduras, 1, 2, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(marisco, 1, 3, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(pasta, 1, 4, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(bebidas, 1, 5, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(platos, 1, 6, QtCore.Qt.AlignCenter)
-        self.lytcategorias.addWidget(arroz, 1, 7, QtCore.Qt.AlignCenter)
-
-        self.layout.addLayout(self.lytcategorias, 5, 0)
-        self.ldiscover = QLabel('Discover new favorites')
-
-        self.discover_items = QGridLayout()
-        self.layout.addLayout(self.discover_items,6, 0)
-
-
-        ws = WebScraping()
-        driver = ws.conexionPaginaWebAhorraMas("cebolla")
-        cont = 0
-        ldiscover=QLabel('Descubre \nlos favoritos')
-        ldiscover.setStyleSheet(stitulo+';margin-top:30px;')
-        self.discover_items.addWidget(ldiscover, 0, 0)
-        self.discover_items.setVerticalSpacing(0)
-        for i, element in enumerate(ws.listaNombres):
-            # si la columna ya va a mas de uno
-            if (cont == 4):
-                break
-            else:
-                nombre = QLabel('\t'+element)
-                nombre.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;')
-                precio = QLabel('\t'+ws.listaPrecios[i])
-                precio.setStyleSheet('font-family:"NSimSun";font-size:20px;background-color:white;font-weight:bold;')
-                # imagen=QPushButton()
-
-                data = urllib.request.urlopen(ws.listaImagenes[i]).read()
-
-                # imagen.setStyleSheet('border-image:url('+ws.listaImagenes[i]+');')
-                image = QtGui.QImage()
-                image.loadFromData(data)
-                print(image)
-                lbl = QLabel()
-                pix = QtGui.QPixmap(image)
-
-                lbl.setPixmap(pix)
-                lbl.setScaledContents(True)
-
-                # imagen.setFixedSize(100,100)
-                print(i)
-                self.discover_items.addWidget(lbl, 1, i)
-                self.discover_items.addWidget(nombre, 2, i)
-                self.discover_items.addWidget(precio, 3, i)
-
-
-            cont = cont + 1
-        self.featured_items = QGridLayout()
-        self.imagenes = QVBoxLayout()
-        self.datos = QGridLayout()
-        self.textos=QVBoxLayout()
-        self.featured_items.addLayout(self.datos, 0, 0)
-        self.featured_items.addLayout(self.imagenes, 0, 1)
-        self.featured_items.addLayout(self.textos, 0, 2)
-        lbfeatured = QLabel('Nuestra seleccion de Lidl')
-        lbfeatured.setStyleSheet(stitulo)
-        #self.featured_items.addWidget(lbfeatured,0,0)
-        self.layout.addLayout(self.featured_items, 7, 0)
-
-        l2 = QLabel('sdf')
-        l2.setStyleSheet('background-color:red;')
-        self.textos.addWidget(l2)
-        self.datos.setHorizontalSpacing(0)
-
-        j=1
-        k=0
-        n=0
-        for i, element in enumerate(ws.listaNombres):
-            l = QLabel('sdf')
-            l.setStyleSheet('background-color:black;')
-            lbl=QLabel(element)
-            lbl.setStyleSheet('background-color:white;')
-            self.datos.addWidget(lbl,i,1)
-            bt = QPushButton('Boton')
-            bt.setFixedSize(400,400)
-            print('columna: 0','fila:',str(j))
-            self.datos.addWidget(bt, i, 0,QtCore.Qt.AlignTop)
-            data = urllib.request.urlopen(ws.listaImagenes[i]).read()
-            image = QtGui.QImage()
-            image.loadFromData(data)
-
-            ft = QLabel()
-            ft.setStyleSheet('border-radius: 50%;')
-            pix = QtGui.QPixmap(image)
-            ft.setScaledContents(True)
-            ft.setPixmap(pix)
-
-            self.datos.addWidget(ft,i,2)
-
-            j=j+2
-            k=k+2
-            n=n+1
-        self.setStyleSheet('background-color:#f6f3ee;')
-        self.widget.setLayout(self.layout)
-
-        # Scroll Area Properties
-        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setWidget(self.widget)
-
-        self.setCentralWidget(self.scroll)
-
-
-        self.setWindowTitle('Scroll Area Demonstration')
-        self.show()
 
 
 
@@ -994,24 +751,27 @@ import time
 
 
 class WebScraping:
-    def __init__(self):
+    def __init__(self,kw):
+        self.keyword=kw
         self.listaNombres=[]
         self.listaTiempos= []
         self.listaImagenes=[]
         self.listaPrecios = []
         self.listaURL=[]
-    def conexionPaginaWebLidl(self, KeyWord):
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+    def conexionPaginaWebLidl(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
         urlLidl = "https://recetas.lidl.es/"
         driver.get(urlLidl)
         time.sleep(0.5)
         self.quitarCookiesLidl(driver)
         time.sleep(1)
-        self.sacarInfoLidl(driver, KeyWord)
+        self.sacarInfoLidl(driver)
         return driver
-    def conexionPaginaWebAhorraMas(self, KeyWord):
+    def conexionPaginaWebAhorraMas(self):
 
-        urlAhorraMas = "https://www.ahorramas.com/buscador?q=" + KeyWord
+        urlAhorraMas = "https://www.ahorramas.com/buscador?q=" + self.keyword
         response = requests.get(urlAhorraMas)
         soup = BeautifulSoup(response.content, "html.parser")
         time.sleep(0.5)
@@ -1026,10 +786,10 @@ class WebScraping:
         except:
             print("No sale boton de aceptar coquies")
 
-    def sacarInfoLidl(self, driver, KeyWord):
+    def sacarInfoLidl(self, driver):
         # Para entrar en el alimento que nosotros queremos
         escribirIngrediente = driver.find_element(By.CLASS_NAME, "inputField.js_mIngredientSearchGroup-input")
-        escribirIngrediente.send_keys(KeyWord)
+        escribirIngrediente.send_keys(self.keyword)
         # hay que darle un poco de tiempo para que despues de escribir seleccione el enter sino no lo ejecuta bien
         time.sleep(2)
         escribirIngrediente.send_keys(Keys.RETURN)
@@ -1039,126 +799,258 @@ class WebScraping:
         todasRecetas = driver.find_element(By.CLASS_NAME, "oRecipeFeed-resultContainer.js_oRecipeFeed-resultContainer")
         time.sleep(1)
         nombre = todasRecetas.find_elements(By.CLASS_NAME, "mRecipeTeaser-title")
-        listaNombres = []
+        self.listaNombres = []
         for n in nombre:
             self.listaNombres.append(n.text)
 
         # PARA COGER EL TIEMPO DEL PRUDUCTO EN COCINARSE
         tiempoReceta = todasRecetas.find_elements(By.CLASS_NAME, "mTimer-time")
-        listaTiempos = []
+        self.listaTiempos = []
         for t in tiempoReceta:
             self.listaTiempos.append(t.text)
         time.sleep(0.5)
         # PARA COGER LA IMAGEN DEL PRODUCTO
         src = todasRecetas.find_elements(By.CLASS_NAME, "picture-img.mRecipeTeaser-image.lazyloaded")
-        listaImagenes = []
+        self.listaImagenes = []
         for s in src:
             self.listaImagenes.append(s.get_attribute("src"))
 
         # PARA COGER LA URL DE LA RECETA
         href = todasRecetas.find_elements(By.CLASS_NAME, "mRecipeTeaser-link")
-        listaURL = []
+        self.listaURL = []
         for h in href:
             self.listaURL.append(h.get_attribute("href"))
 
-        i = 0
-        for i in range(len(listaImagenes)):
-            print(listaNombres[i])
-            print(listaTiempos[i])
-            print(listaImagenes[i])
-            print(listaURL[i])
-            print("-----------------------------------")
-            i += 1
+
 
     def sacarInfoAhorraMas(self, soup):
         # PARA COGER EL NOMBRE DEL PRODUCTO
         bodyInformacion = soup.find_all(class_="tile-body")
-        listaNombres = []
+        self.listaNombres = []
         for np in bodyInformacion:
             nombreProducto = np.find(class_="link product-name-gtm")
             self.listaNombres.append(nombreProducto.text)
 
         # PARA COGER EL PRECIO DEL PRODUCTO
         bodyInformacion = soup.find_all(class_="tile-body")
-        listaPrecios = []
+        self.listaPrecios = []
         for p in bodyInformacion:
             valorProducto = p.find(class_="value")
             # utilizamos strip para eliminar los espacios en blanco tanto delante como detras del precio
             self.listaPrecios.append(valorProducto.text.strip())
             # PARA COGER LA IMAGEN DEL PRODUCTO
             src = soup.find_all(class_="tile-image")
-            listaImagenes = []
+            self.listaImagenes = []
             for s in src:
                 self.listaImagenes.append(s["src"])
+                print(s["src"])
 
             # PARA COGER LA URL DEL PRODUCTO
             href = soup.find_all(class_="product-pdp-link")
-            listaURL = []
+            self.listaURL = []
             for h in href:
                 # concatenamos la direccion de la pagina la cual no incluye el href al usar beautifulsoup
                 self.listaURL.append("https://www.ahorramas.com" + h["href"])
             # Eliminamos los elementos duplicados ya que coge cada url duplicada
             # print(len(listaURL))
             listaURLSinDuplicados = []
-            for url in listaURL:
+            for url in self.listaURL:
                 if url not in listaURLSinDuplicados:
                     listaURLSinDuplicados.append(url)
             # print(len(listaURLSinDuplicados))
 
-            i = 0
-            for i in range(len(listaImagenes)):
-                print(listaPrecios[i])
-                print(listaNombres[i])
-                print(listaImagenes[i])
-                print(listaURLSinDuplicados[i])
-                print("-----------------------------------")
-                i += 1
 
+import mmap
 class App(QtWidgets.QMainWindow):
     def __init__(self):
-        super(App, self).__init__()  # Call the inherited classes __init__ method
-        uic.loadUi('app.ui', self)  # Load the .ui file
-        # self.btncarnes.setIconSize(QSize(200, 200))
+        super(App, self).__init__()
+        # Cargamos el .ui file
+        uic.loadUi('app.ui', self)
 
+        #ponemos unos estilos
+        scategorias='border-radius:100px;}QPushButton:hover{border:4px solid black;}'
 
+        #llamamos a los botones
         self.btnplatos= self.findChild(QtWidgets.QPushButton, 'btnplatos')
-        self.btnplatos.setStyleSheet(
-            "QPushButton{border-image:url(imagenes/platos.jpg);border-radius:100px;}QPushButton:hover{border:4px solid black;}")
+        self.btnplatos.setStyleSheet("QPushButton{border-image:url(imagenes/platos.jpg);"+scategorias)
         self.btnplatos.setFixedSize(200, 200)
         self.btnverdura= self.findChild(QtWidgets.QPushButton, 'btnverdura')
-        self.btnverdura.setStyleSheet("border-image:url(imagenes/verdura.jpg);border-radius:100px")
+        self.btnverdura.setStyleSheet("QPushButton{border-image:url(imagenes/verdura.jpg);"+scategorias)
         self.btnverdura.setFixedSize(200, 200)
         self.btnarroz= self.findChild(QtWidgets.QPushButton, 'btnarroz')
-        self.btnarroz.setStyleSheet("border-image:url(imagenes/arroz.jpg);border-radius:100px")
+        self.btnarroz.setStyleSheet("QPushButton{border-image:url(imagenes/arroz.jpg);"+scategorias)
         self.btnarroz.setFixedSize(200, 200)
         self.btnpasta = self.findChild(QtWidgets.QPushButton, 'btnpasta')
-        self.btnpasta.setStyleSheet("border-image:url(imagenes/pasta.jpg);border-radius:100px")
+        self.btnpasta.setStyleSheet("QPushButton{border-image:url(imagenes/pasta.jpg);"+scategorias)
         self.btnpasta.setFixedSize(200, 200)
         self.btnmarisco = self.findChild(QtWidgets.QPushButton, 'btnmarisco')
-        self.btnmarisco.setStyleSheet("border-image:url(imagenes/marisco.jpg);border-radius:100px")
+        self.btnmarisco.setStyleSheet("QPushButton{border-image:url(imagenes/marisco.jpg);"+scategorias)
         self.btnmarisco.setFixedSize(200, 200)
         self.btnpescado = self.findChild(QtWidgets.QPushButton, 'btnpescado')
-        self.btnpescado.setStyleSheet("border-image:url(imagenes/pescado.jpg);border-radius:100px")
+        self.btnpescado.setStyleSheet("QPushButton{border-image:url(imagenes/pescado.jpg);"+scategorias)
         self.btnpescado.setFixedSize(200, 200)
         self.btnbebidas = self.findChild(QPushButton, 'btnbebidas')
-        self.btnbebidas.setStyleSheet("border-image:url(imagenes/bebida.jpg);border-radius:100px")
+        self.btnbebidas.setStyleSheet("QPushButton{border-image:url(imagenes/bebida.jpg);"+scategorias)
         self.btnbebidas.setFixedSize(200, 200)
         self.btncarne = self.findChild(QPushButton, 'btncarne')
-        self.btncarne.setStyleSheet("border-image:url(imagenes/carne.jpg);border-radius:100px")
+        self.btncarne.setStyleSheet("QPushButton{background-image:url(imagenes/carne.jpg);"+scategorias)
         self.btncarne.setFixedSize(200, 200)
         self.busqueda = self.findChild(QLineEdit, 'busqueda')
-        self.btnbuscar = self.findChild(QPushButton, 'btnbuscar')
-        self.busqueda.setStyleSheet("border-radius:10px;border:1px solid black;background-color:transparent;")
-        self.busqueda.setFixedSize(1000,50)
+        self.btnbuscar = self.findChild(QPushButton, 'buscar')
         self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
+        self.busqueda.setStyleSheet("QPushButton{border-radius:10px;border:1px solid black;background-color:transparent;")
+        #self.volver = self.findChild(QPushButton, 'back')
+        #self.volver.setIcon(QIcon('imagenes/menu.png'))
+        self.txt_frame=self.findChild(QGridLayout, 'gridLayout_8')
+
+        self.grupo_botones=QButtonGroup()
+        self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
+
+        #agrego primer frame
+
+
+        self.buscar_recetas('cebolla')
+        self.buscar_texto('Carpeta Arroz')
+        #ponemos acciones a los botones
+        self.btnbuscar.clicked.connect(lambda: self.buscar_recetas(self.busqueda.text()))
+        self.btncarne.clicked.connect(lambda :self.buscar_recetas('carne'))
+        self.btnpasta.clicked.connect(lambda: self.buscar_recetas('pasta'))
+        self.btnpescado.clicked.connect(lambda: self.buscar_recetas('pescado'))
+        self.btnmarisco.clicked.connect(lambda: self.buscar_recetas('marisco'))
+        self.btnbebidas.clicked.connect(lambda: self.buscar_recetas('bebida'))
+        self.btnplatos.clicked.connect(lambda: self.buscar_recetas('pan'))
+        self.btnverdura.clicked.connect(lambda: self.buscar_recetas('lechuga'))
+        #ponemos un default de recetas
+        #self.buscar_recetas('cebolla')
+
+        self.setStyleSheet('background-color:white;')
         self.show()
+    def buscar_texto(self,categoria):
+        directorio=os.listdir('recetastextos/'+categoria)
+
+        j=0
+        fila=0
+        for i,texto in enumerate(directorio):
+            #quiero que sean 10 columnas
+
+            if j<10:
+
+                self.boton = QPushButton(texto)
+                self.boton.setStyleSheet('QPushButton{border-radius:20px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
+                self.txt_frame.addWidget(self.boton,fila,j)
+                j=j+1
+            else:
+                j=0
+                fila=fila+1
+
+
+
+    def buscar_productos(self,producto):
+        ws = WebScraping(producto)
+        cont = 0
+
+
+        ws.conexionPaginaWebAhorraMas()
+        for i, element in enumerate(ws.listaNombres):
+            print('imagen')
+            # si la columna ya va a mas de uno
+            if (cont == 4):
+                break
+            else:
+                imagen = self.findChild(QLabel, 'imgs_' + str(i))
+                nombre = self.findChild(QLabel, 'nm_' + str(i))
+                descripcion = self.findChild(QLabel, 'prc_' + str(i))
+
+                nombre.setText(element)
+                descripcion.setText(ws.listaPrecios[i])
+                data = urllib.request.urlopen(ws.listaImagenes[i]).read()
+                image = QtGui.QImage()
+                image.loadFromData(data)
+                pix = QtGui.QPixmap(image)
+                imagen.setPixmap(pix)
+                imagen.setScaledContents(True)
+
+            cont = cont + 1
+
+    def buscar_recetas(self,categoria):
+        j = 0
+        fila = 2
+        ws2 = WebScraping(categoria)
+        ws2.conexionPaginaWebLidl()
+        for i, element in enumerate(ws2.listaNombres):
+            if j < 4:
+                img = True
+                try:
+                    imagen = QPushButton('')
+                    response = requests.get(ws2.listaImagenes[i])
+                    if response.status_code == 200:
+                        with open("sample" + str(i) + ".jpg", 'wb') as f:
+                            f.write(response.content)
+                    imagen.setStyleSheet("border-image:url(sample" + str(i) + ".jpg);border-radius:100%;")
+                    imagen.setFixedSize(200, 200)
+
+                except:
+                    print('imagen no obtenida')
+                    img = False
+                print(img)
+                if (img == True):
+                    n = QFrame()
+                    n2 = QFrame()
+                    n3 = QFrame()
+                    n4 = QFrame()
+                    vlt = QVBoxLayout()
+                    n.setLayout(vlt)
+                    self.grid_productos.addWidget(n, fila, j)
+                    # vlt2 = QVBoxLayout()
+                    # n.layout().addWidget(vlt2)
+                    vlt.addWidget(n2)
+                    n2.setLayout(QVBoxLayout())
+                    n3.setLayout(QVBoxLayout())
+                    n4.setLayout(QHBoxLayout())
+                    # parte de arriba
+                    n2.layout().addWidget(QLabel(element))
+
+                    n2.layout().addWidget(imagen)
+                    n2.layout().setAlignment(QtCore.Qt.AlignHCenter)
+                    n3.layout().addWidget(QLabel('Descripción'))
+                    n3.layout().addWidget(QLabel(ws2.listaTiempos[i]))
+                    n4.layout().addWidget(QLabel('♡'))
+                    btn = QPushButton('')
+
+                    btn.setIcon(QIcon('imagenes/exterior.png'))
+
+                    btn.setIconSize(QSize(20, 20))
+                    n4.layout().addWidget(btn)
+
+                    # parte del medio
+                    vlt.addWidget(n3)
+                    vlt.addWidget(n4)
+                    # parte de abajo
+
+                    n.setStyleSheet(
+                        'background-color:#ede8e1;border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;')
+                    n2.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    n3.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    n4.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    j = j + 1
+            else:
+                j = 0
+                fila = fila + 1
+
+        self.buscar_productos(categoria)
+
+
+
 
 if __name__=='__main__':
     app=QApplication(sys.argv)
 
-
-    gui=App()
-    gui.showMaximized()
+    gui=Index()
     gui.show()
+    gui.showMaximized()
+
 
     sys.exit(app.exec_())
+
+
+
