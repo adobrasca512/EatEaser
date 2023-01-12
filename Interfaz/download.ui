@@ -26,24 +26,15 @@
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="3" column="0">
         <widget class="QFrame" name="frame_4">
+         <property name="styleSheet">
+          <string notr="true">background-color:#94D4E1;
+border-radius:20px;</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="font">
-          <font>
-           <family>Rage Italic</family>
-           <pointsize>20</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Tus descargas</string>
          </property>
         </widget>
        </item>
@@ -85,8 +76,8 @@ border-radius:20px;</string>
               <widget class="QLabel" name="label_5">
                <property name="maximumSize">
                 <size>
-                 <width>30</width>
-                 <height>30</height>
+                 <width>50</width>
+                 <height>50</height>
                 </size>
                </property>
                <property name="text">
@@ -111,8 +102,17 @@ border-radius:20px;</string>
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item>
                  <widget class="QLabel" name="label_4">
+                  <property name="font">
+                   <font>
+                    <family>NSimSun</family>
+                    <pointsize>14</pointsize>
+                   </font>
+                  </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>Hola! Aqui podras ver el texto de un video adjuntando un enlace en nuestra barra de busqueda. Al terminar podras observar los resultados.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -127,6 +127,18 @@ border-radius:20px;</string>
        </item>
        <item row="2" column="0">
         <widget class="QScrollArea" name="scrollArea">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>300</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>300</height>
+          </size>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -136,7 +148,7 @@ border-radius:20px;</string>
             <x>0</x>
             <y>0</y>
             <width>291</width>
-            <height>356</height>
+            <height>298</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -157,6 +169,21 @@ border-radius:20px;</string>
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item alignment="Qt::AlignHCenter">
+                  <widget class="QLabel" name="label_6">
+                   <property name="font">
+                    <font>
+                     <family>NSimSun</family>
+                     <pointsize>10</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>No hay descargas que mostrar</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -164,6 +191,38 @@ border-radius:20px;</string>
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="frame_10">
+         <property name="styleSheet">
+          <string notr="true">background-color:white;
+border-radius:10px;</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <family>Rage Italic</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>Tus descargas</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="0" column="0">
@@ -179,6 +238,63 @@ border-radius:20px;</string>
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0" colspan="2">
+           <widget class="QFrame" name="frame_6">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QPushButton" name="volver">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>imagenes/chef-logo.png</normaloff>imagenes/chef-logo.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>50</width>
+                 <height>50</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignHCenter">
+              <widget class="QLabel" name="label">
+               <property name="font">
+                <font>
+                 <family>Rage Italic</family>
+                 <pointsize>26</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color:white;</string>
+               </property>
+               <property name="text">
+                <string>Descargas</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item row="2" column="0" colspan="3" alignment="Qt::AlignHCenter">
            <widget class="QLabel" name="label_3">
             <property name="font">
@@ -196,7 +312,7 @@ border-radius:20px;</string>
            </widget>
           </item>
           <item row="4" column="0" colspan="2">
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="enlace">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -226,12 +342,12 @@ border-radius:20px;</string>
 border-radius:10px;</string>
             </property>
             <property name="text">
-             <string>Enlace Video...</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="descarga">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -239,7 +355,11 @@ border-radius:10px;</string>
              </size>
             </property>
             <property name="text">
-             <string>PushButton</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>imagenes/lupa.png</normaloff>imagenes/lupa.png</iconset>
             </property>
            </widget>
           </item>
@@ -258,57 +378,6 @@ border-radius:10px;</string>
              </size>
             </property>
            </spacer>
-          </item>
-          <item row="0" column="0" colspan="2">
-           <widget class="QFrame" name="frame_6">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QPushButton" name="pushButton_2">
-               <property name="minimumSize">
-                <size>
-                 <width>50</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>40</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>imagenes/chef-logo.png</normaloff>imagenes/chef-logo.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignHCenter">
-              <widget class="QLabel" name="label">
-               <property name="font">
-                <font>
-                 <family>Rage Italic</family>
-                 <pointsize>26</pointsize>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color:white;</string>
-               </property>
-               <property name="text">
-                <string>Descargas</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
           </item>
          </layout>
         </widget>
