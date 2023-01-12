@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 import urllib.request
-import joblib  
+import joblib
 
 from PyQt5 import QtCore, QtWidgets, QtGui, Qt, uic
 from PyQt5.QtCore import QSize
@@ -923,11 +923,12 @@ class App(QtWidgets.QMainWindow):
         self.txt_frame=self.findChild(QGridLayout, 'gridLayout_8')
 
         self.grupo_botones=QButtonGroup()
+        self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
 
-        #self.boton=QLabel('HOLA')
-        #self.txt_frame.addWidget(self.x)
-        #self.layout.addWidget(self.x,0,0)
-        #self.layout.addWidget(QLabel('nombre'),0,1)
+        #agrego primer frame
+
+
+        self.buscar_recetas('cebolla')
         self.buscar_texto('Carpeta Arroz')
         #ponemos acciones a los botones
         self.btnbuscar.clicked.connect(lambda: self.buscar_recetas(self.busqueda.text()))
@@ -939,7 +940,7 @@ class App(QtWidgets.QMainWindow):
         self.btnplatos.clicked.connect(lambda: self.buscar_recetas('pan'))
         self.btnverdura.clicked.connect(lambda: self.buscar_recetas('lechuga'))
         #ponemos un default de recetas
-        self.buscar_recetas('cebolla')
+        #self.buscar_recetas('cebolla')
 
         self.setStyleSheet('background-color:white;')
         self.show()
@@ -991,29 +992,70 @@ class App(QtWidgets.QMainWindow):
             cont = cont + 1
 
     def buscar_recetas(self,categoria):
-        print('boron clickeado')
+        j = 0
+        fila = 2
         ws2 = WebScraping(categoria)
         driver = ws2.conexionPaginaWebLidl()
-        cont = 0
         for i, element in enumerate(ws2.listaNombres):
-            if (cont == 4):
-                break
-            else:
-                imagen = self.findChild(QPushButton, 'imgn_' + str(i))
-                nombre = self.findChild(QLabel, 'rcta_' + str(i))
-                descripcion = self.findChild(QLabel, 'rds_' + str(i))
-                tiempo = self.findChild(QLabel, 'tmps_' + str(i))
-                tiempo.setText('Tiempo:' + ws2.listaTiempos[i])
-                nombre.setText(element)
-                descripcion.setText('Descripción')
-                response = requests.get(ws2.listaImagenes[i])
-                if response.status_code == 200:
-                    with open("sample" + str(i) + ".jpg", 'wb') as f:
-                        f.write(response.content)
-                imagen.setStyleSheet("border-image:url(sample" + str(i) + ".jpg);border-radius:100%")
-                imagen.setFixedSize(250, 250)
+            if j < 4:
+                img = True
+                try:
+                    imagen = QPushButton('')
+                    response = requests.get(ws2.listaImagenes[i])
+                    if response.status_code == 200:
+                        with open("sample" + str(i) + ".jpg", 'wb') as f:
+                            f.write(response.content)
+                    imagen.setStyleSheet("border-image:url(sample" + str(i) + ".jpg);border-radius:100%;")
+                    imagen.setFixedSize(200, 200)
 
-            cont = cont + 1
+                except:
+                    print('imagen no obtenida')
+                    img = False
+                print(img)
+                if (img == True):
+                    n = QFrame()
+                    n2 = QFrame()
+                    n3 = QFrame()
+                    n4 = QFrame()
+                    vlt = QVBoxLayout()
+                    n.setLayout(vlt)
+                    self.grid_productos.addWidget(n, fila, j)
+                    # vlt2 = QVBoxLayout()
+                    # n.layout().addWidget(vlt2)
+                    vlt.addWidget(n2)
+                    n2.setLayout(QVBoxLayout())
+                    n3.setLayout(QVBoxLayout())
+                    n4.setLayout(QHBoxLayout())
+                    # parte de arriba
+                    n2.layout().addWidget(QLabel(element))
+
+                    n2.layout().addWidget(imagen)
+                    n2.layout().setAlignment(QtCore.Qt.AlignHCenter)
+                    n3.layout().addWidget(QLabel('Descripción'))
+                    n3.layout().addWidget(QLabel(ws2.listaTiempos[i]))
+                    n4.layout().addWidget(QLabel('♡'))
+                    btn = QPushButton('')
+
+                    btn.setIcon(QIcon('imagenes/exterior.png'))
+
+                    btn.setIconSize(QSize(20, 20))
+                    n4.layout().addWidget(btn)
+
+                    # parte del medio
+                    vlt.addWidget(n3)
+                    vlt.addWidget(n4)
+                    # parte de abajo
+
+                    n.setStyleSheet(
+                        'background-color:#ede8e1;border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;')
+                    n2.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    n3.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    n4.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    j = j + 1
+            else:
+                j = 0
+                fila = fila + 1
+
         self.buscar_productos(categoria)
 
 
@@ -1022,7 +1064,7 @@ class App(QtWidgets.QMainWindow):
 if __name__=='__main__':
     app=QApplication(sys.argv)
 
-    gui=Index()
+    gui=App()
     gui.show()
     gui.showMaximized()
 
