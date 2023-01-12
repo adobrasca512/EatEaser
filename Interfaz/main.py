@@ -1373,14 +1373,14 @@ class Train(QWidget):
         # labels algoritmo
         self.lalgoritmo = QLabel('Algoritmo:')
         # botones de algorimos
-        self.btn_knn = QPushButton('K-NN')
+        self.btn_svm = QPushButton('SVM')
         self.btn_rf = QPushButton('Random-Forest')
-        self.btn_rn = QPushButton('Red Neuronal')
+        self.btn_mr = QPushButton('Multinomial Regression')
         self.btnalgoritmo = QPushButton()
         # estilizamos botones
-        self.btn_knn.setFixedSize(QtCore.QSize(400, 80))
+        self.btn_svm.setFixedSize(QtCore.QSize(400, 80))
         self.btn_rf.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rn.setFixedSize(QtCore.QSize(400, 80))
+        self.btn_mr.setFixedSize(QtCore.QSize(400, 80))
         # grid del grafico
         self.layout13 = QLabel('d')
         size = QSize(50, 50)
@@ -1423,9 +1423,9 @@ class Train(QWidget):
         sretorno = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;color:white;background-color:black;'
         # estilizamos los botones
         self.btnalgoritmo.setStyleSheet(sbotones)
-        self.btn_knn.setStyleSheet(sbtnalgoritmo)
+        self.btn_svm.setStyleSheet(sbtnalgoritmo)
         self.btn_rf.setStyleSheet(sbtnalgoritmo)
-        self.btn_rn.setStyleSheet(sbtnalgoritmo)
+        self.btn_mr.setStyleSheet(sbtnalgoritmo)
         self.nuevo.setStyleSheet(sbtnruta)
         self.anadir.setStyleSheet(sbtnruta)
         self.cbcategoria.setStyleSheet(scbcategoria)
@@ -1481,9 +1481,9 @@ class Train(QWidget):
         self.guardar.addWidget(self.path_btn, 0, 3)
         # aniadimos al grid de algoritmos
         self.algoritmolayout.addWidget(self.lalgoritmo, 0, 0, 1, 4)
-        self.algoritmolayout.addWidget(self.btn_knn, 1, 0, 2, 1)
+        self.algoritmolayout.addWidget(self.btn_svm, 1, 0, 2, 1)
         self.algoritmolayout.addWidget(self.btn_rf, 1, 1, 2, 1)
-        self.algoritmolayout.addWidget(self.btn_rn, 1, 2, 2, 1)
+        self.algoritmolayout.addWidget(self.btn_mr, 1, 2, 2, 1)
         self.algoritmolayout.addWidget(self.btnalgoritmo, 1, 3, 2, 1)
         # aniadimos a la seleccion
         self.seleccionlayout.addWidget(self.borrar, 1, QtCore.Qt.AlignLeft)
@@ -1495,10 +1495,10 @@ class Train(QWidget):
         self.borrar.clicked.connect(self.eliminar_boton)
         self.path_btn.clicked.connect(self.aniadir_directorio)
         self.btn_guardar.clicked.connect(self.guardarModelo)
-        self.btn_knn.clicked.connect(
-            lambda: self.informacion('Algoritmo K-NN', 'Este algoritmo hace esto y esto y esto'))
-        self.btn_rn.clicked.connect(
-            lambda: self.informacion('Algoritmo Red Neuronal', 'Este algoritmo hace esto y esto y esto'))
+        self.btn_svm.clicked.connect(
+            lambda: self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'))
+        self.btn_mr.clicked.connect(
+            lambda: self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'))
         self.btn_rf.clicked.connect(
             lambda: self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
@@ -1623,6 +1623,7 @@ class Test(QWidget):
         self.nombrecarpeta=''
         self.info=self.Informacion()
         self.varableRutaModeloEntrenado=""
+        self.modelo_entrenado
 
         # layout grande
         self.layout = QGridLayout()
@@ -1669,17 +1670,11 @@ class Test(QWidget):
         self.lalgoritmo = QLabel('Algoritmo:')
         self.lalgoritmo.setStyleSheet(salgoritmo)
         # botones de algorimos
-        self.btn_knn = QPushButton('K-NN')#############
-        self.btn_rf = QPushButton('Random-Forest')
-        self.btn_rn = QPushButton('Red Neuronal')
+        self.btn_seleccion_modelo = QPushButton('Seleccionar Modelo')
         self.btnalgoritmo = QPushButton()
         # estilizamos botones
-        self.btn_knn.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rf.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rn.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_knn.setStyleSheet(sbtnalgoritmo)
-        self.btn_rf.setStyleSheet(sbtnalgoritmo)
-        self.btn_rn.setStyleSheet(sbtnalgoritmo)
+        self.btn_seleccion_modelo.setFixedSize(QtCore.QSize(400, 80))
+        self.btn_seleccion_modelo.setStyleSheet(sbtnalgoritmo)
         size = QSize(50, 50)
         self.btnalgoritmo.setIconSize(size)
         self.btnalgoritmo.setStyleSheet(sbotones)
@@ -1688,9 +1683,7 @@ class Test(QWidget):
 
         # aniadimos al grid de algoritmos
         self.algoritmolayout.addWidget(self.lalgoritmo, 0, 0, 1, 4)
-        self.algoritmolayout.addWidget(self.btn_knn, 1, 0, 2, 1)
-        self.algoritmolayout.addWidget(self.btn_rf, 1, 1, 2, 1)
-        self.algoritmolayout.addWidget(self.btn_rn, 1, 2, 2, 1)
+        self.algoritmolayout.addWidget(self.btn_seleccion_modelo, 1, 1, 2, 1)
         self.algoritmolayout.addWidget(self.btnalgoritmo, 1, 3, 2, 1)
 
         # grjd guardar
@@ -1710,7 +1703,8 @@ class Test(QWidget):
 
 
         # eventos de botones
-        self.path_btn.clicked.connect(self.recuperarRutaModeloEntrenado)
+        self.btn_seleccion_modelo.clicked.connect(self.recuperarRutaModeloEntrenado)
+        self.path_btn.clicked.connect(print(self.modelo_entrenado))
         self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
@@ -1734,12 +1728,8 @@ class Test(QWidget):
 
 
 
-        self.btn_knn.clicked.connect(
-            lambda: self.informacion('Algoritmo K-NN', 'Este algoritmo hace esto y esto y esto'))
-        self.btn_rn.clicked.connect(
-            lambda: self.informacion('Algoritmo Red Neuronal', 'Este algoritmo hace esto y esto y esto'))
-        self.btn_rf.clicked.connect(
-            lambda: self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'))
+        self.btn_seleccion_modelo.clicked.connect(
+            lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
 
 
@@ -1809,7 +1799,8 @@ class Test(QWidget):
     def recuperarModeloEntrenado(self):
         if(self.varableRutaModeloEntrenado!=""):
             print('--------------------------')
-            modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
+            self.modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
+            inf=Informacion()
             #print(modelo_entrenado)
             #print(modelo_entrenado.score(x_train, y_train))
 
@@ -2269,7 +2260,7 @@ class App(QtWidgets.QMainWindow):
 
 
 if __name__=='__main__':
-    
+    '''
     df=pd.DataFrame()
     df['receta']=None
     df['clasif']=None
@@ -2279,14 +2270,12 @@ if __name__=='__main__':
         for i in range(len(content)):
             text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
             df=df.append({'receta':text,'clasif':index},ignore_index=True)
-    
+    '''
     app=QApplication(sys.argv)
 
     gui=Index()
     gui.show()
     gui.showMaximized()
-    
-    print(df)
 
     sys.exit(app.exec_())
 
