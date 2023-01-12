@@ -10,6 +10,1205 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 
+import glob
+import os
+import re
+import requests
+import pathlib
+import sys
+import logging
+import json
+import joblib
+import warnings
+import math
+import random
+import multiprocessing
+from random import shuffle
+import subprocess
+import time
+
+
+def install(package):
+    subprocess.check_call([os.sys.executable, "-m", "pip", "install", package])
+
+
+
+try:
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.action_chains import ActionChains
+except ModuleNotFoundError:
+    install("selenium")
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.common.action_chains import ActionChains
+
+try:
+    from webdriver_manager.chrome import ChromeDriverManager
+except ModuleNotFoundError:
+    install("webdriver_manager")
+    from webdriver_manager.chrome import ChromeDriverManager
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    install("pandas")
+    import pandas as pd
+try:
+    from pytube import YouTube
+    from pytube import Playlist
+except ModuleNotFoundError:
+    install("pytube")
+    from pytube import YouTube
+    from pytube import Playlist
+try:
+    import speech_recognition as sr
+except ModuleNotFoundError:
+    install("SpeechRecognition")
+    import speech_recognition as sr
+try:
+    from pydub import AudioSegment
+    from pydub.silence import split_on_silence
+except:
+    install("pydub")
+    from pydub import AudioSegment
+    from pydub.silence import split_on_silence
+try:
+    import moviepy.editor as mp
+except:
+    install("moviepy")
+    import moviepy.editor as mp
+try:
+    from bs4 import BeautifulSoup
+except:
+    install("beautifulsoup4")
+    from bs4 import BeautifulSoup
+try:
+    from nltk.stem import PorterStemmer
+    from nltk.tokenize import word_tokenize
+except:
+    install("nltk")
+    from nltk.stem import PorterStemmer
+    from nltk.tokenize import word_tokenize
+try:
+    import pyrebase
+except:
+    install("pyrebase4")
+    import pyrebase
+try:   
+    import nltk
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    from nltk.stem.rslp import RSLPStemmer
+    nltk.download('rslp')
+except:
+    install("nltk")
+    import nltk
+    #nltk.download('punkt')
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    from nltk.stem.rslp import RSLPStemmer
+    nltk.download('rslp')
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import accuracy_score
+    from sklearn.model_selection import ParameterGrid
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn import svm
+    from sklearn.model_selection import cross_val_score
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.datasets import make_blobs
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.model_selection import RandomizedSearchCV
+    from sklearn.model_selection import KFold
+except ModuleNotFoundError:
+    install("scikit-learn")
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import accuracy_score
+    from sklearn.model_selection import ParameterGrid
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn import svm
+    from sklearn.model_selection import cross_val_score
+    from sklearn.naive_bayes import GaussianNB
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.datasets import make_blobs
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.model_selection import RandomizedSearchCV
+    from sklearn.model_selection import KFold
+try:
+    import numpy as np
+    from scipy import stats
+except ModuleNotFoundError:
+    install("numpy")
+    import numpy as np
+    from scipy import stats
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    install("tensorflow")
+    import tensorflow as tf
+try:
+    from keras.models import Sequential
+    from keras import layers
+except ModuleNotFoundError:
+    install("keras")
+    from keras.models import Sequential
+    from keras import layers
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    install("matplotlib")
+    import matplotlib.pyplot as plt
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    install("seaborn")
+    import seaborn as sns
+
+
+
+
+class ControladorVideo:
+    def __init__(self,enlace): 
+        fb=Firebase('Interfaz/recetastextos/')
+        self._idvideo = fb.reenumerar()
+        self.enlacevideo=enlace
+        self.yt=YouTube(self.enlacevideo)
+        self.nombrevideo=''
+        self.titulovideo=self.yt.title
+        self.autorvideo=self.yt.author
+        self.fechavideo=self.yt.publish_date
+        self.duracionvideo=self.yt.length
+        self.rec=RecursosAdicionales()
+    """|DESCARGAR VIDEO URL: descarga el video de youtube
+       |return: devuelve una ruta absoluta"""
+    def descargarVideoURL(self):
+        recetasVideos = 'recetasvideos/'
+        #aqui creo un nuevo id para el nuevo video
+        self._idvideo= self._idvideo+1
+        #esta sera el archivo del video y su nuevo nombre
+        nombre='receta'+str(self._idvideo)
+        #le pedimos al pytube que solo nos descargue el audio y lo descargamos
+        t=self.yt.streams.filter(file_extension='mp4').first().download(output_path=recetasVideos,filename=nombre+'.mp4')
+        #devolvemos el nombre
+        return nombre
+    """|PARSEO VIDEO: pasa el video de .mp4 a .wav
+       |nombre: es un string que se colocara el nombre del video
+       |return: devuelve el nuevo nombre del audio en .wav"""
+    def parseoVideo(self,nombre):
+        recetasVideos = 'recetasvideos/'
+        #tomamos el video en mp4 
+        track = mp.VideoFileClip(recetasVideos+nombre+'.mp4')
+        #cambiamos el video a .wav
+        nombre_wav="{}.wav".format(nombre)
+        track.audio.write_audiofile(recetasVideos+nombre_wav)
+        track.close()
+        return nombre
+    """|SPEECH TEXT:Transforma el audio a texto
+       |nombre: es un string que se colocara el nombre del video
+       |return: devuelve un string con el texto devuelto"""
+    def speech_text(self,nombre):
+        recetasVideos = 'recetasvideos/'
+        #instanciamos el recognizer
+        r = sr.Recognizer()
+        audio = sr.AudioFile(recetasVideos+nombre)
+        with audio as source:
+            audio_file = r.record(source)
+        #transcribimos el audio a texto
+        result = r.recognize_google(audio_file, language = 'es-ES')
+        return result
+    def data_json(self):
+        return {"id":self._idvideo, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)}
+    def indexar_datos(self):
+        return self.rec.indexar_datos("Interfaz/recetastextos/indice.json",{"id":self._idvideo+1, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)})
+    """|REPETIDO:Nos dice si el video ya se encuentra en nuestra bd
+       |fileName: nombre del json
+       |key: llave en donde queremos encontrar lo que buscamos
+       |buscar: elemento que estamos buscando"""
+    def repetido(self):
+        return self.rec.buscar_json('Interfaz/recetastextos/indice.json','nombre',self.titulovideo)
+
+
+class Depurador:
+    
+    def __init__(self): 
+        self.rec=RecursosAdicionales()
+    """|VIDEO: proceso etl donde extraemos al informacion del video 
+       |enlace: es un string que se colocara el enlace del video"""
+    def video(self,enlace):
+        try:
+            #instanciamos el controlador de videos
+            cv=ControladorVideo(enlace)
+            fb=Firebase('Interfaz/recetastextos/')
+            
+            #paso 1: verificamos si existe en la database
+            if fb.validar_database(cv.titulovideo)==False:
+                #paso 2: guardamos en database datos principales
+                
+                #paso 3: descargamos el video
+                cv.nombrevideo=cv.descargarVideoURL()
+                print("id: "+str(cv._idvideo))
+                fb.guardar_database(cv.data_json(),cv._idvideo)
+                #paso 4: pasamos el video a .wav
+                nombre=cv.parseoVideo(cv.nombrevideo)
+                #paso 5: evaluamos los silencios 
+                try:                
+                    num_segm=self.rec.segcionarXsilencios(nombre)
+                    result=""
+                    for i in range(num_segm):
+                        try:
+                            result=result+str(cv.speech_text("../temp_audios/{}_extracto{}.wav".format(nombre,i+1)))
+                            result=result+" "
+                        except BaseException:
+                            logging.exception("An exception was thrown!")
+                            audio1=AudioSegment.from_wav("temp_audios/{}_extracto{}.wav".format(nombre,i+1))
+                            duracion=audio1.duration_seconds
+                            if duracion<=5:
+                                print("El extracto {} es un silencio".format(i+1))
+                            elif duracion<=180:
+                                print("El extracto {} es música o ruido".format(i+1))
+                            else:
+                                print("Error importante en el extracto {}".format(i+1))
+                    #paso 6: borramos los chunks temporales de audio
+                    self.rec.eliminacion_audio("temp_audios","wav")
+                    try:
+                        quitarEmojis = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 'NULL')
+                        tituloSinEmojis=cv.titulovideo.translate(quitarEmojis)
+                        autorSinEmojis=cv.autorvideo.translate(quitarEmojis)
+                        #paso 7: escribimos el texto recibido en un txt->se guarda en local
+                        resultado=self.rec.escritura(cv.nombrevideo,"Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(cv.fechavideo)+"\n"+"Enlace: "+str(cv.enlacevideo)+"\n"+"Entradilla:"+result)
+                        #paso 8: guardamos el texto en una base de datos
+                        fb.guardar_firebase(cv.nombrevideo+'.txt')
+                        #paso 9: eliminamos los mp4
+                        self.rec.eliminacion_audio("recetasvideos","mp4")
+                    except BaseException:
+                        logging.exception("An exception was thrown!")
+                        print("No se ha podido eliminar los caracteres corruptos el video: "+ cv.nombrevideo + " - "+ cv.titulovideo)
+                        self.rec.eliminacion_audio("recetasvideos","mp4")
+                        return None   
+                except BaseException:
+                    logging.exception("An exception was thrown!")
+                    print("No se ha podido transcribir el video: "+ cv.nombrevideo + " - "+ cv.titulovideo+" - "+cv.enlacevideo)
+                    self.rec.eliminacion_audio("recetasvideos","mp4")
+                    self.rec.eliminacion_audio("temp_audios","wav")
+                    return None
+            else:
+                print('Este video se encuentra en la base de datos.')
+                resultado=""
+            return resultado
+        except BaseException:
+            logging.exception("An exception was thrown!")
+            print("No se ha podido descargar el video: "+ cv.nombrevideo + " - "+ cv.titulovideo)
+            return None
+    def lista(self, enlace):
+        playlist_urls = Playlist(enlace)
+        for url in playlist_urls:
+            self.video(url)
+
+
+class RecursosAdicionales:
+    """|ESCRITURA: escribe textos txt
+       |nombre: nombre del 
+       |return: devuelve el audio en texto"""    
+    def escritura(self,nombre,texto):
+        recetasTextos = './Interfaz/recetastextos/'
+        if not(os.path.exists(recetasTextos)):
+            os.mkdir(recetasTextos)
+        f = open(recetasTextos+nombre+'.txt', 'w')
+        f.write(texto)
+        f = open(recetasTextos+nombre+'.txt', "r")
+        print(f.read())
+        f.close()
+        
+    def lectura_json(self,fileName):
+        if self.documento_vacio(fileName):
+            with open(fileName, "r") as file:
+                    archivo=json.load(file)
+        else: 
+            archivo=[]
+            print('El documento se encuentra vacio.')
+        return archivo
+    
+    def escritura_json(self,fileName,data):
+        with open(fileName, "w") as file:
+                json.dump(data, file)
+                file.close()
+    def buscar_json(self,fileName,key,buscar):
+        encontrado=False
+        if self.documento_vacio(fileName):
+            archivo_json=self.lectura_json(fileName)
+            for item in archivo_json:
+                if buscar in item[key]:
+                    print('encontrado')
+                    encontrado=True
+                    #no me gusta usar esto pero no tengo idea de como usar un while con json
+                    break
+        return encontrado
+    def documento_vacio(self,fileName):
+        return os.stat(fileName).st_size != 0
+    def indexar_datos(self,fileName,adicion):
+        if not(os.path.exists(fileName)):
+            os.mkdir(fileName)
+        data=[]
+        data=self.lectura_json(fileName)
+        data.append(adicion)
+        self.escritura_json(fileName,data)
+        
+    def eliminacion_audio(self,path,tipo):
+        url = './'+path+'/'
+        py_files = glob.glob(url+'*.'+tipo)
+        for py_file in py_files:
+            try:
+                os.remove(py_file)
+            except OSError as e:
+                print(f"Error:{ e.strerror}")
+    
+    def segcionarXsilencios(self,audio):
+        audio1=AudioSegment.from_wav("./recetasvideos/"+audio+".wav")
+        var_min=1900
+        salir=False
+        while salir==False:
+            samples = audio1.get_array_of_samples()
+            segundo=88521
+            index=[]
+            for i in range(0,len(samples),int(segundo/5)):
+                dataSeg = samples[i:int(segundo/5)+i]
+                media=np.mean(dataSeg)
+                var=np.var(dataSeg)
+                if -10<=media<=10 and var<=var_min:
+                    index.append(i)
+
+            borrar=[]
+            guardado=0
+            for i in range(len(index)-1):
+                if index[i+1]<=index[i]+(20*segundo):
+                    if i==0:
+                        tiempo=(index[i])/segundo
+                    else:
+                        tiempo=(index[i+1]-guardado)/segundo
+                    if tiempo<=120:
+                        borrar.append(i)
+                    else:
+                        guardado=index[i]
+                else:
+                    guardado=index[i]
+
+            final=np.delete(index, borrar, axis=0) 
+            extractos=[]
+            if len(final)==0:
+                var_min=var_min*10
+                salir=False
+            else:
+                for i in range(len(final)):
+                    if i==0:
+                        extractos.append(samples[:final[i]])
+                    else:
+                        extractos.append(samples[final[i-1]:final[i]])
+                extractos.append(samples[final[i]:])
+                salir=True
+
+        for i in range(len(extractos)):
+            nombre=""
+            new_sound = audio1._spawn(extractos[i])
+            nombre="temp_audios/{}_extracto{}.wav".format(audio,i+1)
+            new_sound.export(nombre,format="wav")
+        #print(len(extractos))
+        return len(extractos)
+
+
+
+
+
+class Firebase:
+    def __init__(self,ubicacion):
+        self.ubi=ubicacion
+        
+        self.config={"apiKey": "AIzaSyDDg9WOlFJxnEJoxomYtsnkJfsI4TgoL_E","authDomain": "eateaser-741d4.firebaseapp.com","databaseURL" : "https://eateaser-741d4-default-rtdb.firebaseio.com/","projectId": "eateaser-741d4","storageBucket": "eateaser-741d4.appspot.com","messagingSenderId": "706351391410","appId": "1:706351391410:web:6abc2cabd6bf83843b5fab","measurementId": "G-YZZCBRHNBT"};
+        self.firebase=self.conexion_firebase()
+        self.database=self.firebase.database()
+    def conexion_firebase(self):
+        return pyrebase.initialize_app(self.config)
+    def guardar_firebase(self,nom):
+        storage=self.firebase.storage()
+        storage.child(self.ubi+nom).put(self.ubi+nom)
+    def eliminar_firebase(self,nom):
+        self.firebase.storage().delete(self.ubi+nom)
+    def guardar_database(self,data,_id):
+        self.database.child('Recetas').child(_id).set(data)
+    def validar_database(self,data):
+        validar=self.database.get()
+        encontrado=False
+        for a in validar.each():
+            if  data in str(a.val()):
+                encontrado=True
+                #no me gusta usar esto pero no tengo idea de como usar un while con json
+                break
+        return encontrado
+    def reenumerar(self):
+        recetas=self.database.child("Recetas").get()
+        id=0
+        for item in recetas.each():
+            id=item.key()
+        return int(id)
+
+
+
+class ProcesarDocumentos:     
+    def lectura(self):
+        procDoc=ProcesarDocumentos()
+        rutaCarpetasPorCategoria = "./Interfaz/recetastextos/"
+        listaCarpetasFinal = []
+        #estos string nos servirán para guardar todos los textos de los txt por cada una de las carpetas
+        carpetaArroz = carpetaBebidas = carpetaCarnes = carpetaMarisco = carpetaPasta = carpetaPescados = carpetaPlatosMenores = carpetaVerduras = ''
+        #sacamos una lista de todas las carpetas
+        listaCarpetas = os.listdir(rutaCarpetasPorCategoria)
+        #print(listaCarpetas)
+        #print(len(listaCarpetas))
+        #recorremos todas las carpetas
+        i=0
+        for lc in listaCarpetas:
+            #cogemos el nombre de la carpeta y se lo concatenamos a la ruta anterior
+            rutaPorCarpeta = rutaCarpetasPorCategoria + lc + '/'
+            print(str(i)+rutaPorCarpeta+'-----------------')
+            if(i==0):
+                carpetaArroz = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                #print(carpetaArroz)
+                listaCarpetasFinal.append(carpetaArroz)
+            if(i==1):
+                carpetaBebidas = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaBebidas)
+            if(i==2):
+                carpetaCarnes = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaCarnes)
+            if(i==3):
+                carpetaMarisco = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaMarisco)
+            if(i==4):
+                carpetaPasta = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaPasta)
+            if(i==5):
+                carpetaPescados = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaPescados)
+            if(i==6):
+                carpetaPlatosMenores = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaPlatosMenores)
+            if(i==7):
+                carpetaVerduras = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+                listaCarpetasFinal.append(carpetaVerduras)
+            i=i+1
+        return listaCarpetasFinal
+    def lecturaTesting(self):
+        procDoc=ProcesarDocumentos()
+        rutaCarpetaTesting = "./Interfaz/Carpeta Testing/"
+        carpetaTesting = procDoc.resultadoStringCarpeta(rutaCarpetaTesting)
+        return carpetaTesting
+    def resultadoStringCarpeta(self, rutaPorCarpeta):
+        strCarpeta=[]
+        #vemos el contenido de la carpeta en la que estamos iterando
+        listaTxt = os.listdir(rutaPorCarpeta)
+        print(listaTxt)
+        #recorremos todos los archivos de la carpeta
+        for lt in listaTxt:
+            #concatenamos la ruta de la carpeta con el nombre de los archivos que contiene esta
+            rutaTxt = rutaPorCarpeta + lt
+            #al ir iterando pasaremos por todos los archivos modificando la variable de la ruta para poder hacer un open con ella
+            #file = open(filename, encoding="utf8")
+            try:
+                with open(rutaTxt, 'r') as f: 
+                    #al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
+                    strCarpeta.append(f.read())
+            except:
+                with open(rutaTxt, 'r',encoding="utf8") as f: 
+                    #al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
+                    strCarpeta.append(f.read())
+                
+        return strCarpeta
+    def leer_stopwords(self, path):
+        with open(path) as f:
+            # Lee las stopwords del archivo y las guarda en una lista
+            mis_stopwords = [line.strip() for line in f]
+        return mis_stopwords
+    def tratamientoTextos(self, info):
+        #Eliminamos posibles horas del titulo
+        textoSinSimbolos = re.sub("\d+:\d+:\d+", "" , info)
+        #Eliminamos posibles fechas
+        textoSinSimbolos = re.sub("\d+-\d+-\d+", "" , textoSinSimbolos)
+        #Eliminamos todos los fin de enlace
+        textoSinSimbolos = re.sub("v=.*", "" , textoSinSimbolos)
+        #Eliminamos todos los simbolos del texto (,.;:?¿!!) etc
+        textoSinSimbolos = re.sub("[^0-9A-Za-z_]", " " , textoSinSimbolos)
+        #Sacamos todos los tokens del texto y los metemos en una lista
+        textoTokenizado = nltk.tokenize.word_tokenize(textoSinSimbolos)
+        #una lista no tiene lower asique pasamos el lower con map a toda la lista
+        textoMinusculas = (map(lambda x: x.lower(), textoTokenizado))
+        #Le pasa un stopword de palabras en español a la lista de palabras que le llega
+        #stop_words_sp = set(stopwords.words('spanish'))
+        stop_words_sp = self.leer_stopwords("./rapidminer/stop_words_spanish.txt")
+        pasarStopWords = [i for i in textoMinusculas if i not in stop_words_sp]
+        #Aplicamos la normalizacion mediante stemming
+        #SnowStem = nltk.SnowballStemmer(language = 'spanish')
+        # Crear un objeto SnowballStemmer para el idioma español
+        stemmer = RSLPStemmer()
+        listaStems = [stemmer.stem(word) for word in pasarStopWords]
+        return listaStems
+
+
+
+class modelos:
+    def __init__(self):
+        self.preprocesamiento()
+     
+    def preprocesamiento(self):
+        
+        #Se crea la función que vectoriza los array de las recetas (calcula la frecuencia de las palabras) lo que
+        #convierte una lista de palabras en un array de frecuencias
+        self.vectorizer = CountVectorizer(analyzer = "word",  tokenizer = None, preprocessor = None,  stop_words = None,  max_features = 10000) 
+
+        #Se separa el set de datos en datos de entrenamiento y de testeo. En este caso se divide en 80%-20%
+        #Creandose 4 variables -> 
+        #X_train: Conjunto de recetas de entrenamiento (X_cv: en el testeo) 
+        #Y_train: clasificación de las recetas en los datos de entrenamiento (Y_cv: en el testeo)    
+        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(df["receta"], df["clasif"], test_size = 0.2, random_state=42)
+        self.Y_train=list(self.Y_train)
+
+        #Ahora vecrtorizamos X_train y X_cv para poder meterlo en el modelo de clasificación
+        #Set de entrenamiento
+        arrayTemp=[]
+        for i,j in enumerate(self.X_train):           #El fit_transform funciona con string de frases enteras y automáticamente tokeniza las palabras por lo que hayq ue volver a juntar las palabras en una frase
+            arrayTemp.append(" ".join(j))
+        self.X_train = self.vectorizer.fit_transform(arrayTemp)
+        self.X_train = self.X_train.toarray()
+
+        #Set de testeo
+        arrayTemp=[]
+        for i,j in enumerate(self.X_cv):
+            arrayTemp.append(" ".join(j))
+        self.X_cv = self.vectorizer.transform(arrayTemp)
+        self.X_cv = self.X_cv.toarray()
+        self.Y_train=list(self.Y_train)
+        self.Y_cv=list(self.Y_cv)
+        
+    def Entrenar_RF(self):
+        # Grid de hiperparámetros evaluados
+        # ==============================================================================
+        
+        print(self.X_train.shape)
+        param_grid = ParameterGrid(
+                        {'n_estimators': [1000],
+                         'max_features': [5, 7, 9],
+                         'max_depth'   : [None, 3, 10, 20],
+                         'criterion'   : ['gini', 'entropy']
+                        }
+                    )
+
+        # Loop para ajustar un modelo con cada combinación de hiperparámetros
+        # ==============================================================================
+        resultados = {'params': [], 'oob_accuracy': []}
+
+        for params in param_grid:
+
+            modelo = RandomForestClassifier(
+                        oob_score    = True,
+                        n_jobs       = -1,
+                        random_state = 123,
+                        ** params
+                     )
+
+            modelo.fit(self.X_train, self.Y_train)
+
+            resultados['params'].append(params)
+            resultados['oob_accuracy'].append(modelo.oob_score_)
+            print(f"Modelo: {params} \u2713")
+
+        # Resultados
+        # ==============================================================================
+        resultados = pd.DataFrame(resultados)
+        resultados = pd.concat([resultados, resultados['params'].apply(pd.Series)], axis=1)
+        resultados = resultados.sort_values('oob_accuracy', ascending=False)
+        resultados = resultados.drop(columns = 'params')
+        print(resultados.head(4))
+        
+        '''
+        self.forest = RandomForestClassifier() 
+        self.forest = self.forest.fit(self.X_train, self.Y_train)
+
+        predictions = self.forest.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        '''
+        
+    def Entrenar_RF_CV(self):
+        # Grid de hiperparámetros evaluados
+        # ==============================================================================
+        param_grid = {'n_estimators': [150],
+                      'max_features': [5, 7, 9],
+                      'max_depth'   : [None, 3, 10, 20],
+                      'criterion'   : ['gini', 'entropy']
+                     }
+
+        # Búsqueda por grid search con validación cruzada
+        # ==============================================================================
+        grid = GridSearchCV(
+                estimator  = RandomForestClassifier(random_state = 123),
+                param_grid = param_grid,
+                scoring    = 'accuracy',
+                n_jobs     = multiprocessing.cpu_count() - 1,
+                cv         = RepeatedKFold(n_splits=5, n_repeats=3, random_state=123), 
+                refit      = True,
+                verbose    = 0,
+                return_train_score = True
+               )
+
+        grid.fit(X = self.X_train, y = self.Y_train)
+
+        # Resultados
+        # ==============================================================================
+        resultados = pd.DataFrame(grid.cv_results_)
+        resultados.filter(regex = '(param*|mean_t|std_t)') \
+            .drop(columns = 'params') \
+            .sort_values('mean_test_score', ascending = False) \
+            .head(4)
+        
+        # Mejores hiperparámetros por validación cruzada
+        # ==============================================================================
+        print("----------------------------------------")
+        print("Mejores hiperparámetros encontrados (cv)")
+        print("----------------------------------------")
+        print(grid.best_params_, ":", grid.best_score_, grid.scoring)
+        
+        self.modelo_final = grid.best_estimator_
+        
+        '''
+        self.forest = RandomForestClassifier() 
+        self.forest = self.forest.fit(self.X_train, self.Y_train)
+
+        predictions = self.forest.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        '''
+        
+        
+    def predecir_RF(self,txt):
+        
+        self.pred = self.vectorizer.transform(txt)
+        self.pred = self.pred.toarray()
+        predictions = self.forest.predict(self.pred) 
+        #print("resultado: " , predictions)
+        return list(predictions)
+    def predecir_Carpeta(self,txt):
+        
+        p=ProcesarDocumentos()
+        carpeta=p.resultadoStringCarpeta(txt)
+
+        resultados=[]
+        for i in range(len(carpeta)):
+            text=p.tratamientoTextos(carpeta[i])
+            hey=[" ".join(text)]
+            resultados.append(self.predecir_RF(hey))
+        #print("Resultados: {}".format(resultados))
+        
+        resultados=[]
+        for i in range(len(carpeta)):
+            text=p.tratamientoTextos(carpeta[i])
+            hey=" ".join(text)
+            resultados.append(hey)
+        self.pred1 = self.vectorizer.transform(resultados)
+        self.pred1 = self.pred1.toarray()
+        predictions = self.forest.predict(self.pred1) 
+        #print("resultado: " , predictions)
+        return predictions
+        
+    def Entrenar_KNN(self):  
+        #self.preprocesamiento()
+        
+
+        vecinos = KNeighborsClassifier() 
+        vecinos = vecinos.fit(self.X_train, self.Y_train)
+
+        predictions = vecinos.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+
+    
+    def Entrenar_SVM(self):  
+        #self.preprocesamiento()
+        
+        #Create a svm Classifier
+        clf = svm.SVC(kernel='linear') # Linear Kernel
+
+        #Train the model using the training sets
+        clf.fit(self.X_train, self.Y_train)
+        
+
+        predictions = clf.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        
+        cv=cross_val_score(clf, self.X_train, self.Y_train, cv=10)
+        
+        print("CV -> {}".format(cv))
+        
+    def Entrenar_SVM_CV(self):
+        
+        
+        Cs = np.logspace(-6, -1, 10)
+        svc = svm.SVC()
+        clf = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
+                           n_jobs=-1)
+        clf.fit(self.X_train, self.Y_train)        
+
+        print("best score-> {}".format(clf.best_score_))                                 
+
+        print("best estimator-> {}".format(clf.best_estimator_.C))                            
+
+
+        # Prediction performance on test set is not as good as on train set
+        print("mi score".format(clf.score(self.X_cv, self.Y_cv)))      
+
+    def Entrenar_Bayes(self):  
+        
+        #Create a svm Classifier
+        gaus = GaussianNB() # Linear Kernel
+
+        #Train the model using the training sets
+        gaus.fit(self.X_train, self.Y_train)
+        
+
+        predictions = gaus.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        
+        cv=cross_val_score(gaus, self.X_train, self.Y_train, cv=10)
+        
+        print("CV -> {}".format(cv))   
+        
+    
+    def regresionMultinomial(self):
+        
+        model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+        model.fit(self.X_train, self.Y_train)
+        
+
+        predictions = model.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        
+        cv=cross_val_score(model, self.X_train, self.Y_train, cv=10)
+        
+        print("CV -> {}".format(cv)) 
+    def Entrenar_RedNeuronal(self):
+        
+        xtrain=[]
+        for i in range(len(self.X_train)):     
+            xtrain.append(list(self.X_train[i]))
+        #xtrain=np.array(xtrain)
+
+        xcv=[]
+        for i in range(len(self.X_cv)):     
+            xcv.append(list(self.X_cv[i]))
+        #xcv=np.array(xcv)
+        #Y_train=np.array(Y_train)
+        #Y_cv=np.array(Y_cv)
+
+
+        print(type(xtrain))
+        print(type(self.Y_train))
+        print(type(xcv))
+        print(type(self.Y_cv))
+        
+        
+        clear_session()
+        
+
+        #input_dim = xtrain.shape[1] #.shape[0]  # Number of features
+        input_dim= len(xtrain[0])
+        model = Sequential()
+        model.add(layers.Dense(7, input_dim=input_dim, activation='relu'))
+        model.add(layers.Dense(1, activation='sigmoid'))
+        '''
+        model.compile(loss='mean_squared_error',
+              optimizer='adam',
+              metrics=['binary_accuracy'])
+        
+        '''
+        
+        loss_fn = tf.keras.losses.MeanSquaredError(reduction='sum_over_batch_size')
+        model.compile(loss=loss_fn, 
+                       optimizer='adam', 
+                       metrics=['accuracy'])
+        
+        print(model.summary())
+
+        xtrain2=[]
+        for i in range(len(xtrain)):
+            temp=[]
+            for j in range(len(xtrain[i])):
+                temp.append(int(xtrain[i][j]))
+            xtrain2.append(temp)
+        
+        xcv2=[]
+        for i in range(len(xcv)):
+            temp=[]
+            for j in range(len(xcv[i])):
+                temp.append(int(xcv[i][j]))
+            xcv2.append(temp)
+            
+        ytrain2=[]
+        for i in range(len(self.Y_train)):
+            ytrain2.append(int(self.Y_train[i]))
+            
+        ycv2=[]
+        for i in range(len(self.Y_cv)):
+            ycv2.append(int(self.Y_cv[i]))
+            
+        print(type(xtrain2[0][0]))    
+        self.xtrain2=xtrain2        
+        self.xtrain=xtrain
+        '''
+        history = model.fit(xtrain2, self.Y_train,
+                     epochs=10,
+                     verbose=False,
+                     validation_data=(xcv, self.Y_cv),
+                     batch_size=10)
+        '''
+        history = model.fit(xtrain2, ytrain2,
+                     epochs=10,
+                     verbose=False,
+                     validation_data=(xcv2, ycv2),
+                     batch_size=10)
+
+        
+        clear_session()
+        '''
+        loss, accuracy = model.evaluate(xtrain, self.Y_train, verbose=False)
+        print("Training Accuracy: {:.4f}".format(accuracy))
+        loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
+        print("Testing Accuracy:  {:.4f}".format(accuracy))
+        '''
+        loss, accuracy = model.evaluate(xtrain2, ytrain2, verbose=False)
+        print("Training Accuracy: {:.4f}".format(accuracy))
+        loss, accuracy = model.evaluate(xcv2, ycv2, verbose=False)
+        print("Testing Accuracy:  {:.4f}".format(accuracy))
+
+
+
+class modelosTFIDF:
+    def __init__(self):
+        self.tfidf()
+    
+    def tfidf(self):
+        hola=[]
+        for i,j in enumerate(df['receta']):
+            hola.append(" ".join(j))
+        self.vectorizers= TfidfVectorizer(max_features=4000)    
+        self.vect = self.vectorizers.fit_transform(hola)
+        arr=self.vect.toarray()
+        variable=self.vectorizers.get_feature_names()
+        
+
+        variables=dict.fromkeys(variable,None)
+
+        tf1=pd.DataFrame(variables,index=[0])
+        for i in range(len(df['clasif'])):
+            tf1.loc[i]=arr[i]
+        
+        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(tf1, df['clasif'], test_size = 0.2, random_state=42)
+        self.Y_train=list(self.Y_train)
+        self.Y_cv=list(self.Y_cv)
+         
+  
+        
+    def Entrenar_RF(self):
+        # Grid de hiperparámetros evaluados
+        # ==============================================================================
+        
+        print(self.X_train.shape)
+        param_grid = ParameterGrid(
+                        {'n_estimators': [1000],
+                         'max_features': [5, 7, 9],
+                         'max_depth'   : [None, 3, 10, 20],
+                         'criterion'   : ['gini', 'entropy']
+                        }
+                    )
+
+        # Loop para ajustar un modelo con cada combinación de hiperparámetros
+        # ==============================================================================
+        resultados = {'params': [], 'oob_accuracy': []}
+
+        for params in param_grid:
+
+            modelo = RandomForestClassifier(
+                        oob_score    = True,
+                        n_jobs       = -1,
+                        random_state = 123,
+                        ** params
+                     )
+
+            modelo.fit(self.X_train, self.Y_train)
+
+            resultados['params'].append(params)
+            resultados['oob_accuracy'].append(modelo.oob_score_)
+            print(f"Modelo: {params} \u2713")
+
+        # Resultados
+        # ==============================================================================
+        resultados = pd.DataFrame(resultados)
+        resultados = pd.concat([resultados, resultados['params'].apply(pd.Series)], axis=1)
+        resultados = resultados.sort_values('oob_accuracy', ascending=False)
+        resultados = resultados.drop(columns = 'params')
+        print(resultados.head(4))
+        
+        '''
+        self.forest = RandomForestClassifier() 
+        self.forest = self.forest.fit(self.X_train, self.Y_train)
+
+        predictions = self.forest.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        '''
+        
+    def Entrenar_RF_CV(self):
+        # Grid de hiperparámetros evaluados
+        # ==============================================================================
+        param_grid = {'n_estimators': [150],
+                      'max_features': [5, 7, 9],
+                      'max_depth'   : [None, 3, 10, 20],
+                      'criterion'   : ['gini', 'entropy']
+                     }
+
+        # Búsqueda por grid search con validación cruzada
+        # ==============================================================================
+        
+        grid = GridSearchCV(
+                estimator  = RandomForestClassifier(random_state = 123),
+                param_grid = param_grid,
+                scoring    = 'accuracy',
+                n_jobs     = multiprocessing.cpu_count() - 1,
+                cv         = RepeatedKFold(n_splits=5, n_repeats=3, random_state=123), 
+                refit      = True,
+                verbose    = 0,
+                return_train_score = True
+               )
+
+        grid.fit(X = self.X_train, y = self.Y_train)
+
+        # Resultados
+        # ==============================================================================
+        resultados = pd.DataFrame(grid.cv_results_)
+        resultados.filter(regex = '(param*|mean_t|std_t)') \
+            .drop(columns = 'params') \
+            .sort_values('mean_test_score', ascending = False) \
+            .head(4)
+        
+        # Mejores hiperparámetros por validación cruzada
+        # ==============================================================================
+        print("----------------------------------------")
+        print("Mejores hiperparámetros encontrados (cv)")
+        print("----------------------------------------")
+        print(grid.best_params_, ":", grid.best_score_, grid.scoring)
+        
+        self.modelo_final = grid.best_estimator_
+        
+        '''
+        self.forest = RandomForestClassifier() 
+        self.forest = self.forest.fit(self.X_train, self.Y_train)
+
+        predictions = self.forest.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        '''
+
+    def Entrenar_SVM(self):  
+        #self.preprocesamiento()
+        
+        #Create a svm Classifier
+        m_SVM = svm.SVC(kernel='linear') # Linear Kernel
+
+        #Train the model using the training sets
+        m_SVM.fit(self.X_train, self.Y_train)
+        
+
+        predictions = m_SVM.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        
+        cv=cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        self.m_SVM=m_SVM
+        
+        print("CV -> {}".format(cv))
+        return self.m_SVM
+        
+    def Entrenar_SVM_CV(self):
+        
+        Cs = np.logspace(-6, -1, 10)
+        svc = svm.SVC()
+        m_SVM_CV = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
+                           n_jobs=-1)
+        m_SVM_CV.fit(self.X_train, self.Y_train)        
+
+        print("best score-> {}".format(m_SVM_CV.best_score_))                                 
+
+        print("best estimator-> {}".format(m_SVM_CV.best_estimator_.C))                            
+
+
+        # Prediction performance on test set is not as good as on train set
+        print("mi score".format(m_SVM_CV.score(self.X_cv, self.Y_cv)))      
+
+    def Entrenar_Bayes(self):
+        
+        
+        #Create a svm Classifier
+        gaus = GaussianNB() # Linear Kernel
+
+        #Train the model using the training sets
+        gaus.fit(self.X_train, self.Y_train)
+        
+
+        predictions = gaus.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        
+        cv=cross_val_score(gaus, self.X_train, self.Y_train, cv=10)
+        self.gaus=gaus
+        print("CV -> {}".format(cv))   
+        
+    
+    def regresionMultinomial(self):
+        
+        M_mult = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+        M_mult.fit(self.X_train, self.Y_train)
+        
+        predictions = M_mult.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+        #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
+        self.M_mult=M_mult
+        #print("CV -> {}".format(cv)) 
+    
+    def predecir_RF(self,txt):
+        
+        self.pred = self.vectorizers.transform(txt)
+        self.pred = self.pred.toarray()
+        predictions = self.M_mult.predict(self.pred) 
+        print("resultado: " , predictions)
+        
+    def clasificar(self,modelo,txt):
+        
+        self.pred = self.vectorizers.transform(txt)
+        self.pred = self.pred.toarray()
+        predictions = modelo.predict(self.pred) 
+        print("resultado: " , predictions)
+    
+    def predecir_Carpeta(self,txt):
+        
+        p=ProcesarDocumentos()
+        carpeta=p.resultadoStringCarpeta(txt)
+
+        resultados=[]
+        for i in range(len(carpeta)):
+            text=p.tratamientoTextos(carpeta[i])
+            hey=[" ".join(text)]
+            resultados.append(self.predecir_RF(hey))
+        #print("Resultados: {}".format(resultados))
+        
+        resultados=[]
+        for i in range(len(carpeta)):
+            text=p.tratamientoTextos(carpeta[i])
+            hey=" ".join(text)
+            resultados.append(hey)
+        self.pred1 = self.vectorizers.transform(resultados)
+        self.pred1 = self.pred1.toarray()
+        predictions = self.M_mult.predict(self.pred1) 
+        #print("resultado: " , predictions)
+        return predictions
+        
+    def Entrenar_KNN(self):  
+        #self.preprocesamiento()
+        
+
+        vecinos = KNeighborsClassifier() 
+        vecinos = vecinos.fit(self.X_train, self.Y_train)
+
+        predictions = vecinos.predict(self.X_cv) 
+        self.Y_cv=list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        
+    
+    def Entrenar_RedNeuronal(self):
+        xtrain=[]
+        for i in range(len(self.X_train)):     
+            xtrain.append(list(self.X_train.iloc[i]))
+        #xtrain=np.array(xtrain)
+
+        xcv=[]
+        for i in range(len(self.X_cv)):     
+            xcv.append(list(self.X_cv.iloc[i]))
+        #xcv=np.array(xcv)
+        #Y_train=np.array(Y_train)
+        #Y_cv=np.array(Y_cv)
+
+
+        print(type(xtrain))
+        print(type(self.Y_train))
+        print(type(xcv))
+        print(type(self.Y_cv))
+        
+        
+        clear_session()
+        
+
+        #input_dim = xtrain.shape[1] #.shape[0]  # Number of features
+        input_dim= len(xtrain[0])
+        model = Sequential()
+        model.add(layers.Dense(100, input_dim=input_dim, activation='relu'))
+        model.add(layers.Dense(80, input_dim=100, activation='relu'))
+        model.add(layers.Dense(20, input_dim=80, activation='relu'))
+        model.add(layers.Dense(1, activation='sigmoid'))
+        
+        model.compile(loss='binary_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy'])
+        print(model.summary())
+        history = model.fit(xtrain, self.Y_train,
+                     epochs=1000,
+                     verbose=False,
+                     validation_data=(xcv, self.Y_cv),
+                     batch_size=10)
+
+        
+        clear_session()
+
+        loss, accuracy = model.evaluate(xtrain, self.Y_train, verbose=False)
+        print("Training Accuracy: {:.4f}".format(accuracy))
+        loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
+        print("Testing Accuracy:  {:.4f}".format(accuracy))
+
+    def guardarModelo(self,modelo,nombre):
+        
+        joblib.dump(modelo, './Interfaz/modelos/{}.pkl'.format(nombre)) # Guardo el modelo.
+    
+    def cargarModelo(self,nombre):
+        
+        return joblib.load('./Interfaz/modelos/{}.pkl'.format(nombre))
+
+
+
 class Index(QtWidgets.QMainWindow):
     def __init__(self):
         super(Index, self).__init__()
@@ -744,19 +1943,6 @@ class Test(QWidget):
 
 
 
-
-import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-
-import time
-
-
 class WebScraping:
     def __init__(self,kw):
         self.keyword=kw
@@ -1093,6 +2279,4 @@ if __name__=='__main__':
 
 
     sys.exit(app.exec_())
-
-
 
