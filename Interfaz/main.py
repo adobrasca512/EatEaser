@@ -114,6 +114,13 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             QApplication.restoreOverrideCursor()
             self.close()
+        if self.state == 'Descargar':
+            #QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.gui = Download()
+            self.gui.show()
+            self.gui.showMaximized()
+            #QApplication.restoreOverrideCursor()
+            self.close()
 class Train(QWidget):
     def __init__(self):
         super().__init__()
@@ -869,6 +876,7 @@ class Download(QtWidgets.QMainWindow):
         self.grid = self.findChild(QGridLayout, 'grid_descargas')
         col=0
         fila=0
+        
         for i in range(4):
             print(fila)
             if(col<4):
@@ -1079,7 +1087,7 @@ class App(QtWidgets.QMainWindow):
 if __name__=='__main__':
     app=QApplication(sys.argv)
 
-    gui=Download()
+    gui=Index()
     gui.show()
     gui.showMaximized()
 
