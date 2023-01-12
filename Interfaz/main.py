@@ -1504,7 +1504,7 @@ class Train(QWidget):
             lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("MR")))
         self.btn_rf.clicked.connect(
             lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("RF")))
-        self.btnalgoritmo.clicked.connect(self.vista_previa, self)
+        self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno.clicked.connect(self.volver)
     def cambiar_algoritmo(self, nombre):
