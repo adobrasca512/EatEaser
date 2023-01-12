@@ -472,7 +472,7 @@ class Firebase:
 class ProcesarDocumentos:     
     def lectura(self):
         procDoc=ProcesarDocumentos()
-        rutaCarpetasPorCategoria = "./Interfaz/recetastextos/"
+        rutaCarpetasPorCategoria = "./recetastextos/"
         listaCarpetasFinal = []
         #estos string nos servirán para guardar todos los textos de los txt por cada una de las carpetas
         carpetaArroz = carpetaBebidas = carpetaCarnes = carpetaMarisco = carpetaPasta = carpetaPescados = carpetaPlatosMenores = carpetaVerduras = ''
@@ -1669,7 +1669,7 @@ class Test(QWidget):
         self.lalgoritmo = QLabel('Algoritmo:')
         self.lalgoritmo.setStyleSheet(salgoritmo)
         # botones de algorimos
-        self.btn_knn = QPushButton('K-NN')
+        self.btn_knn = QPushButton('K-NN')#############
         self.btn_rf = QPushButton('Random-Forest')
         self.btn_rn = QPushButton('Red Neuronal')
         self.btnalgoritmo = QPushButton()
@@ -2269,12 +2269,24 @@ class App(QtWidgets.QMainWindow):
 
 
 if __name__=='__main__':
+    
+    df=pd.DataFrame()
+    df['receta']=None
+    df['clasif']=None
+    procesarDocs=ProcesarDocumentos()
+    listaTextosCarpeta=procesarDocs.lectura()
+    for index,content in enumerate(listaTextosCarpeta):
+        for i in range(len(content)):
+            text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
+            df=df.append({'receta':text,'clasif':index},ignore_index=True)
+    
     app=QApplication(sys.argv)
 
-    gui=Download()
+    gui=Index()
     gui.show()
     gui.showMaximized()
-
+    
+    print(df)
 
     sys.exit(app.exec_())
 
