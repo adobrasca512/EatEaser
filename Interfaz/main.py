@@ -11,131 +11,80 @@ import time
 from PyQt5.QtGui import QPixmap, QFont, QFontDatabase, QIcon, QImage, QPainter, QPainterPath
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, \
     QWidget, QSizePolicy, QComboBox, QLayout, QFormLayout, QLineEdit, QButtonGroup, QRadioButton, QCheckBox, \
-    QFileDialog, QMessageBox, QTableWidget, QAbstractItemView, QTableWidgetItem, QHeaderView, QScrollArea, QFrame
+    QFileDialog, QMessageBox, QTableWidget, QAbstractItemView, QTableWidgetItem, QHeaderView, QScrollArea, QFrame, \
+    QSplashScreen, QProgressBar, QDialog
 
 
-class Index(QWidget):
+
+class Index(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
-        self.state='main'
-        # Layout grande
-        self.layout = QHBoxLayout()
-
-        # lado izquierdo del grid
-        self.izqlayout = QGridLayout()
-        self.setWindowTitle("Eat Easer Main page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
-        self.label = QLabel()
-        self.pixmap = QPixmap('imagenes/imagen.jpg')
-        self.label.setPixmap(self.pixmap)
-        self.label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.izqlayout.addWidget(self.label,0,0)
-        # lado derecho del grid
-        self.derlayout = QGridLayout()
-        self.der_grid = QGridLayout()
-
-        #Stylesheets
-        botones_menu = "QPushButton{ color :black;background-color:white;border:3px solid white;font-weight:lighter;font-size:22px;font-family:'Bahnschrift Light';letter-spacing:3px;}QPushButton:hover {color:gray}"
-        stitulo="margin:0,0,0,0;white-space: normal;color:black;font-size:34px;font-weight:bold;text-transform:upperrcase;text-align: center;"
-        sdescripcion="color:gray;font-size:24px;font-weight:light;text-transform:lowercase;text-align: center;"
-        sacceder="QPushButton{border:1px solid white;background-color:white;font-size:18px;font-family:'Bahnschrift Light';}QPushButton:hover{font-weight:bold}"
-        sfuente_1="font-family:'Bahnschrift Light';letter-spacing:3px;"
-        snombres = "font-size:24px;font-family:'Bahnschrift Light';letter-spacing:3px;"
-        #botones menu
-        self.about = QtWidgets.QPushButton("About", self)
-        self.app = QtWidgets.QPushButton("Application", self)
-        self.train = QtWidgets.QPushButton("Train", self)
-        self.test = QtWidgets.QPushButton("Test", self)
-        #botones menu estilizados
-        self.about.setStyleSheet(botones_menu)
-        self.train.setStyleSheet(botones_menu)
-        self.test.setStyleSheet(botones_menu)
-        self.app.setStyleSheet(botones_menu)
-        #grid de arriba añadimos menu
-        self.arriba_grid = QGridLayout()
-        self.arriba_grid.addWidget(self.about, 0, 0)
-        self.arriba_grid.addWidget(self.train, 0, 1)
-        self.arriba_grid.addWidget(self.test, 0, 2)
-        self.arriba_grid.addWidget(self.app, 0, 3)
-        #grid del medio
-        self.medio_grid = QGridLayout()
-        self.abajo_grid = QGridLayout()
-        #titulo del main
-        self.titulo = QLabel(self)
-        self.titulo.setText("Bienvenido al Startup de Eateaser")
-        self.titulo.setStyleSheet(sfuente_1+stitulo)
-        #descripcion del main
-        self.descripcion = QLabel(self)
-        self.descripcion.setText("Selecciona una opción del menú y descubre sobre ello.")
-        self.descripcion.setStyleSheet(sfuente_1+sdescripcion)
-        #Boton oculto de acceder
-        self.acceder=QPushButton('Acceder')
+        super(Index, self).__init__()
+        # Cargamos el .ui file
+        uic.loadUi('index.ui', self)
+        self.about = self.findChild(QtWidgets.QPushButton, 'about')
+        self.app = self.findChild(QtWidgets.QPushButton, 'app')
+        self.train = self.findChild(QtWidgets.QPushButton, 'train')
+        self.test = self.findChild(QtWidgets.QPushButton, 'test')
+        self.downloads = self.findChild(QtWidgets.QPushButton, 'downloads')
+        self.titulo = self.findChild(QLabel, 'titulo')
+        self.descripcion = self.findChild(QLabel, 'descripcion')
+        self.acceder = self.findChild(QtWidgets.QPushButton, 'acceder')
+        self.icono = self.findChild(QtWidgets.QPushButton, 'icono')
         self.acceder.setVisible(False)
-        self.acceder.setIcon(QIcon('imagenes/up-arrow.png'))
-        self.acceder.setStyleSheet(sacceder)
-        #agrid del medio aniadimos titulo, descripcion y boton
-        self.medio_grid.addWidget(self.titulo,0,0,1,1,QtCore.Qt.AlignHCenter)
-        self.medio_grid.addWidget(self.descripcion,1,0,1,1,QtCore.Qt.AlignHCenter)
-        self.medio_grid.addWidget(self.acceder, 2, 0,2,1, QtCore.Qt.AlignHCenter)
-        #grid derecho aniadimos todos los grids
-        self.der_grid = QGridLayout()
-        self.der_grid.addLayout(self.arriba_grid, 0, 0)
-        self.der_grid.addLayout(self.medio_grid, 1, 0)
-        self.der_grid.addLayout(self.abajo_grid,2,0)
-        self.derlayout.addLayout(self.der_grid, 2, 0,3,0)
-        # añadimos todo
-        self.layout.addLayout(self.izqlayout,20)
-        self.layout.addLayout(self.derlayout,20)
-        self.setLayout(self.layout)
-        #configuraciones de la pagina
-        self.setStyleSheet("background-color :  white")
-        self.showMaximized()
-        #acciones de botones
-        self.about.clicked.connect(lambda :self.menuClicked('Startup Eateaser','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',False,True))
-        self.train.clicked.connect(lambda :self.menuClicked('Fase de Entrenamiento','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.test.clicked.connect(lambda :self.menuClicked('Fase de Testeo','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
-        self.app.clicked.connect(lambda :self.menuClicked('Aplicación','Compañia encargada para sugerirte las mejores recetas.\nSeremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                'tus platillos favoritos. Ademas tambien \nclasificamos resetas y te enseñamos nuestros algoritmos',True,False))
+        self.icono.setVisible(False)
+        self.about.clicked.connect(lambda: self.menuClicked('Startup Eateaser',
+                                                            'Compañia encargada para sugerirte las mejores recetas Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facilpara conocer la clasificacion de \n'
+                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            False, True,''))
+        self.train.clicked.connect(lambda: self.menuClicked('Fase de Entrenamiento',
+                                                            'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil para conocer la clasificacion de \n'
+                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            True, False,'train.png'))
+        self.test.clicked.connect(lambda: self.menuClicked('Fase de Testeo',
+                                                           'Compañia encargada para sugerirte las mejores recetas.\Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
+                                                           'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                           True, False,'test.png'))
+        self.app.clicked.connect(lambda: self.menuClicked('Aplicación',
+                                                          'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
+                                                          'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                          True, False,'app.png'))
         self.acceder.clicked.connect(self.openTrain)
-
-        #about informacion botones imagenes
-        self.juancar = QPushButton()
-        self.adi = QPushButton()
-        self.carlos = QPushButton()
-        self.rober = QPushButton()
-        #personalizamos los botones acontinuacion
-        self.personalizar_boton( self.juancar, 'juancar.jpeg')
+        # about informacion botones imagenes
+        self.juancar = self.findChild(QtWidgets.QPushButton, 'juan')
+        self.adi = self.findChild(QtWidgets.QPushButton, 'adi')
+        self.carlos = self.findChild(QtWidgets.QPushButton, 'carlos')
+        self.rober = self.findChild(QtWidgets.QPushButton, 'rober')
+        # personalizamos los botones acontinuacion
+        self.personalizar_boton(self.juancar, 'juancar.jpeg')
         self.personalizar_boton(self.adi, 'adi.jpeg')
         self.personalizar_boton(self.carlos, 'carlos.jpeg')
         self.personalizar_boton(self.rober, 'rober.jpeg')
-        #labels personalizadas
-        self.ljuancar = QLabel('Juan\nCarlos')
-        self.ladi = QLabel('Adilem\nDobras')
-        self.lcarlos = QLabel('Carlos\nGonzales')
-        self.lrober = QLabel('Roberto\nEchevarria')
-        #estilizamos las labels
-        self.ladi.setStyleSheet(snombres)
-        self.ljuancar.setStyleSheet(snombres)
-        self.lrober.setStyleSheet(snombres)
-        self.lcarlos.setStyleSheet(snombres)
-        #grid de abajo aniadimos widgets
-        self.abajo_grid.addWidget(self.juancar, 0, 0)
-        self.abajo_grid.addWidget(self.adi, 0, 1)
-        self.abajo_grid.addWidget(self.carlos, 0, 2)
-        self.abajo_grid.addWidget(self.rober, 0, 3)
-        self.abajo_grid.addWidget(self.ljuancar, 1, 0)
-        self.abajo_grid.addWidget(self.ladi, 1, 1)
-        self.abajo_grid.addWidget(self.lcarlos, 1, 2)
-        self.abajo_grid.addWidget(self.lrober, 1, 3,1,1)
-        self.abajo_grid.setContentsMargins(100,0,100,0)
-
+        # labels personalizadas
+        self.ljuancar = self.findChild(QLabel, 'ljuan')
+        self.ladi = self.findChild(QLabel, 'ladi')
+        self.lcarlos = self.findChild(QLabel, 'lcarlos')
+        self.lrober =self.findChild(QLabel, 'lrober')
         self.apagar_widgets(False)
-    def setWidgets(self):
-        pass
-    def apagar_widgets(self,boolean):
+
+    def menuClicked(self, titulo, descripcion, acceder, widgets,dir):
+        self.titulo.setText(titulo)
+        self.descripcion.setText(descripcion)
+        self.acceder.setVisible(acceder)
+        self.apagar_widgets(widgets)
+        self.state = titulo
+        if(widgets==False):
+            self.icono.setVisible(True)
+            self.icono.setIcon(QIcon('imagenes/' + dir))
+            self.icono.setIconSize(QSize(200, 200))
+            # boton.setFixedSize(200, 200)
+            self.icono.setStyleSheet('border-radius:12px;')
+        else:
+            self.icono.setVisible(False)
+
+
+
+
+    def apagar_widgets(self, boolean):
         self.carlos.setVisible(boolean)
         self.juancar.setVisible(boolean)
         self.adi.setVisible(boolean)
@@ -145,18 +94,11 @@ class Index(QWidget):
         self.ljuancar.setVisible(boolean)
         self.lcarlos.setVisible(boolean)
 
-
-    def personalizar_boton(self,boton,nombre):
-        boton.setIcon(QIcon('imagenes/'+nombre))
+    def personalizar_boton(self, boton, nombre):
+        boton.setIcon(QIcon('imagenes/' + nombre))
         boton.setIconSize(QSize(200, 200))
-        boton.setFixedSize(200, 200)
+        #boton.setFixedSize(200, 200)
         boton.setStyleSheet('border-radius:12px;')
-    def menuClicked(self,titulo,descripcion,acceder,widgets):
-        self.titulo.setText(titulo)
-        self.descripcion.setText(descripcion)
-        self.acceder.setVisible(acceder)
-        self.apagar_widgets(widgets)
-        self.state = titulo
     def openTrain(self):
         if self.state=='Fase de Entrenamiento':
 
@@ -171,10 +113,19 @@ class Index(QWidget):
             self.gui.showMaximized()
             self.close()
         if self.state=='Aplicación':
+
+
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+
             self.gui = App()
             self.gui.show()
             self.gui.showMaximized()
+            QApplication.restoreOverrideCursor()
             self.close()
+
+
+
 
 class Train(QWidget):
     def __init__(self):
@@ -899,7 +850,7 @@ class WebScraping:
             # print(len(listaURLSinDuplicados))
 
 
-
+import mmap
 class App(QtWidgets.QMainWindow):
     def __init__(self):
         super(App, self).__init__()
@@ -938,9 +889,17 @@ class App(QtWidgets.QMainWindow):
         self.btnbuscar = self.findChild(QPushButton, 'buscar')
         self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
         self.busqueda.setStyleSheet("QPushButton{border-radius:10px;border:1px solid black;background-color:transparent;")
-        self.volver = self.findChild(QPushButton, 'back')
-        self.volver.setIcon(QIcon('imagenes/menu.png'))
+        #self.volver = self.findChild(QPushButton, 'back')
+        #self.volver.setIcon(QIcon('imagenes/menu.png'))
+        self.txt_frame=self.findChild(QGridLayout, 'gridLayout_8')
 
+        self.grupo_botones=QButtonGroup()
+
+        #self.boton=QLabel('HOLA')
+        #self.txt_frame.addWidget(self.x)
+        #self.layout.addWidget(self.x,0,0)
+        #self.layout.addWidget(QLabel('nombre'),0,1)
+        self.buscar_texto('Carpeta Arroz')
         #ponemos acciones a los botones
         self.btnbuscar.clicked.connect(lambda: self.buscar_recetas(self.busqueda.text()))
         self.btncarne.clicked.connect(lambda :self.buscar_recetas('carne'))
@@ -955,6 +914,26 @@ class App(QtWidgets.QMainWindow):
 
         self.setStyleSheet('background-color:white;')
         self.show()
+    def buscar_texto(self,categoria):
+        directorio=os.listdir('recetastextos/'+categoria)
+
+        j=0
+        fila=0
+        for i,texto in enumerate(directorio):
+            #quiero que sean 10 columnas
+
+            if j<10:
+
+                self.boton = QPushButton(texto)
+                self.boton.setStyleSheet('QPushButton{border-radius:20px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
+                self.txt_frame.addWidget(self.boton,fila,j)
+                j=j+1
+            else:
+                j=0
+                fila=fila+1
+
+
+
     def buscar_productos(self,producto):
         ws = WebScraping(producto)
         cont = 0
@@ -1013,10 +992,13 @@ class App(QtWidgets.QMainWindow):
 
 if __name__=='__main__':
     app=QApplication(sys.argv)
+
     gui=Index()
-    gui.showMaximized()
     gui.show()
+    gui.showMaximized()
+
 
     sys.exit(app.exec_())
+
 
 
