@@ -1331,7 +1331,6 @@ class Train(QWidget):
         self.addlayout_to_layouts()
         self.addwindgets_to_layouts()
         self.activarBotones()
-        self.opcionModeloElegida=0
 
     def setLayouts(self):
         # layout grande
@@ -1351,9 +1350,12 @@ class Train(QWidget):
 
 
     def setWidgets(self):
+        #variable que almacena las carpetas de textos que ya han sido añadidas/seleccionadas
         self.seleccionados = []
         self.checkboxes = []
         self.varableSeleccionCarpetaGuardarModelo = ""
+        # variable que almacena el algoritmo que se ha seleccionado con los botones
+        self.algoritmo_clicked=""
         # labels de ruta
         self.lcategoria = QLabel('Selecciona la categoria')
         # combobox de ruta
@@ -1497,34 +1499,24 @@ class Train(QWidget):
         self.path_btn.clicked.connect(self.aniadir_directorio)
         self.btn_guardar.clicked.connect(self.guardarModelo)
         self.btn_svm.clicked.connect(
-            lambda: (self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'), 
-                    self.modeloEntrenamientoElegido(1)))
+            lambda: (self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("SVM")))
         self.btn_mr.clicked.connect(
-            lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'),
-                    self.modeloEntrenamientoElegido(3)))
+            lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("MR")))
         self.btn_rf.clicked.connect(
-            lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'),
-                    self.modeloEntrenamientoElegido(2)))
+            lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("RF")))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno.clicked.connect(self.volver)
+    def cambiar_algoritmo(self, nombre):
+        self.algoritmo_clicked = nombre      
     def informacion(self,titulo,descripcion):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
-    
-    def modeloEntrenamientoElegido(self, opcionElegida):
-        self.opcionModeloElegida = opcionElegida
-    
-    #def cargarModeloSeleccionadoUser(self):
-    #    modeloTfIdf = modelosTFIDF()
-    #    if(self.opcionModeloElegida==1):
-    #        modeloTfIdf
-    #    elif(self.opcionModeloElegida==2):
-    #        modeloTfIdf.
-    #    elif(self.opcionModeloElegida==3):
-    #        modeloTfIdf
-        
-        
+            #FUNCION PARA REALIZAR EL ALGORITMO
+    #def realizar_alogritmo(self):
+        #if(self.algoritmo_clicked=="SVM"):    
+        #elif(self.algoritmo_clicked=="MR"):
+        #elif(self.algoritmo_clicked=="RM"):  
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -1537,7 +1529,6 @@ class Train(QWidget):
 
             self.mensaje_error('Campos vacios.')
         else:
-            #self.cargarModeloSeleccionadoUser()
             #verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
@@ -1564,12 +1555,16 @@ class Train(QWidget):
 
     def aniadir_boton(self):
         self.add=QCheckBox(self.cbcategoria.currentText())
-        self.seleccionados.append(str(self.cbcategoria.currentText()))
-        self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
-                                              'black;color:white}')
-
-        self.seleccionlayout.addWidget(self.add)
-        self.checkboxes.append(self.add)
+        if any(i == self.cbcategoria.currentText() for i in self.seleccionados):
+            self.mensaje_error(self.cbcategoria.currentText()+' ya esta seleccionada.')
+        else:
+            
+            self.seleccionados.append(str(self.cbcategoria.currentText()))
+            self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
+                                                  'black;color:white}')
+    
+            self.seleccionlayout.addWidget(self.add)
+            self.checkboxes.append(self.add)
         print(self.seleccionados)
 
     def eliminar_boton(self):
