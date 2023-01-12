@@ -1623,7 +1623,6 @@ class Test(QWidget):
         self.nombrecarpeta=''
         self.info=self.Informacion()
         self.varableRutaModeloEntrenado=""
-        self.modelo_entrenado
 
         # layout grande
         self.layout = QGridLayout()
@@ -1703,9 +1702,10 @@ class Test(QWidget):
 
 
         # eventos de botones
-        self.btn_seleccion_modelo.clicked.connect(self.recuperarRutaModeloEntrenado)
-        self.path_btn.clicked.connect(print(self.modelo_entrenado))
-        self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
+        self.btn_seleccion_modelo.clicked.connect(
+            lambda: self.recuperarRutaModeloEntrenado())
+        #self.path_btn.clicked.connect()
+        #self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
         self.formguardar = QLineEdit()
@@ -1725,9 +1725,6 @@ class Test(QWidget):
 
         #agregamos la tabla
         self.tableWidget = QTableWidget()
-
-
-
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
@@ -1793,16 +1790,6 @@ class Test(QWidget):
         self.ver.buttonClicked[int].connect(self.info.ver_)
 
 
-    def recuperarRutaModeloEntrenado(self):
-        r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
-        self.varableRutaModeloEntrenado=r[0]
-    def recuperarModeloEntrenado(self):
-        if(self.varableRutaModeloEntrenado!=""):
-            print('--------------------------')
-            self.modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
-            inf=Informacion()
-            #print(modelo_entrenado)
-            #print(modelo_entrenado.score(x_train, y_train))
 
     class Informacion(QWidget):
         def __init__(self):
@@ -1812,7 +1799,7 @@ class Test(QWidget):
             stexto='line-height: 0.9;font-family:"NSimSun";font-size:24px;background-color:white;border:1px solid black;text-align:justify;text-transform:capitalize;padding:20px;'
             sventana='background-color:black;color:white;font-family:"NSimSun";font-size:20px;text-align:center;'
             self.layout=QGridLayout()
-
+            #self.varableRutaModeloEntrenado=""
             self.nombre=QLabel('Nombre')
             self.categoria=QLabel('Categoria')
             self.texto=QLabel('Texto')
@@ -1849,14 +1836,19 @@ class Test(QWidget):
             self.gui.setFixedSize(width, height)
 
 
-
-
-
     def informacion(self, titulo, descripcion):
         self.ltitulo.setText(titulo)
         self.ldescrip.setText(descripcion)
+    
+    def recuperarRutaModeloEntrenado(self):
+        r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+        self.varableRutaModeloEntrenado =r [0]
+        #print(self.varableRutaModeloEntrenado)
+        
     def setData(self):
-
+        if(self.varableRutaModeloEntrenado!=""):
+            print("modelo cargado")
+            modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
         self.tableWidget.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
         self.tableWidget.setColumnCount(3)
         self.info.ruta=os.listdir(self.cbcategoria.placeholderText())
