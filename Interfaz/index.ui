@@ -94,7 +94,7 @@
                 <enum>QFrame::Raised</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                <item>
+                <item alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="ladi">
                   <property name="font">
                    <font>
@@ -122,7 +122,7 @@
                 <enum>QFrame::Raised</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                <item>
+                <item alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="lrober">
                   <property name="font">
                    <font>
@@ -235,7 +235,7 @@
                 <enum>QFrame::Raised</enum>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                <item>
+                <item alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="lcarlos">
                   <property name="font">
                    <font>
