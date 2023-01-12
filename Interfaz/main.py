@@ -861,6 +861,38 @@ class WebScraping:
 
 
 import mmap
+class Download(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(Download, self).__init__()
+        # Cargamos el .ui file
+        uic.loadUi('download.ui', self)
+        self.grid = self.findChild(QGridLayout, 'grid_descargas')
+        col=0
+        fila=0
+        for i in range(4):
+            print(fila)
+            if(col<4):
+
+                frame = QFrame()
+                self.grid.addWidget(frame, fila, col)
+                frame_grid = QVBoxLayout()
+                frame.setLayout(frame_grid)
+                grid_titulo = QVBoxLayout()
+                grid_boton = QVBoxLayout()
+                frame_grid.addLayout(grid_titulo)
+                grid_titulo.addWidget(QLabel('Titlo de video'))
+                frame_grid.addLayout(grid_boton)
+                ver=QPushButton('Ver texto')
+                ver.setStyleSheet('background-color:black;color:white;font-family:Californian FB;font-size:16px;border-radius:20px;')
+                ver.setFixedSize(100,60)
+                grid_boton.addWidget(ver)
+                frame.setStyleSheet('background-color:white;border-radius:20px;')
+                col=col+1
+            else:
+                col=0
+                fila=fila+1
+
+
 class App(QtWidgets.QMainWindow):
     def __init__(self):
         super(App, self).__init__()
@@ -1045,7 +1077,7 @@ class App(QtWidgets.QMainWindow):
 if __name__=='__main__':
     app=QApplication(sys.argv)
 
-    gui=Index()
+    gui=Download()
     gui.show()
     gui.showMaximized()
 
