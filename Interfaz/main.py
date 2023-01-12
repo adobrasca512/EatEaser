@@ -245,6 +245,12 @@ class Depurador:
         self.rec=RecursosAdicionales()
     """|VIDEO: proceso etl donde extraemos al informacion del video 
        |enlace: es un string que se colocara el enlace del video"""
+       
+    def filtroDescarga(self, enlace_txtbox):
+        if(re.search("\/playlist\?", enlace_txtbox)):
+            self.lista(enlace_txtbox)
+        else:
+            self.video(enlace_txtbox)
     def video(self,enlace):
         try:
             #instanciamos el controlador de videos
