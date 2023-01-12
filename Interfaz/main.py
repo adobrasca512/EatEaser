@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import urllib.request
+import joblib  
 
 from PyQt5 import QtCore, QtWidgets, QtGui, Qt, uic
 from PyQt5.QtCore import QSize
@@ -135,6 +136,7 @@ class Train(QWidget):
         #variables globales
         self.seleccionados = []
         self.checkboxes = []
+        self.varableSeleccionCarpetaGuardarModelo=""
 
         #layout grande
         self.layout = QGridLayout()
@@ -177,6 +179,7 @@ class Train(QWidget):
         self.rutalayout.addWidget(self.cbcategoria,0,1,1,1)
         self.rutalayout.addWidget(self.anadir, 0, 2, 1, 1)
         self.rutalayout.addWidget(self.nuevo,0,3,1,1)
+        
 
 
 
@@ -226,7 +229,7 @@ class Train(QWidget):
         self.btn_guardar.setIcon(QIcon('imagenes/guardar-el-archivo.png'))
         self.btn_guardar.setStyleSheet(sbotones)
         self.path_btn.setStyleSheet(sbotones)
-
+        
         #aniadimos a la seleccion
         self.seleccionlayout.addWidget(self.borrar,1,QtCore.Qt.AlignLeft)
 
@@ -234,6 +237,7 @@ class Train(QWidget):
         self.anadir.clicked.connect(self.aniadir_boton)
         self.borrar.clicked.connect(self.eliminar_boton)
         self.path_btn.clicked.connect(self.aniadir_directorio)
+        self.btn_guardar.clicked.connect(self.guardarModelo)
         self.btn_knn.clicked.connect(
             lambda: self.informacion('Algoritmo K-NN', 'Este algoritmo hace esto y esto y esto'))
         self.btn_rn.clicked.connect(
@@ -403,13 +407,23 @@ class Train(QWidget):
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
     def aniadir_directorio(self):
         r=QFileDialog.getExistingDirectory(self, "Select Directory",directory=os.getcwd())
-        print(r)
-        self.formguardar.setPlaceholderText(r)
+        self.varableSeleccionCarpetaGuardarModelo=r
     def volver(self):
         self.gui = Index()
         self.gui.show()
         self.gui.showMaximized()
         self.close()
+    
+    def guardarModelo(self, modeloEntrenado):
+        if(self.varableSeleccionCarpetaGuardarModelo==""):
+            print("no hay ruta")
+        elif(self.formguardar.text()==""):
+            print("no hay nombre de archivo")
+        else:
+            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + "/" + self.formguardar.text() + ".pkl"
+            joblib.dump(modeloEntrenado, rutaGuardarModelo)
+            print(rutaGuardarModelo)
+        
 
 
 
@@ -422,6 +436,7 @@ class Test(QWidget):
         # variables globales
         self.nombrecarpeta=''
         self.info=self.Informacion()
+        self.varableRutaModeloEntrenado=""
 
         # layout grande
         self.layout = QGridLayout()
@@ -509,7 +524,8 @@ class Test(QWidget):
 
 
         # eventos de botones
-
+        self.path_btn.clicked.connect(self.recuperarRutaModeloEntrenado)
+        self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
         self.formguardar = QLineEdit()
@@ -601,6 +617,15 @@ class Test(QWidget):
         self.ver.buttonClicked[int].connect(self.info.ver_)
 
 
+    def recuperarRutaModeloEntrenado(self):
+        r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+        self.varableRutaModeloEntrenado=r[0]
+    def recuperarModeloEntrenado(self):
+        if(self.varableRutaModeloEntrenado!=""):
+            print('--------------------------')
+            modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
+            #print(modelo_entrenado)
+            #print(modelo_entrenado.score(x_train, y_train))
 
     class Informacion(QWidget):
         def __init__(self):
@@ -728,6 +753,10 @@ class Test(QWidget):
 
             # le añado todos los que esten en listbox
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' + str(self.total_archivos) + ' archivos\n')
+            
+            
+            
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
