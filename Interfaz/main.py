@@ -1331,6 +1331,7 @@ class Train(QWidget):
         self.addlayout_to_layouts()
         self.addwindgets_to_layouts()
         self.activarBotones()
+        self.opcionModeloElegida=0
 
     def setLayouts(self):
         # layout grande
@@ -1496,18 +1497,34 @@ class Train(QWidget):
         self.path_btn.clicked.connect(self.aniadir_directorio)
         self.btn_guardar.clicked.connect(self.guardarModelo)
         self.btn_svm.clicked.connect(
-            lambda: self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'))
+            lambda: (self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'), 
+                    self.modeloEntrenamientoElegido(1)))
         self.btn_mr.clicked.connect(
-            lambda: self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'))
+            lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'),
+                    self.modeloEntrenamientoElegido(3)))
         self.btn_rf.clicked.connect(
-            lambda: self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'))
+            lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'),
+                    self.modeloEntrenamientoElegido(2)))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno.clicked.connect(self.volver)
     def informacion(self,titulo,descripcion):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
-
+    
+    def modeloEntrenamientoElegido(self, opcionElegida):
+        self.opcionModeloElegida = opcionElegida
+    
+    #def cargarModeloSeleccionadoUser(self):
+    #    modeloTfIdf = modelosTFIDF()
+    #    if(self.opcionModeloElegida==1):
+    #        modeloTfIdf
+    #    elif(self.opcionModeloElegida==2):
+    #        modeloTfIdf.
+    #    elif(self.opcionModeloElegida==3):
+    #        modeloTfIdf
+        
+        
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -1520,6 +1537,7 @@ class Train(QWidget):
 
             self.mensaje_error('Campos vacios.')
         else:
+            #self.cargarModeloSeleccionadoUser()
             #verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
