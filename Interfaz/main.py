@@ -1350,9 +1350,12 @@ class Train(QWidget):
 
 
     def setWidgets(self):
+        #variable que almacena las carpetas de textos que ya han sido añadidas/seleccionadas
         self.seleccionados = []
         self.checkboxes = []
         self.varableSeleccionCarpetaGuardarModelo = ""
+        # variable que almacena el algoritmo que se ha seleccionado con los botones
+        self.algoritmo_clicked=""
         # labels de ruta
         self.lcategoria = QLabel('Selecciona la categoria')
         # combobox de ruta
@@ -1496,18 +1499,24 @@ class Train(QWidget):
         self.path_btn.clicked.connect(self.aniadir_directorio)
         self.btn_guardar.clicked.connect(self.guardarModelo)
         self.btn_svm.clicked.connect(
-            lambda: self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'))
+            lambda: (self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("SVM")))
         self.btn_mr.clicked.connect(
-            lambda: self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'))
+            lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("MR")))
         self.btn_rf.clicked.connect(
-            lambda: self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'))
-        self.btnalgoritmo.clicked.connect(self.vista_previa)
+            lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("RF")))
+        self.btnalgoritmo.clicked.connect(self.vista_previa, self)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno.clicked.connect(self.volver)
+    def cambiar_algoritmo(self, nombre):
+        self.algoritmo_clicked = nombre      
     def informacion(self,titulo,descripcion):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
-
+            #FUNCION PARA REALIZAR EL ALGORITMO
+    #def realizar_alogritmo(self):
+        #if(self.algoritmo_clicked=="SVM"):    
+        #elif(self.algoritmo_clicked=="MR"):
+        #elif(self.algoritmo_clicked=="RM"):  
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -1546,12 +1555,16 @@ class Train(QWidget):
 
     def aniadir_boton(self):
         self.add=QCheckBox(self.cbcategoria.currentText())
-        self.seleccionados.append(str(self.cbcategoria.currentText()))
-        self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
-                                              'black;color:white}')
-
-        self.seleccionlayout.addWidget(self.add)
-        self.checkboxes.append(self.add)
+        if any(i == self.cbcategoria.currentText() for i in self.seleccionados):
+            self.mensaje_error(self.cbcategoria.currentText()+' ya esta seleccionada.')
+        else:
+            
+            self.seleccionados.append(str(self.cbcategoria.currentText()))
+            self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
+                                                  'black;color:white}')
+    
+            self.seleccionlayout.addWidget(self.add)
+            self.checkboxes.append(self.add)
         print(self.seleccionados)
 
     def eliminar_boton(self):
