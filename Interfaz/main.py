@@ -912,12 +912,12 @@ class modelos:
 
 
 class modelosTFIDF:
-    def __init__(self):
+    def __init__(self, df):
         self.tfidf()
-    
+        self.df=df
     def tfidf(self):
         hola=[]
-        for i,j in enumerate(df['receta']):
+        for i,j in enumerate(self.df['receta']):
             hola.append(" ".join(j))
         self.vectorizers= TfidfVectorizer(max_features=4000)    
         self.vect = self.vectorizers.fit_transform(hola)
@@ -928,10 +928,10 @@ class modelosTFIDF:
         variables=dict.fromkeys(variable,None)
 
         tf1=pd.DataFrame(variables,index=[0])
-        for i in range(len(df['clasif'])):
+        for i in range(len(self.df['clasif'])):
             tf1.loc[i]=arr[i]
         
-        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(tf1, df['clasif'], test_size = 0.2, random_state=42)
+        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(tf1, self.df['clasif'], test_size = 0.2, random_state=42)
         self.Y_train=list(self.Y_train)
         self.Y_cv=list(self.Y_cv)
          
@@ -1331,7 +1331,20 @@ class Train(QWidget):
         self.addlayout_to_layouts()
         self.addwindgets_to_layouts()
         self.activarBotones()
-
+        self.df=pd.DataFrame()
+        #self.modeloTfIdfEjecucion=cargarDFParaModelo()
+        
+    def cargarDFParaModelo(self):
+        self.df['receta']=None
+        self.df['clasif']=None
+        procesarDocs=ProcesarDocumentos()
+        listaTextosCarpeta=procesarDocs.lectura()
+        for index,content in enumerate(listaTextosCarpeta):
+            for i in range(len(content)):
+                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
+                self.df=self.df.append({'receta':text,'clasif':index},ignore_index=True)
+        modelo=modelosTFIDF(self.df)
+        return modelo
     def setLayouts(self):
         # layout grande
         self.layout = QGridLayout()
@@ -1512,11 +1525,20 @@ class Train(QWidget):
     def informacion(self,titulo,descripcion):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
-            #FUNCION PARA REALIZAR EL ALGORITMO
-    #def realizar_alogritmo(self):
-        #if(self.algoritmo_clicked=="SVM"):    
-        #elif(self.algoritmo_clicked=="MR"):
-        #elif(self.algoritmo_clicked=="RM"):  
+    #FUNCION PARA REALIZAR EL ALGORITMO
+    def realizar_alogritmo(self):
+        
+        if(self.algoritmo_clicked=="SVM"):
+            #self.seleccionados
+            #self.modeloTfIdfEjecucion.Entrenar_SVM()
+            print('SVM')
+        elif(self.algoritmo_clicked=="MR"):
+            #self.modeloTfIdfEjecucion.Entrenar_Bayes()
+            print('MR')
+        elif(self.algoritmo_clicked=="RM"):  
+            #self.modeloTfIdfEjecucion.Entrenar_RF()
+            print('RM')
+            
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -2265,17 +2287,9 @@ class App(QtWidgets.QMainWindow):
 
 
 if __name__=='__main__':
-    '''
-    df=pd.DataFrame()
-    df['receta']=None
-    df['clasif']=None
-    procesarDocs=ProcesarDocumentos()
-    listaTextosCarpeta=procesarDocs.lectura()
-    for index,content in enumerate(listaTextosCarpeta):
-        for i in range(len(content)):
-            text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
-            df=df.append({'receta':text,'clasif':index},ignore_index=True)
-    '''
+    
+    
+    
     app=QApplication(sys.argv)
 
     gui=Index()
