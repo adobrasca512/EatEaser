@@ -913,8 +913,9 @@ class modelos:
 
 class modelosTFIDF:
     def __init__(self, df):
-        self.tfidf()
         self.df=df
+        self.tfidf()
+        
     def tfidf(self):
         hola=[]
         for i,j in enumerate(self.df['receta']):
@@ -1094,7 +1095,7 @@ class modelosTFIDF:
         print("CV -> {}".format(cv))   
         
     
-    def regresionMultinomial(self):
+    def Entrenar_RegresionMultinomial(self):
         
         M_mult = LogisticRegression(multi_class='multinomial', solver='lbfgs')
         M_mult.fit(self.X_train, self.Y_train)
@@ -1121,16 +1122,16 @@ class modelosTFIDF:
         predictions = modelo.predict(self.pred) 
         print("resultado: " , predictions)
     
-    def predecir_Carpeta(self,txt):
+    def predecir_Carpeta(self,rutaModelo, modeloSeleccionado):
         
         p=ProcesarDocumentos()
-        carpeta=p.resultadoStringCarpeta(txt)
+        carpeta=p.resultadoStringCarpeta(rutaModelo)
 
-        resultados=[]
-        for i in range(len(carpeta)):
-            text=p.tratamientoTextos(carpeta[i])
-            hey=[" ".join(text)]
-            resultados.append(self.predecir_RF(hey))
+        #resultados=[]
+        #for i in range(len(carpeta)):
+        #    text=p.tratamientoTextos(carpeta[i])
+        #    hey=[" ".join(text)]
+        #    resultados.append(self.predecir_RF(hey))
         #print("Resultados: {}".format(resultados))
         
         resultados=[]
@@ -1140,7 +1141,7 @@ class modelosTFIDF:
             resultados.append(hey)
         self.pred1 = self.vectorizers.transform(resultados)
         self.pred1 = self.pred1.toarray()
-        predictions = self.M_mult.predict(self.pred1) 
+        predictions = modeloSeleccionado.predict(self.pred1) 
         #print("resultado: " , predictions)
         return predictions
         
@@ -1319,6 +1320,7 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             QApplication.restoreOverrideCursor()
             self.close()
+            
 class Train(QWidget):
     def __init__(self):
         super().__init__()
@@ -1332,19 +1334,10 @@ class Train(QWidget):
         self.addwindgets_to_layouts()
         self.activarBotones()
         self.df=pd.DataFrame()
-        #self.modeloTfIdfEjecucion=cargarDFParaModelo()
+        #self.modeloTfIdfEjecucion=cargarDFParaModelo()#mama
         
-    def cargarDFParaModelo(self):
-        self.df['receta']=None
-        self.df['clasif']=None
-        procesarDocs=ProcesarDocumentos()
-        listaTextosCarpeta=procesarDocs.lectura()
-        for index,content in enumerate(listaTextosCarpeta):
-            for i in range(len(content)):
-                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
-                self.df=self.df.append({'receta':text,'clasif':index},ignore_index=True)
-        modelo=modelosTFIDF(self.df)
-        return modelo
+
+    
     def setLayouts(self):
         # layout grande
         self.layout = QGridLayout()
@@ -1527,16 +1520,35 @@ class Train(QWidget):
             self.ldescrip.setText(descripcion)
     #FUNCION PARA REALIZAR EL ALGORITMO
     def realizar_alogritmo(self):
+        self.df['receta']=None
+        self.df['clasif']=None
+        procesarDocs=ProcesarDocumentos()
+        listaTextosCarpeta=procesarDocs.lectura()
+        for index,content in enumerate(listaTextosCarpeta):
+            for i in range(len(content)):
+                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
+                self.df=self.df.append({'receta':text,'clasif':index},ignore_index=True)
+        
+        
+        
+        for index,content in enumerate(listaTextosCarpeta):
+            if sel[index]=='1':
+                for i in range(len(content)):
+                    text=p.tratamientoTextos(listaTextosCarpeta[index][i])
+                    df=df.append({'receta':text,'clasif':index},ignore_index=True)
+        
+        modelo=modelosTFIDF(self.df)
+        return modelo
         
         if(self.algoritmo_clicked=="SVM"):
             #self.seleccionados
-            #self.modeloTfIdfEjecucion.Entrenar_SVM()
+            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_SVM()
             print('SVM')
         elif(self.algoritmo_clicked=="MR"):
-            #self.modeloTfIdfEjecucion.Entrenar_Bayes()
+            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RegresionMultinomial()
             print('MR')
         elif(self.algoritmo_clicked=="RM"):  
-            #self.modeloTfIdfEjecucion.Entrenar_RF()
+            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RF()
             print('RM')
             
     def vista_previa(self):
@@ -1660,6 +1672,7 @@ class Test(QWidget):
         self.nombrecarpeta=''
         self.info=self.Informacion()
         self.varableRutaModeloEntrenado=""
+        self.nombrecarpetaTestosTest=""
 
         # layout grande
         self.layout = QGridLayout()
@@ -1879,7 +1892,7 @@ class Test(QWidget):
     
     def recuperarRutaModeloEntrenado(self):
         r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
-        self.varableRutaModeloEntrenado =r [0]
+        self.varableRutaModeloEntrenado = r[0]
         #print(self.varableRutaModeloEntrenado)
         
     def setData(self):
@@ -1897,7 +1910,7 @@ class Test(QWidget):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         i=0
 
-
+        self.nombrecarpetaTestosTest= "".join(self.cbcategoria.placeholderText())
         self.nombrecarpeta=self.cbcategoria.placeholderText().split('/')[-1]
         for key in os.listdir(self.cbcategoria.placeholderText()):
             boton=QPushButton()
@@ -1947,6 +1960,10 @@ class Test(QWidget):
 
             self.mensaje_error('Campos vacios.')
         else:
+            mod=modelosTFIDF()
+            print(self.nombrecarpetaTestosTest)
+            #si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
+            #mod.predecir_Carpeta(self.nombrecarpetaTestosTest, varableRutaModeloEntrenado)
             self.setData()
             size = len(os.listdir(self.cbcategoria.placeholderText()))
 
