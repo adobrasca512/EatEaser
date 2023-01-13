@@ -1637,9 +1637,11 @@ class Train(QWidget):
 
     def guardarModelo(self, modeloEntrenado):
         if(self.varableSeleccionCarpetaGuardarModelo==""):
-            print("no hay ruta")
+            #print("no hay ruta")
+            self.mensaje_error("No hay una ruta seleccionada")
         elif(self.formguardar.text()==""):
-            print("no hay nombre de archivo")
+            #print("no hay nombre de archivo")
+            self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
             rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + "/" + self.formguardar.text() + ".pkl"
             joblib.dump(modeloEntrenado, rutaGuardarModelo)
