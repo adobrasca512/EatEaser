@@ -912,15 +912,16 @@ class modelos:
 
 
 class modelosTFIDF:
-    def __init__(self, df):
+    def __init__(self, df,features_mod):
         self.df=df
-        self.tfidf()
+        self.tfidf(features_mod)
+    
         
-    def tfidf(self):
+    def tfidf(self,features_mod):
         hola=[]
         for i,j in enumerate(self.df['receta']):
             hola.append(" ".join(j))
-        self.vectorizers= TfidfVectorizer(max_features=4000)    
+        self.vectorizers= TfidfVectorizer(max_features=features_mod)    
         self.vect = self.vectorizers.fit_transform(hola)
         arr=self.vect.toarray()
         variable=self.vectorizers.get_feature_names()
@@ -1553,27 +1554,6 @@ class Train(QWidget):
         print(df['clasif'].unique())
     
         return df
-            
-    def realizar_alogritmo(self):
-        
-        modelo=modelosTFIDF(self.df1)
-        
-        
-        if(self.algoritmo_clicked=="SVM"):
-            #self.seleccionados
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_SVM()
-            print('SVM')
-        elif(self.algoritmo_clicked=="MR"):
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RegresionMultinomial()
-            print('MR')
-        elif(self.algoritmo_clicked=="RM"):  
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RF()
-            print('RM')
-           
-    
-   
-        
-        
         
         
         
@@ -1591,7 +1571,7 @@ class Train(QWidget):
         else:
             
             self.df1=self.crearDF()
-            modelo=modelosTFIDF(self.df1)
+            modelo=modelosTFIDF(self.df1,7000)
             
             if(self.algoritmo_clicked=="SVM"):
                 #self.seleccionados
@@ -1606,7 +1586,7 @@ class Train(QWidget):
             
             print(self.df1.head())
             
-            
+            print("El modelo ha sido entrenado correctamente! :)")
             
             #verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
@@ -2029,9 +2009,10 @@ class Test(QWidget):
         else:
             self.cargarModeloTest()
             modelo=self.modelo_entrenado
+            numeroFeature=modelo.n_features_in_
             df_completo=self.cargarDF_Completo()
             rutaCarpetaTesting=self.nombrecarpetaTestosTest+"/" #"c:/ddjashdashdjkash/../carpeta testing"
-            mod=modelosTFIDF(df_completo)
+            mod=modelosTFIDF(df_completo,numeroFeature)
             print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(rutaCarpetaTesting))
             prediccion=mod.predecir_Carpeta(rutaCarpetaTesting,modelo)
             print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
