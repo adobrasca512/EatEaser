@@ -912,15 +912,16 @@ class modelos:
 
 
 class modelosTFIDF:
-    def __init__(self, df):
+    def __init__(self, df,features_mod):
         self.df=df
-        self.tfidf()
+        self.tfidf(features_mod)
+    
         
-    def tfidf(self):
+    def tfidf(self,features_mod):
         hola=[]
         for i,j in enumerate(self.df['receta']):
             hola.append(" ".join(j))
-        self.vectorizers= TfidfVectorizer(max_features=4000)    
+        self.vectorizers= TfidfVectorizer(max_features=features_mod)    
         self.vect = self.vectorizers.fit_transform(hola)
         arr=self.vect.toarray()
         variable=self.vectorizers.get_feature_names()
@@ -1519,38 +1520,43 @@ class Train(QWidget):
             self.ltitulo.setText(titulo)
             self.ldescrip.setText(descripcion)
     #FUNCION PARA REALIZAR EL ALGORITMO
-    def realizar_alogritmo(self):
-        self.df['receta']=None
-        self.df['clasif']=None
+    
+    def crearDF(self):
+        
+        df=pd.DataFrame()
+        df['receta']=None
+        df['clasif']=None
         procesarDocs=ProcesarDocumentos()
         listaTextosCarpeta=procesarDocs.lectura()
-        for index,content in enumerate(listaTextosCarpeta):
-            for i in range(len(content)):
-                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
-                self.df=self.df.append({'receta':text,'clasif':index},ignore_index=True)
+        diccionarioCarpetas={'Carpeta Arroz':0,'Carpeta Bebidas':1,'Carpeta Carnes':2,
+                             'Carpeta Marisco':3,'Carpeta Pasta':4,'Carpeta Pescados':5,
+                             'Carpeta Platos Menores':6,'Carpeta Verduras':7}
         
         
+        print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
+        print(self.seleccionados[0])
+        seleccion=[]
+        for i in range(len(self.seleccionados)):
+            seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
         
-        for index,content in enumerate(listaTextosCarpeta):
-            if sel[index]=='1':
-                for i in range(len(content)):
-                    text=p.tratamientoTextos(listaTextosCarpeta[index][i])
-                    df=df.append({'receta':text,'clasif':index},ignore_index=True)
         
-        modelo=modelosTFIDF(self.df)
-        return modelo
-        
-        if(self.algoritmo_clicked=="SVM"):
-            #self.seleccionados
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_SVM()
-            print('SVM')
-        elif(self.algoritmo_clicked=="MR"):
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RegresionMultinomial()
-            print('MR')
-        elif(self.algoritmo_clicked=="RM"):  
-            self.modeloEntrenadoFinal=self.modeloTfIdfEjecucion.Entrenar_RF()
-            print('RM')
             
+        
+        
+        
+        
+        for index,content in enumerate(listaTextosCarpeta):
+            if index in seleccion:
+                for i in range(len(content)):
+                    text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
+                    df=df.append({'receta':text,'clasif':index},ignore_index=True)
+                    
+        print(df['clasif'].unique())
+    
+        return df
+        
+        
+        
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -1563,6 +1569,25 @@ class Train(QWidget):
 
             self.mensaje_error('Campos vacios.')
         else:
+            
+            self.df1=self.crearDF()
+            modelo=modelosTFIDF(self.df1,7000)
+            
+            if(self.algoritmo_clicked=="SVM"):
+                #self.seleccionados
+                self.modeloEntrenadoFinal=modelo.Entrenar_SVM()
+                print('SVM')
+            elif(self.algoritmo_clicked=="MR"):
+                self.modeloEntrenadoFinal=modeloTfIdfEjecucion.Entrenar_RegresionMultinomial()
+                print('MR')
+            elif(self.algoritmo_clicked=="RM"):  
+                self.modeloEntrenadoFinal=modeloTfIdfEjecucion.Entrenar_RF()
+                print('RM')
+            
+            print(self.df1.head())
+            
+            print("El modelo ha sido entrenado correctamente! :)")
+            
             #verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
@@ -1656,7 +1681,7 @@ class Train(QWidget):
             self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
             rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + "/" + self.formguardar.text() + ".pkl"
-            joblib.dump(modeloEntrenado, rutaGuardarModelo)
+            joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
 
 
@@ -1894,31 +1919,39 @@ class Test(QWidget):
         r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
         self.varableRutaModeloEntrenado = r[0]
         #print(self.varableRutaModeloEntrenado)
-        
-    def setData(self):
+     
+    
+    def cargarModeloTest(self):
         if(self.varableRutaModeloEntrenado!=""):
             print("modelo cargado")
-            modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
-        self.tableWidget.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
-        self.tableWidget.setColumnCount(3)
-        self.info.ruta=os.listdir(self.cbcategoria.placeholderText())
-        self.info.carpeta_seleccionada=self.cbcategoria.placeholderText()
-        self.tableWidget.setHorizontalHeaderLabels(["Texto", "Categoria", "Ver Texto"])
-        header = self.tableWidget.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+            
+            self.modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
+            self.tableWidget.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
+            self.tableWidget.setColumnCount(3)
+            self.info.ruta=os.listdir(self.cbcategoria.placeholderText())
+            self.info.carpeta_seleccionada=self.cbcategoria.placeholderText()
+            self.tableWidget.setHorizontalHeaderLabels(["Texto", "Categoria", "Ver Texto"])
+            header = self.tableWidget.horizontalHeader()
+            header.setSectionResizeMode(0, QHeaderView.Stretch)
+            header.setSectionResizeMode(1, QHeaderView.Stretch)
+            header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+            self.nombrecarpetaTestosTest= "".join(self.cbcategoria.placeholderText())
+            self.nombrecarpeta=self.cbcategoria.placeholderText().split('/')[-1]
+    
+    def setData(self):
+        
+        
+        
         i=0
 
-        self.nombrecarpetaTestosTest= "".join(self.cbcategoria.placeholderText())
-        self.nombrecarpeta=self.cbcategoria.placeholderText().split('/')[-1]
+        
         for key in os.listdir(self.cbcategoria.placeholderText()):
             boton=QPushButton()
             self.ver.addButton(boton)
             self.ver.setId(boton,i)
             boton.setIcon(QIcon('imagenes/ojo.png'))
             self.tableWidget.setItem(i,0,QTableWidgetItem(key))
-            self.tableWidget.setItem(i, 1, QTableWidgetItem('key'))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem("{}".format(self.prediccion[i])))
             self.tableWidget.setCellWidget(i, 2, boton)
             i=i+1
 
@@ -1948,6 +1981,20 @@ class Test(QWidget):
             buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
             defaultButton=QMessageBox.Discard,
         )
+    
+    def cargarDF_Completo(self):
+        import pandas as pd
+        df=pd.DataFrame()
+        df['receta']=None
+        df['clasif']=None
+        procesarDocs=ProcesarDocumentos()
+        listaTextosCarpeta=procesarDocs.lectura()
+        for index,content in enumerate(listaTextosCarpeta):
+            for i in range(len(content)):
+                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
+                df=df.append({'receta':text,'clasif':index},ignore_index=True)
+        return df
+        
     def vista_previa(self):
         self.vista.setText('')
         i = 0
@@ -1960,16 +2007,32 @@ class Test(QWidget):
 
             self.mensaje_error('Campos vacios.')
         else:
-            mod=modelosTFIDF()
-            print(self.nombrecarpetaTestosTest)
+            self.cargarModeloTest()
+            modelo=self.modelo_entrenado
+            numeroFeature=modelo.n_features_in_
+            df_completo=self.cargarDF_Completo()
+            rutaCarpetaTesting=self.nombrecarpetaTestosTest+"/" #"c:/ddjashdashdjkash/../carpeta testing"
+            mod=modelosTFIDF(df_completo,numeroFeature)
+            print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(rutaCarpetaTesting))
+            prediccion=mod.predecir_Carpeta(rutaCarpetaTesting,modelo)
+            print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
+            diccionario={0:"Arroz",1:"Bebida" , 2:"Carne" , 3:"Marisco",4:"Pasta",5:"Pescado",6:"Platos menores",7:"Verdura"}
+            resultado=[]
+            for i in prediccion:
+                resultado.append(diccionario[i])
+            self.prediccion=resultado
+            self.setData()
+            # carpeta de entrenamiento
+            # Vectorizer
+            # usar metodo para predecir
             #si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
             #mod.predecir_Carpeta(self.nombrecarpetaTestosTest, varableRutaModeloEntrenado)
-            self.setData()
+            
             size = len(os.listdir(self.cbcategoria.placeholderText()))
-
+                
             self.total_archivos = size
             texto=self.nombrecarpeta + ': ' + str(size) + ' archivos\n'
-
+            
 
 
 
@@ -2234,7 +2297,7 @@ class App(QtWidgets.QMainWindow):
                 imagen.setScaledContents(True)
 
             cont = cont + 1
-
+            
     def buscar_recetas(self,categoria):
         j = 0
         fila = 2
