@@ -1273,7 +1273,7 @@ class Index(QtWidgets.QMainWindow):
                                                                 'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
                                                                 'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
                                                                 True, False, 'descarga.png'))
-        self.acceder.clicked.connect(self.openTrain)
+        self.acceder.clicked.connect(self.openWindow)
     def menuClicked(self, titulo, descripcion, acceder, widgets,dir):
         self.titulo.setText(titulo)
         self.descripcion.setText(descripcion)
@@ -1302,7 +1302,7 @@ class Index(QtWidgets.QMainWindow):
         boton.setIcon(QIcon('imagenes/' + nombre))
         boton.setIconSize(QSize(200, 200))
         boton.setStyleSheet('background-color:transparent;')
-    def openTrain(self):
+    def openWindow(self):
         if self.state=='Fase de Entrenamiento':
             self.gui = Train()
             self.gui.show()
@@ -1759,7 +1759,7 @@ class Test(QWidget):
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
         self.formguardar = QLineEdit()
-        self.lform = QLabel("Guardar modelo:")
+        self.lform = QLabel("Guardar Resultados:")
         self.lform.setStyleSheet(sform)
 
         # aniadimos los widgets a guardar
