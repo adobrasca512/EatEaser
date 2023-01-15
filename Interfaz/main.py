@@ -811,6 +811,7 @@ class modelosTFIDF:
         #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
         self.M_mult=M_mult
         #print("CV -> {}".format(cv)) 
+        return self.M_mult
     
     def predecir_RF(self,txt):
         
@@ -951,7 +952,7 @@ class Index(QtWidgets.QMainWindow):
         self.personalizar_boton(self.juancar, 'juancar.jpeg')
         self.personalizar_boton(self.adi, 'adi.jpeg')
         self.personalizar_boton(self.carlos, 'carlos.jpeg')
-        self.personalizar_boton(self.rober, 'rober.jpeg')
+        self.personalizar_boton(self.rober, 'rober.jpg')
         self.acceder.setVisible(False)
         self.icono.setVisible(False)
         self.apagar_widgets(False)
@@ -1289,9 +1290,9 @@ class Train(QWidget):
             elif(self.algoritmo_clicked=="MR"):
                 self.modeloEntrenadoFinal=modelo.Entrenar_RegresionMultinomial()
                 print('MR')
-            elif(self.algoritmo_clicked=="RM"):  
+            elif(self.algoritmo_clicked=="RF"):  
                 self.modeloEntrenadoFinal=modelo.Entrenar_RF()
-                print('RM')
+                print('RF')
             
             print(self.df1.head())
             
