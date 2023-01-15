@@ -178,9 +178,10 @@ except ModuleNotFoundError:
 
 
 
+
 class ControladorVideo:
     def __init__(self,enlace): 
-        fb=Firebase('Interfaz/recetastextos/')
+        fb=Firebase('recetastextos/')
         self._idvideo = fb.reenumerar()
         self.enlacevideo=enlace
         self.yt=YouTube(self.enlacevideo)
@@ -230,50 +231,54 @@ class ControladorVideo:
     def data_json(self):
         return {"id":self._idvideo, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)}
     def indexar_datos(self):
-        return self.rec.indexar_datos("Interfaz/recetastextos/indice.json",{"id":self._idvideo+1, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)})
+        return self.rec.indexar_datos("recetastextos/indice.json",{"id":self._idvideo+1, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)})
     """|REPETIDO:Nos dice si el video ya se encuentra en nuestra bd
        |fileName: nombre del json
        |key: llave en donde queremos encontrar lo que buscamos
        |buscar: elemento que estamos buscando"""
     def repetido(self):
-        return self.rec.buscar_json('Interfaz/recetastextos/indice.json','nombre',self.titulovideo)
+        return self.rec.buscar_json('recetastextos/indice.json','nombre',self.titulovideo)
 
 
 class Depurador:
     
-    def __init__(self): 
+    def __init__(self,enlace):
         self.rec=RecursosAdicionales()
+        self.enlace=enlace
+        self.cv = ControladorVideo(self.enlace)
     """|VIDEO: proceso etl donde extraemos al informacion del video 
        |enlace: es un string que se colocara el enlace del video"""
-       
+
+
     def filtroDescarga(self, enlace_txtbox):
-        if(re.search("\/playlist\?", enlace_txtbox)):
+        if(re.search("/playlist?", enlace_txtbox)):
             self.lista(enlace_txtbox)
         else:
             self.video(enlace_txtbox)
-    def video(self,enlace):
+
+    def video(self):
         try:
             #instanciamos el controlador de videos
-            cv=ControladorVideo(enlace)
-            fb=Firebase('Interfaz/recetastextos/')
+            self.cv=ControladorVideo(self.enlace)
+            fb=Firebase('recetastextos/')
             
             #paso 1: verificamos si existe en la database
-            if fb.validar_database(cv.titulovideo)==False:
+            if fb.validar_database(self.cv.titulovideo)==False:
                 #paso 2: guardamos en database datos principales
                 
                 #paso 3: descargamos el video
-                cv.nombrevideo=cv.descargarVideoURL()
-                print("id: "+str(cv._idvideo))
-                fb.guardar_database(cv.data_json(),cv._idvideo)
+                self.cv.nombrevideo=self.cv.descargarVideoURL()
+                print("id: "+str(self.cv._idvideo))
+                fb.guardar_database(self.cv.data_json(),self.cv._idvideo)
                 #paso 4: pasamos el video a .wav
-                nombre=cv.parseoVideo(cv.nombrevideo)
+                nombre=self.cv.parseoVideo(self.cv.nombrevideo)
                 #paso 5: evaluamos los silencios 
                 try:                
                     num_segm=self.rec.segcionarXsilencios(nombre)
                     result=""
                     for i in range(num_segm):
                         try:
-                            result=result+str(cv.speech_text("../temp_audios/{}_extracto{}.wav".format(nombre,i+1)))
+                            result=result+str(self.cv.speech_text("../temp_audios/{}_extracto{}.wav".format(nombre,i+1)))
                             result=result+" "
                         except BaseException:
                             logging.exception("An exception was thrown!")
@@ -289,22 +294,22 @@ class Depurador:
                     self.rec.eliminacion_audio("temp_audios","wav")
                     try:
                         quitarEmojis = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 'NULL')
-                        tituloSinEmojis=cv.titulovideo.translate(quitarEmojis)
-                        autorSinEmojis=cv.autorvideo.translate(quitarEmojis)
+                        tituloSinEmojis=self.cv.titulovideo.translate(quitarEmojis)
+                        autorSinEmojis=self.cv.autorvideo.translate(quitarEmojis)
                         #paso 7: escribimos el texto recibido en un txt->se guarda en local
-                        resultado=self.rec.escritura(cv.nombrevideo,"Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(cv.fechavideo)+"\n"+"Enlace: "+str(cv.enlacevideo)+"\n"+"Entradilla:"+result)
+                        resultado=self.rec.escritura(self.cv.nombrevideo,"Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(self.cv.fechavideo)+"\n"+"Enlace: "+str(self.cv.enlacevideo)+"\n"+"Entradilla:"+result)
                         #paso 8: guardamos el texto en una base de datos
-                        fb.guardar_firebase(cv.nombrevideo+'.txt')
+                        fb.guardar_firebase(self.cv.nombrevideo+'.txt')
                         #paso 9: eliminamos los mp4
                         self.rec.eliminacion_audio("recetasvideos","mp4")
                     except BaseException:
                         logging.exception("An exception was thrown!")
-                        print("No se ha podido eliminar los caracteres corruptos el video: "+ cv.nombrevideo + " - "+ cv.titulovideo)
+                        print("No se ha podido eliminar los caracteres corruptos el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo)
                         self.rec.eliminacion_audio("recetasvideos","mp4")
                         return None   
                 except BaseException:
                     logging.exception("An exception was thrown!")
-                    print("No se ha podido transcribir el video: "+ cv.nombrevideo + " - "+ cv.titulovideo+" - "+cv.enlacevideo)
+                    print("No se ha podido transcribir el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo+" - "+self.cv.enlacevideo)
                     self.rec.eliminacion_audio("recetasvideos","mp4")
                     self.rec.eliminacion_audio("temp_audios","wav")
                     return None
@@ -314,7 +319,7 @@ class Depurador:
             return resultado
         except BaseException:
             logging.exception("An exception was thrown!")
-            print("No se ha podido descargar el video: "+ cv.nombrevideo + " - "+ cv.titulovideo)
+            print("No se ha podido descargar el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo)
             return None
     def lista(self, enlace):
         playlist_urls = Playlist(enlace)
@@ -327,7 +332,7 @@ class RecursosAdicionales:
        |nombre: nombre del 
        |return: devuelve el audio en texto"""    
     def escritura(self,nombre,texto):
-        recetasTextos = './Interfaz/recetastextos/'
+        recetasTextos = 'recetastextos/'
         if not(os.path.exists(recetasTextos)):
             os.mkdir(recetasTextos)
         f = open(recetasTextos+nombre+'.txt', 'w')
@@ -570,182 +575,7 @@ class ProcesarDocumentos:
 
 
 
-class modelos:
-    def __init__(self):
-        self.preprocesamiento()
-     
-    def preprocesamiento(self):
-        
-        #Se crea la función que vectoriza los array de las recetas (calcula la frecuencia de las palabras) lo que
-        #convierte una lista de palabras en un array de frecuencias
-        self.vectorizer = CountVectorizer(analyzer = "word",  tokenizer = None, preprocessor = None,  stop_words = None,  max_features = 10000) 
 
-        #Se separa el set de datos en datos de entrenamiento y de testeo. En este caso se divide en 80%-20%
-        #Creandose 4 variables -> 
-        #X_train: Conjunto de recetas de entrenamiento (X_cv: en el testeo) 
-        #Y_train: clasificación de las recetas en los datos de entrenamiento (Y_cv: en el testeo)    
-        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(df["receta"], df["clasif"], test_size = 0.2, random_state=42)
-        self.Y_train=list(self.Y_train)
-
-        #Ahora vecrtorizamos X_train y X_cv para poder meterlo en el modelo de clasificación
-        #Set de entrenamiento
-        arrayTemp=[]
-        for i,j in enumerate(self.X_train):           #El fit_transform funciona con string de frases enteras y automáticamente tokeniza las palabras por lo que hayq ue volver a juntar las palabras en una frase
-            arrayTemp.append(" ".join(j))
-        self.X_train = self.vectorizer.fit_transform(arrayTemp)
-        self.X_train = self.X_train.toarray()
-
-        #Set de testeo
-        arrayTemp=[]
-        for i,j in enumerate(self.X_cv):
-            arrayTemp.append(" ".join(j))
-        self.X_cv = self.vectorizer.transform(arrayTemp)
-        self.X_cv = self.X_cv.toarray()
-        self.Y_train=list(self.Y_train)
-        self.Y_cv=list(self.Y_cv)
-        
-    def Entrenar_RF(self):
-        # Grid de hiperparámetros evaluados
-        # ==============================================================================
-        
-        print(self.X_train.shape)
-        param_grid = ParameterGrid(
-                        {'n_estimators': [1000],
-                         'max_features': [5, 7, 9],
-                         'max_depth'   : [None, 3, 10, 20],
-                         'criterion'   : ['gini', 'entropy']
-                        }
-                    )
-
-        # Loop para ajustar un modelo con cada combinación de hiperparámetros
-        # ==============================================================================
-        resultados = {'params': [], 'oob_accuracy': []}
-
-        for params in param_grid:
-
-            modelo = RandomForestClassifier(
-                        oob_score    = True,
-                        n_jobs       = -1,
-                        random_state = 123,
-                        ** params
-                     )
-
-            modelo.fit(self.X_train, self.Y_train)
-
-            resultados['params'].append(params)
-            resultados['oob_accuracy'].append(modelo.oob_score_)
-            print(f"Modelo: {params} \u2713")
-
-        # Resultados
-        # ==============================================================================
-        resultados = pd.DataFrame(resultados)
-        resultados = pd.concat([resultados, resultados['params'].apply(pd.Series)], axis=1)
-        resultados = resultados.sort_values('oob_accuracy', ascending=False)
-        resultados = resultados.drop(columns = 'params')
-        print(resultados.head(4))
-        
-        '''
-        self.forest = RandomForestClassifier() 
-        self.forest = self.forest.fit(self.X_train, self.Y_train)
-
-        predictions = self.forest.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        '''
-        
-    def Entrenar_RF_CV(self):
-        # Grid de hiperparámetros evaluados
-        # ==============================================================================
-        param_grid = {'n_estimators': [150],
-                      'max_features': [5, 7, 9],
-                      'max_depth'   : [None, 3, 10, 20],
-                      'criterion'   : ['gini', 'entropy']
-                     }
-
-        # Búsqueda por grid search con validación cruzada
-        # ==============================================================================
-        grid = GridSearchCV(
-                estimator  = RandomForestClassifier(random_state = 123),
-                param_grid = param_grid,
-                scoring    = 'accuracy',
-                n_jobs     = multiprocessing.cpu_count() - 1,
-                cv         = RepeatedKFold(n_splits=5, n_repeats=3, random_state=123), 
-                refit      = True,
-                verbose    = 0,
-                return_train_score = True
-               )
-
-        grid.fit(X = self.X_train, y = self.Y_train)
-
-        # Resultados
-        # ==============================================================================
-        resultados = pd.DataFrame(grid.cv_results_)
-        resultados.filter(regex = '(param*|mean_t|std_t)') \
-            .drop(columns = 'params') \
-            .sort_values('mean_test_score', ascending = False) \
-            .head(4)
-        
-        # Mejores hiperparámetros por validación cruzada
-        # ==============================================================================
-        print("----------------------------------------")
-        print("Mejores hiperparámetros encontrados (cv)")
-        print("----------------------------------------")
-        print(grid.best_params_, ":", grid.best_score_, grid.scoring)
-        
-        self.modelo_final = grid.best_estimator_
-        
-        '''
-        self.forest = RandomForestClassifier() 
-        self.forest = self.forest.fit(self.X_train, self.Y_train)
-
-        predictions = self.forest.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        '''
-        
-        
-    def predecir_RF(self,txt):
-        
-        self.pred = self.vectorizer.transform(txt)
-        self.pred = self.pred.toarray()
-        predictions = self.forest.predict(self.pred) 
-        #print("resultado: " , predictions)
-        return list(predictions)
-    def predecir_Carpeta(self,txt):
-        
-        p=ProcesarDocumentos()
-        carpeta=p.resultadoStringCarpeta(txt)
-
-        resultados=[]
-        for i in range(len(carpeta)):
-            text=p.tratamientoTextos(carpeta[i])
-            hey=[" ".join(text)]
-            resultados.append(self.predecir_RF(hey))
-        #print("Resultados: {}".format(resultados))
-        
-        resultados=[]
-        for i in range(len(carpeta)):
-            text=p.tratamientoTextos(carpeta[i])
-            hey=" ".join(text)
-            resultados.append(hey)
-        self.pred1 = self.vectorizer.transform(resultados)
-        self.pred1 = self.pred1.toarray()
-        predictions = self.forest.predict(self.pred1) 
-        #print("resultado: " , predictions)
-        return predictions
-        
-    def Entrenar_KNN(self):  
-        #self.preprocesamiento()
-        
-
-        vecinos = KNeighborsClassifier() 
-        vecinos = vecinos.fit(self.X_train, self.Y_train)
-
-        predictions = vecinos.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-
-    
     def Entrenar_SVM(self):  
         #self.preprocesamiento()
         
@@ -781,133 +611,6 @@ class modelos:
 
         # Prediction performance on test set is not as good as on train set
         print("mi score".format(clf.score(self.X_cv, self.Y_cv)))      
-
-    def Entrenar_Bayes(self):  
-        
-        #Create a svm Classifier
-        gaus = GaussianNB() # Linear Kernel
-
-        #Train the model using the training sets
-        gaus.fit(self.X_train, self.Y_train)
-        
-
-        predictions = gaus.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        
-        cv=cross_val_score(gaus, self.X_train, self.Y_train, cv=10)
-        
-        print("CV -> {}".format(cv))   
-        
-    
-    def regresionMultinomial(self):
-        
-        model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
-        model.fit(self.X_train, self.Y_train)
-        
-
-        predictions = model.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        
-        cv=cross_val_score(model, self.X_train, self.Y_train, cv=10)
-        
-        print("CV -> {}".format(cv)) 
-    def Entrenar_RedNeuronal(self):
-        
-        xtrain=[]
-        for i in range(len(self.X_train)):     
-            xtrain.append(list(self.X_train[i]))
-        #xtrain=np.array(xtrain)
-
-        xcv=[]
-        for i in range(len(self.X_cv)):     
-            xcv.append(list(self.X_cv[i]))
-        #xcv=np.array(xcv)
-        #Y_train=np.array(Y_train)
-        #Y_cv=np.array(Y_cv)
-
-
-        print(type(xtrain))
-        print(type(self.Y_train))
-        print(type(xcv))
-        print(type(self.Y_cv))
-        
-        
-        clear_session()
-        
-
-        #input_dim = xtrain.shape[1] #.shape[0]  # Number of features
-        input_dim= len(xtrain[0])
-        model = Sequential()
-        model.add(layers.Dense(7, input_dim=input_dim, activation='relu'))
-        model.add(layers.Dense(1, activation='sigmoid'))
-        '''
-        model.compile(loss='mean_squared_error',
-              optimizer='adam',
-              metrics=['binary_accuracy'])
-        
-        '''
-        
-        loss_fn = tf.keras.losses.MeanSquaredError(reduction='sum_over_batch_size')
-        model.compile(loss=loss_fn, 
-                       optimizer='adam', 
-                       metrics=['accuracy'])
-        
-        print(model.summary())
-
-        xtrain2=[]
-        for i in range(len(xtrain)):
-            temp=[]
-            for j in range(len(xtrain[i])):
-                temp.append(int(xtrain[i][j]))
-            xtrain2.append(temp)
-        
-        xcv2=[]
-        for i in range(len(xcv)):
-            temp=[]
-            for j in range(len(xcv[i])):
-                temp.append(int(xcv[i][j]))
-            xcv2.append(temp)
-            
-        ytrain2=[]
-        for i in range(len(self.Y_train)):
-            ytrain2.append(int(self.Y_train[i]))
-            
-        ycv2=[]
-        for i in range(len(self.Y_cv)):
-            ycv2.append(int(self.Y_cv[i]))
-            
-        print(type(xtrain2[0][0]))    
-        self.xtrain2=xtrain2        
-        self.xtrain=xtrain
-        '''
-        history = model.fit(xtrain2, self.Y_train,
-                     epochs=10,
-                     verbose=False,
-                     validation_data=(xcv, self.Y_cv),
-                     batch_size=10)
-        '''
-        history = model.fit(xtrain2, ytrain2,
-                     epochs=10,
-                     verbose=False,
-                     validation_data=(xcv2, ycv2),
-                     batch_size=10)
-
-        
-        clear_session()
-        '''
-        loss, accuracy = model.evaluate(xtrain, self.Y_train, verbose=False)
-        print("Training Accuracy: {:.4f}".format(accuracy))
-        loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
-        print("Testing Accuracy:  {:.4f}".format(accuracy))
-        '''
-        loss, accuracy = model.evaluate(xtrain2, ytrain2, verbose=False)
-        print("Training Accuracy: {:.4f}".format(accuracy))
-        loss, accuracy = model.evaluate(xcv2, ycv2, verbose=False)
-        print("Testing Accuracy:  {:.4f}".format(accuracy))
 
 
 
@@ -1321,7 +1024,13 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             QApplication.restoreOverrideCursor()
             self.close()
-            
+        if self.state == 'Descargar':
+            #QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.gui = Download()
+            self.gui.show()
+            self.gui.showMaximized()
+            #QApplication.restoreOverrideCursor()
+            self.close()
 class Train(QWidget):
     def __init__(self):
         super().__init__()
@@ -2158,34 +1867,83 @@ class Download(QtWidgets.QMainWindow):
         super(Download, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('download.ui', self)
+        self.info = self.Informacion()
         self.grid = self.findChild(QGridLayout, 'grid_descargas')
-        col=0
-        fila=0
+        
+        self.btn_descarga=self.findChild(QPushButton,'descarga')
+        self.enlace = self.findChild(QLineEdit, 'enlace')
+        self.volver = self.findChild(QPushButton, 'volver')
+        self.btn_descarga.clicked.connect(self.descargar)
+        self.volver.clicked.connect(self.volver_)
+        self.btn_group=QButtonGroup()
+        self.btn_group.buttonClicked[int].connect(self.info.setTexto)
+    class Informacion(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            # Cargamos el .ui file
+            uic.loadUi('vista.ui', self)
+
+            rc=RecursosAdicionales()
+            self.texto = self.findChild(QLabel, 'texto')
+            self.nombre = self.findChild(QLabel, 'nombre')
+
+            self.copiar = self.findChild(QPushButton, 'copiar')
+            self.copiar.clicked.connect(self.copiar_)
+        def setTexto(self,id):
+            with open('recetastextos/receta' + str(id) + '.txt', "r") as archivo:
+                for linea in archivo:
+                    resultado=linea
+            self.texto.setText(resultado)
+            self.nombre.setText('receta' + str(id) + '.txt')
+            self.show()
+            width = 900
+            height = 500
+            self.setFixedSize(width, height)
+        def copiar_(self):
+            clipboard.copy(self.texto.text())
+
+
+
+    def volver_(self):
+        self.gui = Index()
+        self.gui.show()
+        self.gui.showMaximized()
+        self.close()
+    def descargar(self):
+        col = 0
+        fila = 0
+        print(self.enlace.text())
+        dp = Depurador(self.enlace.text())
+        dp.filtroDescarga()
+
         for i in range(4):
-            print(fila)
-            if(col<4):
+
+            if (col <4):
 
                 frame = QFrame()
                 self.grid.addWidget(frame, fila, col)
+
                 frame_grid = QVBoxLayout()
+
                 frame.setLayout(frame_grid)
                 grid_titulo = QVBoxLayout()
                 grid_boton = QVBoxLayout()
                 frame_grid.addLayout(grid_titulo)
-                titulo=QLabel('Titulo de video')
+                titulo = QLabel(dp.cv.nombrevideo)
                 titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
                 grid_titulo.addWidget(titulo)
                 frame_grid.addLayout(grid_boton)
-                ver=QPushButton('Ver texto')
-                ver.setStyleSheet('background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
-                ver.setFixedSize(100,60)
+                ver = QPushButton('Ver texto')
+                self.btn_group.addButton(ver,dp.cv._idvideo)
+                ver.setStyleSheet(
+                    'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                ver.setFixedSize(100, 60)
                 grid_boton.addWidget(ver)
                 frame.setStyleSheet('background-color:white;border-radius:20px;')
-                col=col+1
+                col = col + 1
             else:
-                col=0
-                fila=fila+1
-
+                col = 0
+                fila = fila + 1
 
 class App(QtWidgets.QMainWindow):
     def __init__(self):
@@ -2379,4 +2137,5 @@ if __name__=='__main__':
     gui.showMaximized()
 
     sys.exit(app.exec_())
+
 
