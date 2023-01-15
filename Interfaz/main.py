@@ -250,11 +250,11 @@ class Depurador:
        |enlace: es un string que se colocara el enlace del video"""
 
 
-    def filtroDescarga(self, enlace_txtbox):
-        if(re.search("/playlist?", enlace_txtbox)):
-            self.lista(enlace_txtbox)
+    def filtroDescarga(self):
+        if(re.search("/playlist?", self.enlace)):
+            self.lista()
         else:
-            self.video(enlace_txtbox)
+            self.video()
 
     def video(self):
         try:
@@ -321,8 +321,8 @@ class Depurador:
             logging.exception("An exception was thrown!")
             print("No se ha podido descargar el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo)
             return None
-    def lista(self, enlace):
-        playlist_urls = Playlist(enlace)
+    def lista(self):
+        playlist_urls = Playlist(self.enlace)
         for url in playlist_urls:
             self.video(url)
 
