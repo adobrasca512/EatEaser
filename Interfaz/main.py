@@ -1287,10 +1287,10 @@ class Train(QWidget):
                 self.modeloEntrenadoFinal=modelo.Entrenar_SVM()
                 print('SVM')
             elif(self.algoritmo_clicked=="MR"):
-                self.modeloEntrenadoFinal=modeloTfIdfEjecucion.Entrenar_RegresionMultinomial()
+                self.modeloEntrenadoFinal=modelo.Entrenar_RegresionMultinomial()
                 print('MR')
             elif(self.algoritmo_clicked=="RM"):  
-                self.modeloEntrenadoFinal=modeloTfIdfEjecucion.Entrenar_RF()
+                self.modeloEntrenadoFinal=modelo.Entrenar_RF()
                 print('RM')
             
             print(self.df1.head())
