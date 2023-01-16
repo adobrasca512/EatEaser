@@ -159,7 +159,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Juan Carlos Rondeau</string>
+                   <string>JuanCar Rondeau</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -244,7 +244,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Carlos Gonzales</string>
+                   <string>Carlos González</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
