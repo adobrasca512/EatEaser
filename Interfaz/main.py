@@ -1,4 +1,3 @@
-import mmap
 import os
 import sys
 import shutil
@@ -12,19 +11,11 @@ from PyQt5.QtWidgets import *
 
 
 import glob
-import os
 import re
 import requests
-import pathlib
-import sys
 import logging
 import json
-import joblib
-import warnings
-import math
-import random
 import multiprocessing
-from random import shuffle
 import subprocess
 import time
 
@@ -37,13 +28,11 @@ try:
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
-    from selenium.webdriver.common.action_chains import ActionChains
 except ModuleNotFoundError:
     install("selenium")
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
-    from selenium.webdriver.common.action_chains import ActionChains
 
 try:
     from webdriver_manager.chrome import ChromeDriverManager
@@ -69,11 +58,9 @@ except ModuleNotFoundError:
     import speech_recognition as sr
 try:
     from pydub import AudioSegment
-    from pydub.silence import split_on_silence
 except:
     install("pydub")
     from pydub import AudioSegment
-    from pydub.silence import split_on_silence
 try:
     import moviepy.editor as mp
 except:
@@ -85,11 +72,9 @@ except:
     install("beautifulsoup4")
     from bs4 import BeautifulSoup
 try:
-    from nltk.stem import PorterStemmer
     from nltk.tokenize import word_tokenize
 except:
     install("nltk")
-    from nltk.stem import PorterStemmer
     from nltk.tokenize import word_tokenize
 try:
     import pyrebase
@@ -99,15 +84,12 @@ except:
 try:
     import nltk
     nltk.download('stopwords')
-    from nltk.corpus import stopwords
     from nltk.stem.rslp import RSLPStemmer
     nltk.download('rslp')
 except:
     install("nltk")
     import nltk
-    # nltk.download('punkt')
     nltk.download('stopwords')
-    from nltk.corpus import stopwords
     from nltk.stem.rslp import RSLPStemmer
     nltk.download('rslp')
 try:
@@ -117,16 +99,11 @@ try:
     from sklearn.metrics import accuracy_score
     from sklearn.model_selection import ParameterGrid
     from sklearn.model_selection import GridSearchCV
-    from sklearn.feature_extraction.text import CountVectorizer
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn import svm
     from sklearn.model_selection import cross_val_score
     from sklearn.naive_bayes import GaussianNB
     from sklearn.linear_model import LogisticRegression
-    from sklearn.datasets import make_blobs
-    from sklearn.neural_network import MLPClassifier
-    from sklearn.model_selection import RandomizedSearchCV
-    from sklearn.model_selection import KFold
 except ModuleNotFoundError:
     install("scikit-learn")
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -135,28 +112,16 @@ except ModuleNotFoundError:
     from sklearn.metrics import accuracy_score
     from sklearn.model_selection import ParameterGrid
     from sklearn.model_selection import GridSearchCV
-    from sklearn.feature_extraction.text import CountVectorizer
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn import svm
     from sklearn.model_selection import cross_val_score
     from sklearn.naive_bayes import GaussianNB
     from sklearn.linear_model import LogisticRegression
-    from sklearn.datasets import make_blobs
-    from sklearn.neural_network import MLPClassifier
-    from sklearn.model_selection import RandomizedSearchCV
-    from sklearn.model_selection import KFold
 try:
     import numpy as np
-    from scipy import stats
 except ModuleNotFoundError:
     install("numpy")
     import numpy as np
-    from scipy import stats
-try:
-    import tensorflow as tf
-except ModuleNotFoundError:
-    install("tensorflow")
-    import tensorflow as tf
 try:
     from keras.models import Sequential
     from keras import layers
@@ -164,16 +129,6 @@ except ModuleNotFoundError:
     install("keras")
     from keras.models import Sequential
     from keras import layers
-try:
-    import matplotlib.pyplot as plt
-except ModuleNotFoundError:
-    install("matplotlib")
-    import matplotlib.pyplot as plt
-try:
-    import seaborn as sns
-except ModuleNotFoundError:
-    install("seaborn")
-    import seaborn as sns
 
 
 class ControladorVideo:
