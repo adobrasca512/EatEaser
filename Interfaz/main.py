@@ -1,9 +1,10 @@
+import mmap
 import os
 import sys
 import shutil
 import urllib.request
 import joblib
-#imports de la interfaz
+# imports de la interfaz
 from PyQt5 import QtCore, QtWidgets, QtGui, uic
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import *
@@ -30,7 +31,6 @@ import time
 
 def install(package):
     subprocess.check_call([os.sys.executable, "-m", "pip", "install", package])
-
 
 
 try:
@@ -96,7 +96,7 @@ try:
 except:
     install("pyrebase4")
     import pyrebase
-try:   
+try:
     import nltk
     nltk.download('stopwords')
     from nltk.corpus import stopwords
@@ -105,7 +105,7 @@ try:
 except:
     install("nltk")
     import nltk
-    #nltk.download('punkt')
+    # nltk.download('punkt')
     nltk.download('stopwords')
     from nltk.corpus import stopwords
     from nltk.stem.rslp import RSLPStemmer
@@ -176,79 +176,82 @@ except ModuleNotFoundError:
     import seaborn as sns
 
 
-
-
-
 class ControladorVideo:
-    def __init__(self,enlace): 
-        fb=Firebase('recetastextos/')
+    def __init__(self, enlace):
+        fb = Firebase('recetastextos/')
         self._idvideo = fb.reenumerar()
-        self.enlacevideo=enlace
-        self.yt=YouTube(self.enlacevideo)
-        self.nombrevideo=''
-        self.titulovideo=self.yt.title
-        self.autorvideo=self.yt.author
-        self.fechavideo=self.yt.publish_date
-        self.duracionvideo=self.yt.length
-        self.rec=RecursosAdicionales()
+        self.enlacevideo = enlace
+        self.yt = YouTube(self.enlacevideo)
+        self.nombrevideo = ''
+        self.titulovideo = self.yt.title
+        self.autorvideo = self.yt.author
+        self.fechavideo = self.yt.publish_date
+        self.duracionvideo = self.yt.length
+        self.rec = RecursosAdicionales()
     """|DESCARGAR VIDEO URL: descarga el video de youtube
        |return: devuelve una ruta absoluta"""
+
     def descargarVideoURL(self):
         recetasVideos = 'recetasvideos/'
-        #aqui creo un nuevo id para el nuevo video
-        self._idvideo= self._idvideo+1
-        #esta sera el archivo del video y su nuevo nombre
-        nombre='receta'+str(self._idvideo)
-        #le pedimos al pytube que solo nos descargue el audio y lo descargamos
-        t=self.yt.streams.filter(file_extension='mp4').first().download(output_path=recetasVideos,filename=nombre+'.mp4')
-        #devolvemos el nombre
+        # aqui creo un nuevo id para el nuevo video
+        self._idvideo = self._idvideo+1
+        # esta sera el archivo del video y su nuevo nombre
+        nombre = 'receta'+str(self._idvideo)
+        # le pedimos al pytube que solo nos descargue el audio y lo descargamos
+        t = self.yt.streams.filter(file_extension='mp4').first().download(
+            output_path=recetasVideos, filename=nombre+'.mp4')
+        # devolvemos el nombre
         return nombre
     """|PARSEO VIDEO: pasa el video de .mp4 a .wav
        |nombre: es un string que se colocara el nombre del video
        |return: devuelve el nuevo nombre del audio en .wav"""
-    def parseoVideo(self,nombre):
+
+    def parseoVideo(self, nombre):
         recetasVideos = 'recetasvideos/'
-        #tomamos el video en mp4 
+        # tomamos el video en mp4
         track = mp.VideoFileClip(recetasVideos+nombre+'.mp4')
-        #cambiamos el video a .wav
-        nombre_wav="{}.wav".format(nombre)
+        # cambiamos el video a .wav
+        nombre_wav = "{}.wav".format(nombre)
         track.audio.write_audiofile(recetasVideos+nombre_wav)
         track.close()
         return nombre
     """|SPEECH TEXT:Transforma el audio a texto
        |nombre: es un string que se colocara el nombre del video
        |return: devuelve un string con el texto devuelto"""
-    def speech_text(self,nombre):
+
+    def speech_text(self, nombre):
         recetasVideos = 'recetasvideos/'
-        #instanciamos el recognizer
+        # instanciamos el recognizer
         r = sr.Recognizer()
         audio = sr.AudioFile(recetasVideos+nombre)
         with audio as source:
             audio_file = r.record(source)
-        #transcribimos el audio a texto
-        result = r.recognize_google(audio_file, language = 'es-ES')
+        # transcribimos el audio a texto
+        result = r.recognize_google(audio_file, language='es-ES')
         return result
+
     def data_json(self):
-        return {"id":self._idvideo, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)}
+        return {"id": self._idvideo, "nombre": self.titulovideo, "autor": self.autorvideo, "fecha": str(self.fechavideo), "enlace": str(self.enlacevideo)}
+
     def indexar_datos(self):
-        return self.rec.indexar_datos("recetastextos/indice.json",{"id":self._idvideo+1, "nombre":self.titulovideo, "autor": self.autorvideo, "fecha":str(self.fechavideo),"enlace":str(self.enlacevideo)})
+        return self.rec.indexar_datos("recetastextos/indice.json", {"id": self._idvideo+1, "nombre": self.titulovideo, "autor": self.autorvideo, "fecha": str(self.fechavideo), "enlace": str(self.enlacevideo)})
     """|REPETIDO:Nos dice si el video ya se encuentra en nuestra bd
        |fileName: nombre del json
        |key: llave en donde queremos encontrar lo que buscamos
        |buscar: elemento que estamos buscando"""
+
     def repetido(self):
-        return self.rec.buscar_json('recetastextos/indice.json','nombre',self.titulovideo)
+        return self.rec.buscar_json('recetastextos/indice.json', 'nombre', self.titulovideo)
 
 
 class Depurador:
-    
-    def __init__(self,enlace):
-        self.rec=RecursosAdicionales()
-        self.enlace=enlace
+
+    def __init__(self, enlace):
+        self.rec = RecursosAdicionales()
+        self.enlace = enlace
         self.cv = ControladorVideo(self.enlace)
     """|VIDEO: proceso etl donde extraemos al informacion del video 
        |enlace: es un string que se colocara el enlace del video"""
-
 
     def esLista(self):
         if(re.search("/playlist?", self.enlace)):
@@ -258,69 +261,82 @@ class Depurador:
 
     def video(self):
         try:
-            #instanciamos el controlador de videos
-            self.cv=ControladorVideo(self.enlace)
-            fb=Firebase('recetastextos/')
-            
-            #paso 1: verificamos si existe en la database
-            if fb.validar_database(self.cv.titulovideo)==False:
-                #paso 2: guardamos en database datos principales
-                
-                #paso 3: descargamos el video
-                self.cv.nombrevideo=self.cv.descargarVideoURL()
+            # instanciamos el controlador de videos
+            self.cv = ControladorVideo(self.enlace)
+            fb = Firebase('recetastextos/')
+
+            # paso 1: verificamos si existe en la database
+            if fb.validar_database(self.cv.titulovideo) == False:
+                # paso 2: guardamos en database datos principales
+
+                # paso 3: descargamos el video
+                self.cv.nombrevideo = self.cv.descargarVideoURL()
                 print("id: "+str(self.cv._idvideo))
-                fb.guardar_database(self.cv.data_json(),self.cv._idvideo)
-                #paso 4: pasamos el video a .wav
-                nombre=self.cv.parseoVideo(self.cv.nombrevideo)
-                #paso 5: evaluamos los silencios 
-                try:                
-                    num_segm=self.rec.segcionarXsilencios(nombre)
-                    result=""
+                fb.guardar_database(self.cv.data_json(), self.cv._idvideo)
+                # paso 4: pasamos el video a .wav
+                nombre = self.cv.parseoVideo(self.cv.nombrevideo)
+                # paso 5: evaluamos los silencios
+                try:
+                    num_segm = self.rec.segcionarXsilencios(nombre)
+                    result = ""
                     for i in range(num_segm):
                         try:
-                            result=result+str(self.cv.speech_text("../temp_audios/{}_extracto{}.wav".format(nombre,i+1)))
-                            result=result+" "
+                            result = result + \
+                                str(self.cv.speech_text(
+                                    "../temp_audios/{}_extracto{}.wav".format(nombre, i+1)))
+                            result = result+" "
                         except BaseException:
                             logging.exception("An exception was thrown!")
-                            audio1=AudioSegment.from_wav("temp_audios/{}_extracto{}.wav".format(nombre,i+1))
-                            duracion=audio1.duration_seconds
-                            if duracion<=5:
+                            audio1 = AudioSegment.from_wav(
+                                "temp_audios/{}_extracto{}.wav".format(nombre, i+1))
+                            duracion = audio1.duration_seconds
+                            if duracion <= 5:
                                 print("El extracto {} es un silencio".format(i+1))
-                            elif duracion<=180:
-                                print("El extracto {} es música o ruido".format(i+1))
+                            elif duracion <= 180:
+                                print(
+                                    "El extracto {} es música o ruido".format(i+1))
                             else:
-                                print("Error importante en el extracto {}".format(i+1))
-                    #paso 6: borramos los chunks temporales de audio
-                    self.rec.eliminacion_audio("temp_audios","wav")
+                                print(
+                                    "Error importante en el extracto {}".format(i+1))
+                    # paso 6: borramos los chunks temporales de audio
+                    self.rec.eliminacion_audio("temp_audios", "wav")
                     try:
-                        quitarEmojis = dict.fromkeys(range(0x10000, sys.maxunicode + 1), 'NULL')
-                        tituloSinEmojis=self.cv.titulovideo.translate(quitarEmojis)
-                        autorSinEmojis=self.cv.autorvideo.translate(quitarEmojis)
-                        #paso 7: escribimos el texto recibido en un txt->se guarda en local
-                        resultado=self.rec.escritura(self.cv.nombrevideo,"Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(self.cv.fechavideo)+"\n"+"Enlace: "+str(self.cv.enlacevideo)+"\n"+"Entradilla:"+result)
-                        #paso 8: guardamos el texto en una base de datos
+                        quitarEmojis = dict.fromkeys(
+                            range(0x10000, sys.maxunicode + 1), 'NULL')
+                        tituloSinEmojis = self.cv.titulovideo.translate(
+                            quitarEmojis)
+                        autorSinEmojis = self.cv.autorvideo.translate(
+                            quitarEmojis)
+                        # paso 7: escribimos el texto recibido en un txt->se guarda en local
+                        resultado = self.rec.escritura(self.cv.nombrevideo, "Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(
+                            self.cv.fechavideo)+"\n"+"Enlace: "+str(self.cv.enlacevideo)+"\n"+"Entradilla:"+result)
+                        # paso 8: guardamos el texto en una base de datos
                         fb.guardar_firebase(self.cv.nombrevideo+'.txt')
-                        #paso 9: eliminamos los mp4
-                        self.rec.eliminacion_audio("recetasvideos","mp4")
+                        # paso 9: eliminamos los mp4
+                        self.rec.eliminacion_audio("recetasvideos", "mp4")
                     except BaseException:
                         logging.exception("An exception was thrown!")
-                        print("No se ha podido eliminar los caracteres corruptos el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo)
-                        self.rec.eliminacion_audio("recetasvideos","mp4")
-                        return None   
+                        print("No se ha podido eliminar los caracteres corruptos el video: " +
+                              self.cv.nombrevideo + " - " + self.cv.titulovideo)
+                        self.rec.eliminacion_audio("recetasvideos", "mp4")
+                        return None
                 except BaseException:
                     logging.exception("An exception was thrown!")
-                    print("No se ha podido transcribir el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo+" - "+self.cv.enlacevideo)
-                    self.rec.eliminacion_audio("recetasvideos","mp4")
-                    self.rec.eliminacion_audio("temp_audios","wav")
+                    print("No se ha podido transcribir el video: " + self.cv.nombrevideo +
+                          " - " + self.cv.titulovideo+" - "+self.cv.enlacevideo)
+                    self.rec.eliminacion_audio("recetasvideos", "mp4")
+                    self.rec.eliminacion_audio("temp_audios", "wav")
                     return None
             else:
                 print('Este video se encuentra en la base de datos.')
-                resultado=""
+                resultado = ""
             return resultado
         except BaseException:
             logging.exception("An exception was thrown!")
-            print("No se ha podido descargar el video: "+ self.cv.nombrevideo + " - "+ self.cv.titulovideo)
+            print("No se ha podido descargar el video: " +
+                  self.cv.nombrevideo + " - " + self.cv.titulovideo)
             return None
+
     def lista(self):
         playlist_urls = Playlist(self.enlace)
         for url in playlist_urls:
@@ -330,8 +346,9 @@ class Depurador:
 class RecursosAdicionales:
     """|ESCRITURA: escribe textos txt
        |nombre: nombre del 
-       |return: devuelve el audio en texto"""    
-    def escritura(self,nombre,texto):
+       |return: devuelve el audio en texto"""
+
+    def escritura(self, nombre, texto):
         recetasTextos = 'recetastextos/'
         if not(os.path.exists(recetasTextos)):
             os.mkdir(recetasTextos)
@@ -340,42 +357,45 @@ class RecursosAdicionales:
         f = open(recetasTextos+nombre+'.txt', "r")
         print(f.read())
         f.close()
-        
-    def lectura_json(self,fileName):
+
+    def lectura_json(self, fileName):
         if self.documento_vacio(fileName):
             with open(fileName, "r") as file:
-                    archivo=json.load(file)
-        else: 
-            archivo=[]
+                archivo = json.load(file)
+        else:
+            archivo = []
             print('El documento se encuentra vacio.')
         return archivo
-    
-    def escritura_json(self,fileName,data):
+
+    def escritura_json(self, fileName, data):
         with open(fileName, "w") as file:
-                json.dump(data, file)
-                file.close()
-    def buscar_json(self,fileName,key,buscar):
-        encontrado=False
+            json.dump(data, file)
+            file.close()
+
+    def buscar_json(self, fileName, key, buscar):
+        encontrado = False
         if self.documento_vacio(fileName):
-            archivo_json=self.lectura_json(fileName)
+            archivo_json = self.lectura_json(fileName)
             for item in archivo_json:
                 if buscar in item[key]:
                     print('encontrado')
-                    encontrado=True
-                    #no me gusta usar esto pero no tengo idea de como usar un while con json
+                    encontrado = True
+                    # no me gusta usar esto pero no tengo idea de como usar un while con json
                     break
         return encontrado
-    def documento_vacio(self,fileName):
+
+    def documento_vacio(self, fileName):
         return os.stat(fileName).st_size != 0
-    def indexar_datos(self,fileName,adicion):
+
+    def indexar_datos(self, fileName, adicion):
         if not(os.path.exists(fileName)):
             os.mkdir(fileName)
-        data=[]
-        data=self.lectura_json(fileName)
+        data = []
+        data = self.lectura_json(fileName)
         data.append(adicion)
-        self.escritura_json(fileName,data)
-        
-    def eliminacion_audio(self,path,tipo):
+        self.escritura_json(fileName, data)
+
+    def eliminacion_audio(self, path, tipo):
         url = './'+path+'/'
         py_files = glob.glob(url+'*.'+tipo)
         for py_file in py_files:
@@ -383,277 +403,277 @@ class RecursosAdicionales:
                 os.remove(py_file)
             except OSError as e:
                 print(f"Error:{ e.strerror}")
-    
-    def segcionarXsilencios(self,audio):
-        audio1=AudioSegment.from_wav("./recetasvideos/"+audio+".wav")
-        var_min=1900
-        salir=False
-        while salir==False:
+
+    def segcionarXsilencios(self, audio):
+        audio1 = AudioSegment.from_wav("./recetasvideos/"+audio+".wav")
+        var_min = 1900
+        salir = False
+        while salir == False:
             samples = audio1.get_array_of_samples()
-            segundo=88521
-            index=[]
-            for i in range(0,len(samples),int(segundo/5)):
+            segundo = 88521
+            index = []
+            for i in range(0, len(samples), int(segundo/5)):
                 dataSeg = samples[i:int(segundo/5)+i]
-                media=np.mean(dataSeg)
-                var=np.var(dataSeg)
-                if -10<=media<=10 and var<=var_min:
+                media = np.mean(dataSeg)
+                var = np.var(dataSeg)
+                if -10 <= media <= 10 and var <= var_min:
                     index.append(i)
 
-            borrar=[]
-            guardado=0
+            borrar = []
+            guardado = 0
             for i in range(len(index)-1):
-                if index[i+1]<=index[i]+(20*segundo):
-                    if i==0:
-                        tiempo=(index[i])/segundo
+                if index[i+1] <= index[i]+(20*segundo):
+                    if i == 0:
+                        tiempo = (index[i])/segundo
                     else:
-                        tiempo=(index[i+1]-guardado)/segundo
-                    if tiempo<=120:
+                        tiempo = (index[i+1]-guardado)/segundo
+                    if tiempo <= 120:
                         borrar.append(i)
                     else:
-                        guardado=index[i]
+                        guardado = index[i]
                 else:
-                    guardado=index[i]
+                    guardado = index[i]
 
-            final=np.delete(index, borrar, axis=0) 
-            extractos=[]
-            if len(final)==0:
-                var_min=var_min*10
-                salir=False
+            final = np.delete(index, borrar, axis=0)
+            extractos = []
+            if len(final) == 0:
+                var_min = var_min*10
+                salir = False
             else:
                 for i in range(len(final)):
-                    if i==0:
+                    if i == 0:
                         extractos.append(samples[:final[i]])
                     else:
                         extractos.append(samples[final[i-1]:final[i]])
                 extractos.append(samples[final[i]:])
-                salir=True
+                salir = True
 
         for i in range(len(extractos)):
-            nombre=""
+            nombre = ""
             new_sound = audio1._spawn(extractos[i])
-            nombre="temp_audios/{}_extracto{}.wav".format(audio,i+1)
-            new_sound.export(nombre,format="wav")
-        #print(len(extractos))
+            nombre = "temp_audios/{}_extracto{}.wav".format(audio, i+1)
+            new_sound.export(nombre, format="wav")
+        # print(len(extractos))
         return len(extractos)
 
 
-
-
-
 class Firebase:
-    def __init__(self,ubicacion):
-        self.ubi=ubicacion
-        
-        self.config={"apiKey": "AIzaSyDDg9WOlFJxnEJoxomYtsnkJfsI4TgoL_E","authDomain": "eateaser-741d4.firebaseapp.com","databaseURL" : "https://eateaser-741d4-default-rtdb.firebaseio.com/","projectId": "eateaser-741d4","storageBucket": "eateaser-741d4.appspot.com","messagingSenderId": "706351391410","appId": "1:706351391410:web:6abc2cabd6bf83843b5fab","measurementId": "G-YZZCBRHNBT"};
-        self.firebase=self.conexion_firebase()
-        self.database=self.firebase.database()
+    def __init__(self, ubicacion):
+        self.ubi = ubicacion
+
+        self.config = {"apiKey": "AIzaSyDDg9WOlFJxnEJoxomYtsnkJfsI4TgoL_E", "authDomain": "eateaser-741d4.firebaseapp.com", "databaseURL": "https://eateaser-741d4-default-rtdb.firebaseio.com/",
+                       "projectId": "eateaser-741d4", "storageBucket": "eateaser-741d4.appspot.com", "messagingSenderId": "706351391410", "appId": "1:706351391410:web:6abc2cabd6bf83843b5fab", "measurementId": "G-YZZCBRHNBT"}
+        self.firebase = self.conexion_firebase()
+        self.database = self.firebase.database()
+
     def conexion_firebase(self):
         return pyrebase.initialize_app(self.config)
-    def guardar_firebase(self,nom):
-        storage=self.firebase.storage()
+
+    def guardar_firebase(self, nom):
+        storage = self.firebase.storage()
         storage.child(self.ubi+nom).put(self.ubi+nom)
-    def eliminar_firebase(self,nom):
+
+    def eliminar_firebase(self, nom):
         self.firebase.storage().delete(self.ubi+nom)
-    def guardar_database(self,data,_id):
+
+    def guardar_database(self, data, _id):
         self.database.child('Recetas').child(_id).set(data)
-    def validar_database(self,data):
-        validar=self.database.get()
-        encontrado=False
+
+    def validar_database(self, data):
+        validar = self.database.get()
+        encontrado = False
         for a in validar.each():
-            if  data in str(a.val()):
-                encontrado=True
-                #no me gusta usar esto pero no tengo idea de como usar un while con json
+            if data in str(a.val()):
+                encontrado = True
+                # no me gusta usar esto pero no tengo idea de como usar un while con json
                 break
         return encontrado
+
     def reenumerar(self):
-        recetas=self.database.child("Recetas").get()
-        id=0
+        recetas = self.database.child("Recetas").get()
+        id = 0
         for item in recetas.each():
-            id=item.key()
+            id = item.key()
         return int(id)
 
 
-
-class ProcesarDocumentos:     
+class ProcesarDocumentos:
     def lectura(self):
-        procDoc=ProcesarDocumentos()
+        procDoc = ProcesarDocumentos()
         rutaCarpetasPorCategoria = "./recetastextos/"
         listaCarpetasFinal = []
-        #estos string nos servirán para guardar todos los textos de los txt por cada una de las carpetas
+        # estos string nos servirán para guardar todos los textos de los txt por cada una de las carpetas
         carpetaArroz = carpetaBebidas = carpetaCarnes = carpetaMarisco = carpetaPasta = carpetaPescados = carpetaPlatosMenores = carpetaVerduras = ''
-        #sacamos una lista de todas las carpetas
+        # sacamos una lista de todas las carpetas
         listaCarpetas = os.listdir(rutaCarpetasPorCategoria)
-        #print(listaCarpetas)
-        #print(len(listaCarpetas))
-        #recorremos todas las carpetas
-        i=0
+        # print(listaCarpetas)
+        # print(len(listaCarpetas))
+        # recorremos todas las carpetas
+        i = 0
         for lc in listaCarpetas:
-            #cogemos el nombre de la carpeta y se lo concatenamos a la ruta anterior
+            # cogemos el nombre de la carpeta y se lo concatenamos a la ruta anterior
             rutaPorCarpeta = rutaCarpetasPorCategoria + lc + '/'
             print(str(i)+rutaPorCarpeta+'-----------------')
-            if(i==0):
+            if(i == 0):
                 carpetaArroz = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
-                #print(carpetaArroz)
+                # print(carpetaArroz)
                 listaCarpetasFinal.append(carpetaArroz)
-            if(i==1):
+            if(i == 1):
                 carpetaBebidas = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaBebidas)
-            if(i==2):
+            if(i == 2):
                 carpetaCarnes = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaCarnes)
-            if(i==3):
+            if(i == 3):
                 carpetaMarisco = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaMarisco)
-            if(i==4):
+            if(i == 4):
                 carpetaPasta = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaPasta)
-            if(i==5):
-                carpetaPescados = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+            if(i == 5):
+                carpetaPescados = procDoc.resultadoStringCarpeta(
+                    rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaPescados)
-            if(i==6):
-                carpetaPlatosMenores = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+            if(i == 6):
+                carpetaPlatosMenores = procDoc.resultadoStringCarpeta(
+                    rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaPlatosMenores)
-            if(i==7):
-                carpetaVerduras = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
+            if(i == 7):
+                carpetaVerduras = procDoc.resultadoStringCarpeta(
+                    rutaPorCarpeta)
                 listaCarpetasFinal.append(carpetaVerduras)
-            i=i+1
+            i = i+1
         return listaCarpetasFinal
+
     def lecturaTesting(self):
-        procDoc=ProcesarDocumentos()
+        procDoc = ProcesarDocumentos()
         rutaCarpetaTesting = "./Interfaz/Carpeta Testing/"
         carpetaTesting = procDoc.resultadoStringCarpeta(rutaCarpetaTesting)
         return carpetaTesting
+
     def resultadoStringCarpeta(self, rutaPorCarpeta):
-        strCarpeta=[]
-        #vemos el contenido de la carpeta en la que estamos iterando
+        strCarpeta = []
+        # vemos el contenido de la carpeta en la que estamos iterando
         listaTxt = os.listdir(rutaPorCarpeta)
         print(listaTxt)
-        #recorremos todos los archivos de la carpeta
+        # recorremos todos los archivos de la carpeta
         for lt in listaTxt:
-            #concatenamos la ruta de la carpeta con el nombre de los archivos que contiene esta
+            # concatenamos la ruta de la carpeta con el nombre de los archivos que contiene esta
             rutaTxt = rutaPorCarpeta + lt
-            #al ir iterando pasaremos por todos los archivos modificando la variable de la ruta para poder hacer un open con ella
+            # al ir iterando pasaremos por todos los archivos modificando la variable de la ruta para poder hacer un open con ella
             #file = open(filename, encoding="utf8")
             try:
-                with open(rutaTxt, 'r') as f: 
-                    #al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
+                with open(rutaTxt, 'r') as f:
+                    # al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
                     strCarpeta.append(f.read())
             except:
-                with open(rutaTxt, 'r',encoding="utf8") as f: 
-                    #al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
+                with open(rutaTxt, 'r', encoding="utf8") as f:
+                    # al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
                     strCarpeta.append(f.read())
-                
+
         return strCarpeta
+
     def leer_stopwords(self, path):
         with open(path) as f:
             # Lee las stopwords del archivo y las guarda en una lista
             mis_stopwords = [line.strip() for line in f]
         return mis_stopwords
+
     def tratamientoTextos(self, info):
-        #Eliminamos posibles horas del titulo
-        textoSinSimbolos = re.sub("\d+:\d+:\d+", "" , info)
-        #Eliminamos posibles fechas
-        textoSinSimbolos = re.sub("\d+-\d+-\d+", "" , textoSinSimbolos)
-        #Eliminamos todos los fin de enlace
-        textoSinSimbolos = re.sub("v=.*", "" , textoSinSimbolos)
-        #Eliminamos todos los simbolos del texto (,.;:?¿!!) etc
-        textoSinSimbolos = re.sub("[^0-9A-Za-z_]", " " , textoSinSimbolos)
-        #Sacamos todos los tokens del texto y los metemos en una lista
+        # Eliminamos posibles horas del titulo
+        textoSinSimbolos = re.sub("\d+:\d+:\d+", "", info)
+        # Eliminamos posibles fechas
+        textoSinSimbolos = re.sub("\d+-\d+-\d+", "", textoSinSimbolos)
+        # Eliminamos todos los fin de enlace
+        textoSinSimbolos = re.sub("v=.*", "", textoSinSimbolos)
+        # Eliminamos todos los simbolos del texto (,.;:?¿!!) etc
+        textoSinSimbolos = re.sub("[^0-9A-Za-z_]", " ", textoSinSimbolos)
+        # Sacamos todos los tokens del texto y los metemos en una lista
         textoTokenizado = nltk.tokenize.word_tokenize(textoSinSimbolos)
-        #una lista no tiene lower asique pasamos el lower con map a toda la lista
+        # una lista no tiene lower asique pasamos el lower con map a toda la lista
         textoMinusculas = (map(lambda x: x.lower(), textoTokenizado))
-        #Le pasa un stopword de palabras en español a la lista de palabras que le llega
+        # Le pasa un stopword de palabras en español a la lista de palabras que le llega
         #stop_words_sp = set(stopwords.words('spanish'))
-        stop_words_sp = self.leer_stopwords("./rapidminer/stop_words_spanish.txt")
+        stop_words_sp = self.leer_stopwords(
+            "./rapidminer/stop_words_spanish.txt")
         pasarStopWords = [i for i in textoMinusculas if i not in stop_words_sp]
-        #Aplicamos la normalizacion mediante stemming
+        # Aplicamos la normalizacion mediante stemming
         #SnowStem = nltk.SnowballStemmer(language = 'spanish')
         # Crear un objeto SnowballStemmer para el idioma español
         stemmer = RSLPStemmer()
         listaStems = [stemmer.stem(word) for word in pasarStopWords]
         return listaStems
 
+    def Entrenar_SVM(self):
+        # self.preprocesamiento()
 
+        # Create a svm Classifier
+        clf = svm.SVC(kernel='linear')  # Linear Kernel
 
-
-    def Entrenar_SVM(self):  
-        #self.preprocesamiento()
-        
-        #Create a svm Classifier
-        clf = svm.SVC(kernel='linear') # Linear Kernel
-
-        #Train the model using the training sets
+        # Train the model using the training sets
         clf.fit(self.X_train, self.Y_train)
-        
 
-        predictions = clf.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
+        predictions = clf.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        
-        cv=cross_val_score(clf, self.X_train, self.Y_train, cv=10)
-        
+
+        cv = cross_val_score(clf, self.X_train, self.Y_train, cv=10)
+
         print("CV -> {}".format(cv))
-        
+
     def Entrenar_SVM_CV(self):
-        
-        
+
         Cs = np.logspace(-6, -1, 10)
         svc = svm.SVC()
         clf = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
                            n_jobs=-1)
-        clf.fit(self.X_train, self.Y_train)        
+        clf.fit(self.X_train, self.Y_train)
 
-        print("best score-> {}".format(clf.best_score_))                                 
+        print("best score-> {}".format(clf.best_score_))
 
-        print("best estimator-> {}".format(clf.best_estimator_.C))                            
-
+        print("best estimator-> {}".format(clf.best_estimator_.C))
 
         # Prediction performance on test set is not as good as on train set
-        print("mi score".format(clf.score(self.X_cv, self.Y_cv)))      
-
+        print("mi score".format(clf.score(self.X_cv, self.Y_cv)))
 
 
 class modelosTFIDF:
-    def __init__(self, df,features_mod):
-        self.df=df
+    def __init__(self, df, features_mod):
+        self.df = df
         self.tfidf(features_mod)
-    
-        
-    def tfidf(self,features_mod):
-        hola=[]
-        for i,j in enumerate(self.df['receta']):
+
+    def tfidf(self, features_mod):
+        hola = []
+        for i, j in enumerate(self.df['receta']):
             hola.append(" ".join(j))
-        self.vectorizers= TfidfVectorizer(max_features=features_mod)    
+        self.vectorizers = TfidfVectorizer(max_features=features_mod)
         self.vect = self.vectorizers.fit_transform(hola)
-        arr=self.vect.toarray()
-        variable=self.vectorizers.get_feature_names()
-        
+        arr = self.vect.toarray()
+        variable = self.vectorizers.get_feature_names()
 
-        variables=dict.fromkeys(variable,None)
+        variables = dict.fromkeys(variable, None)
 
-        tf1=pd.DataFrame(variables,index=[0])
+        tf1 = pd.DataFrame(variables, index=[0])
         for i in range(len(self.df['clasif'])):
-            tf1.loc[i]=arr[i]
-        
-        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(tf1, self.df['clasif'], test_size = 0.2, random_state=42)
-        self.Y_train=list(self.Y_train)
-        self.Y_cv=list(self.Y_cv)
-         
-  
-        
+            tf1.loc[i] = arr[i]
+
+        self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(
+            tf1, self.df['clasif'], test_size=0.2, random_state=42)
+        self.Y_train = list(self.Y_train)
+        self.Y_cv = list(self.Y_cv)
+
     def Entrenar_RF(self):
         # Grid de hiperparámetros evaluados
         # ==============================================================================
-        
+
         print(self.X_train.shape)
         param_grid = ParameterGrid(
-                        {'n_estimators': [1000],
-                         'max_features': [5, 7, 9],
-                         'max_depth'   : [None, 3, 10, 20],
-                         'criterion'   : ['gini', 'entropy']
-                        }
-                    )
+            {'n_estimators': [1000],
+             'max_features': [5, 7, 9],
+             'max_depth': [None, 3, 10, 20],
+             'criterion': ['gini', 'entropy']
+             }
+        )
 
         # Loop para ajustar un modelo con cada combinación de hiperparámetros
         # ==============================================================================
@@ -662,11 +682,11 @@ class modelosTFIDF:
         for params in param_grid:
 
             modelo = RandomForestClassifier(
-                        oob_score    = True,
-                        n_jobs       = -1,
-                        random_state = 123,
-                        ** params
-                     )
+                oob_score=True,
+                n_jobs=-1,
+                random_state=123,
+                ** params
+            )
 
             modelo.fit(self.X_train, self.Y_train)
 
@@ -677,11 +697,12 @@ class modelosTFIDF:
         # Resultados
         # ==============================================================================
         resultados = pd.DataFrame(resultados)
-        resultados = pd.concat([resultados, resultados['params'].apply(pd.Series)], axis=1)
+        resultados = pd.concat(
+            [resultados, resultados['params'].apply(pd.Series)], axis=1)
         resultados = resultados.sort_values('oob_accuracy', ascending=False)
-        resultados = resultados.drop(columns = 'params')
+        resultados = resultados.drop(columns='params')
         print(resultados.head(4))
-        
+
         '''
         self.forest = RandomForestClassifier() 
         self.forest = self.forest.fit(self.X_train, self.Y_train)
@@ -690,49 +711,49 @@ class modelosTFIDF:
         self.Y_cv=list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
         '''
-        
+
     def Entrenar_RF_CV(self):
         # Grid de hiperparámetros evaluados
         # ==============================================================================
         param_grid = {'n_estimators': [150],
                       'max_features': [5, 7, 9],
-                      'max_depth'   : [None, 3, 10, 20],
-                      'criterion'   : ['gini', 'entropy']
-                     }
+                      'max_depth': [None, 3, 10, 20],
+                      'criterion': ['gini', 'entropy']
+                      }
 
         # Búsqueda por grid search con validación cruzada
         # ==============================================================================
-        
-        grid = GridSearchCV(
-                estimator  = RandomForestClassifier(random_state = 123),
-                param_grid = param_grid,
-                scoring    = 'accuracy',
-                n_jobs     = multiprocessing.cpu_count() - 1,
-                cv         = RepeatedKFold(n_splits=5, n_repeats=3, random_state=123), 
-                refit      = True,
-                verbose    = 0,
-                return_train_score = True
-               )
 
-        grid.fit(X = self.X_train, y = self.Y_train)
+        grid = GridSearchCV(
+            estimator=RandomForestClassifier(random_state=123),
+            param_grid=param_grid,
+            scoring='accuracy',
+            n_jobs=multiprocessing.cpu_count() - 1,
+            cv=RepeatedKFold(n_splits=5, n_repeats=3, random_state=123),
+            refit=True,
+            verbose=0,
+            return_train_score=True
+        )
+
+        grid.fit(X=self.X_train, y=self.Y_train)
 
         # Resultados
         # ==============================================================================
         resultados = pd.DataFrame(grid.cv_results_)
-        resultados.filter(regex = '(param*|mean_t|std_t)') \
-            .drop(columns = 'params') \
-            .sort_values('mean_test_score', ascending = False) \
+        resultados.filter(regex='(param*|mean_t|std_t)') \
+            .drop(columns='params') \
+            .sort_values('mean_test_score', ascending=False) \
             .head(4)
-        
+
         # Mejores hiperparámetros por validación cruzada
         # ==============================================================================
         print("----------------------------------------")
         print("Mejores hiperparámetros encontrados (cv)")
         print("----------------------------------------")
         print(grid.best_params_, ":", grid.best_score_, grid.scoring)
-        
+
         self.modelo_final = grid.best_estimator_
-        
+
         '''
         self.forest = RandomForestClassifier() 
         self.forest = self.forest.fit(self.X_train, self.Y_train)
@@ -742,168 +763,155 @@ class modelosTFIDF:
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
         '''
 
-    def Entrenar_SVM(self):  
-        #self.preprocesamiento()
-        
-        #Create a svm Classifier
-        m_SVM = svm.SVC(kernel='linear') # Linear Kernel
+    def Entrenar_SVM(self):
+        # self.preprocesamiento()
 
-        #Train the model using the training sets
+        # Create a svm Classifier
+        m_SVM = svm.SVC(kernel='linear')  # Linear Kernel
+
+        # Train the model using the training sets
         m_SVM.fit(self.X_train, self.Y_train)
-        
 
-        predictions = m_SVM.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
+        predictions = m_SVM.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        
-        cv=cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
-        self.m_SVM=m_SVM
-        
+
+        cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        self.m_SVM = m_SVM
+
         print("CV -> {}".format(cv))
         return self.m_SVM
-        
+
     def Entrenar_SVM_CV(self):
-        
+
         Cs = np.logspace(-6, -1, 10)
         svc = svm.SVC()
         m_SVM_CV = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
-                           n_jobs=-1)
-        m_SVM_CV.fit(self.X_train, self.Y_train)        
+                                n_jobs=-1)
+        m_SVM_CV.fit(self.X_train, self.Y_train)
 
-        print("best score-> {}".format(m_SVM_CV.best_score_))                                 
+        print("best score-> {}".format(m_SVM_CV.best_score_))
 
-        print("best estimator-> {}".format(m_SVM_CV.best_estimator_.C))                            
-
+        print("best estimator-> {}".format(m_SVM_CV.best_estimator_.C))
 
         # Prediction performance on test set is not as good as on train set
-        print("mi score".format(m_SVM_CV.score(self.X_cv, self.Y_cv)))      
+        print("mi score".format(m_SVM_CV.score(self.X_cv, self.Y_cv)))
 
     def Entrenar_Bayes(self):
-        
-        
-        #Create a svm Classifier
-        gaus = GaussianNB() # Linear Kernel
 
-        #Train the model using the training sets
+        # Create a svm Classifier
+        gaus = GaussianNB()  # Linear Kernel
+
+        # Train the model using the training sets
         gaus.fit(self.X_train, self.Y_train)
-        
 
-        predictions = gaus.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
+        predictions = gaus.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        
-        cv=cross_val_score(gaus, self.X_train, self.Y_train, cv=10)
-        self.gaus=gaus
-        print("CV -> {}".format(cv))   
-        
-    
+
+        cv = cross_val_score(gaus, self.X_train, self.Y_train, cv=10)
+        self.gaus = gaus
+        print("CV -> {}".format(cv))
+
     def Entrenar_RegresionMultinomial(self):
-        
+
         M_mult = LogisticRegression(multi_class='multinomial', solver='lbfgs')
         M_mult.fit(self.X_train, self.Y_train)
-        
-        predictions = M_mult.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-        #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
-        self.M_mult=M_mult
-        #print("CV -> {}".format(cv)) 
-        return self.M_mult
-    
-    def predecir_RF(self,txt):
-        
-        self.pred = self.vectorizers.transform(txt)
-        self.pred = self.pred.toarray()
-        predictions = self.M_mult.predict(self.pred) 
-        print("resultado: " , predictions)
-        
-    def clasificar(self,modelo,txt):
-        
-        self.pred = self.vectorizers.transform(txt)
-        self.pred = self.pred.toarray()
-        predictions = modelo.predict(self.pred) 
-        print("resultado: " , predictions)
-    
-    def predecir_Carpeta(self,rutaModelo, modeloSeleccionado):
-        
-        p=ProcesarDocumentos()
-        carpeta=p.resultadoStringCarpeta(rutaModelo)
 
-        #resultados=[]
-        #for i in range(len(carpeta)):
+        predictions = M_mult.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+
+        #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
+        self.M_mult = M_mult
+        #print("CV -> {}".format(cv))
+        return self.M_mult
+
+    def predecir_RF(self, txt):
+
+        self.pred = self.vectorizers.transform(txt)
+        self.pred = self.pred.toarray()
+        predictions = self.M_mult.predict(self.pred)
+        print("resultado: ", predictions)
+
+    def clasificar(self, modelo, txt):
+
+        self.pred = self.vectorizers.transform(txt)
+        self.pred = self.pred.toarray()
+        predictions = modelo.predict(self.pred)
+        print("resultado: ", predictions)
+
+    def predecir_Carpeta(self, rutaModelo, modeloSeleccionado):
+
+        p = ProcesarDocumentos()
+        carpeta = p.resultadoStringCarpeta(rutaModelo)
+
+        # resultados=[]
+        # for i in range(len(carpeta)):
         #    text=p.tratamientoTextos(carpeta[i])
         #    hey=[" ".join(text)]
         #    resultados.append(self.predecir_RF(hey))
         #print("Resultados: {}".format(resultados))
-        
-        resultados=[]
+
+        resultados = []
         for i in range(len(carpeta)):
-            text=p.tratamientoTextos(carpeta[i])
-            hey=" ".join(text)
+            text = p.tratamientoTextos(carpeta[i])
+            hey = " ".join(text)
             resultados.append(hey)
         self.pred1 = self.vectorizers.transform(resultados)
         self.pred1 = self.pred1.toarray()
-        predictions = modeloSeleccionado.predict(self.pred1) 
+        predictions = modeloSeleccionado.predict(self.pred1)
         #print("resultado: " , predictions)
         return predictions
-        
-    def Entrenar_KNN(self):  
-        #self.preprocesamiento()
-        
 
-        vecinos = KNeighborsClassifier() 
+    def Entrenar_KNN(self):
+        # self.preprocesamiento()
+
+        vecinos = KNeighborsClassifier()
         vecinos = vecinos.fit(self.X_train, self.Y_train)
 
-        predictions = vecinos.predict(self.X_cv) 
-        self.Y_cv=list(self.Y_cv)
+        predictions = vecinos.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-        
-    
+
     def Entrenar_RedNeuronal(self):
-        xtrain=[]
-        for i in range(len(self.X_train)):     
+        xtrain = []
+        for i in range(len(self.X_train)):
             xtrain.append(list(self.X_train.iloc[i]))
-        #xtrain=np.array(xtrain)
+        # xtrain=np.array(xtrain)
 
-        xcv=[]
-        for i in range(len(self.X_cv)):     
+        xcv = []
+        for i in range(len(self.X_cv)):
             xcv.append(list(self.X_cv.iloc[i]))
-        #xcv=np.array(xcv)
-        #Y_train=np.array(Y_train)
-        #Y_cv=np.array(Y_cv)
-
+        # xcv=np.array(xcv)
+        # Y_train=np.array(Y_train)
+        # Y_cv=np.array(Y_cv)
 
         print(type(xtrain))
         print(type(self.Y_train))
         print(type(xcv))
         print(type(self.Y_cv))
-        
-        
-        clear_session()
-        
 
-        #input_dim = xtrain.shape[1] #.shape[0]  # Number of features
-        input_dim= len(xtrain[0])
+        clear_session()
+
+        # input_dim = xtrain.shape[1] #.shape[0]  # Number of features
+        input_dim = len(xtrain[0])
         model = Sequential()
         model.add(layers.Dense(100, input_dim=input_dim, activation='relu'))
         model.add(layers.Dense(80, input_dim=100, activation='relu'))
         model.add(layers.Dense(20, input_dim=80, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
-        
+
         model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
+                      optimizer='adam',
+                      metrics=['accuracy'])
         print(model.summary())
         history = model.fit(xtrain, self.Y_train,
-                     epochs=1000,
-                     verbose=False,
-                     validation_data=(xcv, self.Y_cv),
-                     batch_size=10)
+                            epochs=1000,
+                            verbose=False,
+                            validation_data=(xcv, self.Y_cv),
+                            batch_size=10)
 
-        
         clear_session()
 
         loss, accuracy = model.evaluate(xtrain, self.Y_train, verbose=False)
@@ -911,14 +919,14 @@ class modelosTFIDF:
         loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
         print("Testing Accuracy:  {:.4f}".format(accuracy))
 
-    def guardarModelo(self,modelo,nombre):
-        
-        joblib.dump(modelo, './Interfaz/modelos/{}.pkl'.format(nombre)) # Guardo el modelo.
-    
-    def cargarModelo(self,nombre):
-        
-        return joblib.load('./Interfaz/modelos/{}.pkl'.format(nombre))
+    def guardarModelo(self, modelo, nombre):
 
+        # Guardo el modelo.
+        joblib.dump(modelo, './Interfaz/modelos/{}.pkl'.format(nombre))
+
+    def cargarModelo(self, nombre):
+
+        return joblib.load('./Interfaz/modelos/{}.pkl'.format(nombre))
 
 
 class Index(QtWidgets.QMainWindow):
@@ -926,11 +934,12 @@ class Index(QtWidgets.QMainWindow):
         super(Index, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('index.ui', self)
-        #cargamos widgets
+        # cargamos widgets
         self.setWidgets()
-        #activamos botones
+        # activamos botones
         self.activarBotones()
-    #Aqui se declaran los widgets
+    # Aqui se declaran los widgets
+
     def setWidgets(self):
         self.about = self.findChild(QtWidgets.QPushButton, 'about')
         self.app = self.findChild(QtWidgets.QPushButton, 'app')
@@ -956,7 +965,8 @@ class Index(QtWidgets.QMainWindow):
         self.acceder.setVisible(False)
         self.icono.setVisible(False)
         self.apagar_widgets(False)
-    #aqui ponemos los eventos de los botones
+    # aqui ponemos los eventos de los botones
+
     def activarBotones(self):
         self.about.clicked.connect(lambda: self.menuClicked('Startup Eateaser',
                                                             'Compañia encargada para sugerirte las mejores recetas Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facilpara conocer la clasificacion de \n'
@@ -979,13 +989,14 @@ class Index(QtWidgets.QMainWindow):
                                                                 'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
                                                                 True, False, 'descarga.png'))
         self.acceder.clicked.connect(self.openWindow)
-    def menuClicked(self, titulo, descripcion, acceder, widgets,dir):
+
+    def menuClicked(self, titulo, descripcion, acceder, widgets, dir):
         self.titulo.setText(titulo)
         self.descripcion.setText(descripcion)
         self.acceder.setVisible(acceder)
         self.apagar_widgets(widgets)
         self.state = titulo
-        if(widgets==False):
+        if(widgets == False):
             self.icono.setVisible(True)
             self.icono.setIcon(QIcon('imagenes/' + dir))
             self.icono.setIconSize(QSize(200, 200))
@@ -1007,18 +1018,19 @@ class Index(QtWidgets.QMainWindow):
         boton.setIcon(QIcon('imagenes/' + nombre))
         boton.setIconSize(QSize(200, 200))
         boton.setStyleSheet('background-color:transparent;')
+
     def openWindow(self):
-        if self.state=='Fase de Entrenamiento':
+        if self.state == 'Fase de Entrenamiento':
             self.gui = Train()
             self.gui.show()
             self.gui.showMaximized()
             self.close()
-        if self.state=='Fase de Testeo':
+        if self.state == 'Fase de Testeo':
             self.gui = Test()
             self.gui.show()
             self.gui.showMaximized()
             self.close()
-        if self.state=='Aplicación':
+        if self.state == 'Aplicación':
             QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.gui = App()
             self.gui.show()
@@ -1026,29 +1038,29 @@ class Index(QtWidgets.QMainWindow):
             QApplication.restoreOverrideCursor()
             self.close()
         if self.state == 'Descargar':
-            #QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            # QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.gui = Download()
             self.gui.show()
             self.gui.showMaximized()
-            #QApplication.restoreOverrideCursor()
+            # QApplication.restoreOverrideCursor()
             self.close()
+
+
 class Train(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Eat Easer Train page")
         self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
-        #variables globales
+        # variables globales
         self.setWidgets()
         self.setLayouts()
         self.stylesheet()
         self.addlayout_to_layouts()
         self.addwindgets_to_layouts()
         self.activarBotones()
-        self.df=pd.DataFrame()
-        #self.modeloTfIdfEjecucion=cargarDFParaModelo()#mama
-        
+        self.df = pd.DataFrame()
+        # self.modeloTfIdfEjecucion=cargarDFParaModelo()#mama
 
-    
     def setLayouts(self):
         # layout grande
         self.layout = QGridLayout()
@@ -1065,14 +1077,13 @@ class Train(QWidget):
         self.grafico = QVBoxLayout()
         self.setLayout(self.layout)
 
-
     def setWidgets(self):
-        #variable que almacena las carpetas de textos que ya han sido añadidas/seleccionadas
+        # variable que almacena las carpetas de textos que ya han sido añadidas/seleccionadas
         self.seleccionados = []
         self.checkboxes = []
         self.varableSeleccionCarpetaGuardarModelo = ""
         # variable que almacena el algoritmo que se ha seleccionado con los botones
-        self.algoritmo_clicked=""
+        self.algoritmo_clicked = ""
         # labels de ruta
         self.lcategoria = QLabel('Selecciona la categoria')
         # combobox de ruta
@@ -1162,6 +1173,7 @@ class Train(QWidget):
         self.path_btn.setStyleSheet(sbotones)
         self.lform.setStyleSheet(sform)
         self.layout13.setStyleSheet('background-color:white')
+
     def addlayout_to_layouts(self):
         # aniadimos los layouts al total
         self.layout.addLayout(self.izqlayout, 0, 0)
@@ -1181,6 +1193,7 @@ class Train(QWidget):
         self.izqlayout.setRowStretch(3, 1)
         self.izqlayout.setRowStretch(4, 2)
         self.izqlayout.setRowStretch(5, 1)
+
     def addwindgets_to_layouts(self):
         # aniadimos al layout de ruta
         self.rutalayout.addWidget(self.lcategoria, 0, 0, 1, 1)
@@ -1189,10 +1202,14 @@ class Train(QWidget):
         self.rutalayout.addWidget(self.nuevo, 0, 3, 1, 1)
         # aniadimos widgets en lado derecho
         self.derlayout.addWidget(self.fondo, 0, 0, 6, 1)
-        self.derlayout.addWidget(self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
         self.derlayout.rowStretch(1)
         # aniadimos los widgets a guardar
         self.guardar.addWidget(self.lform, 0, 0, 1, 1)
@@ -1209,6 +1226,7 @@ class Train(QWidget):
         self.seleccionlayout.addWidget(self.borrar, 1, QtCore.Qt.AlignLeft)
         self.grafico.addWidget(self.layout13)
         self.izqlayout.addWidget(self.retorno, 0, 0)
+
     def activarBotones(self):
         # eventos de botones
         self.anadir.clicked.connect(self.aniadir_boton)
@@ -1224,96 +1242,90 @@ class Train(QWidget):
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno.clicked.connect(self.volver)
+
     def cambiar_algoritmo(self, nombre):
-        self.algoritmo_clicked = nombre      
-    def informacion(self,titulo,descripcion):
-            self.ltitulo.setText(titulo)
-            self.ldescrip.setText(descripcion)
-    #FUNCION PARA REALIZAR EL ALGORITMO
-    
+        self.algoritmo_clicked = nombre
+
+    def informacion(self, titulo, descripcion):
+        self.ltitulo.setText(titulo)
+        self.ldescrip.setText(descripcion)
+    # FUNCION PARA REALIZAR EL ALGORITMO
+
     def crearDF(self):
-        
-        df=pd.DataFrame()
-        df['receta']=None
-        df['clasif']=None
-        procesarDocs=ProcesarDocumentos()
-        listaTextosCarpeta=procesarDocs.lectura()
-        diccionarioCarpetas={'Carpeta Arroz':0,'Carpeta Bebidas':1,'Carpeta Carnes':2,
-                             'Carpeta Marisco':3,'Carpeta Pasta':4,'Carpeta Pescados':5,
-                             'Carpeta Platos Menores':6,'Carpeta Verduras':7}
-        
-        
+
+        df = pd.DataFrame()
+        df['receta'] = None
+        df['clasif'] = None
+        procesarDocs = ProcesarDocumentos()
+        listaTextosCarpeta = procesarDocs.lectura()
+        diccionarioCarpetas = {'Carpeta Arroz': 0, 'Carpeta Bebidas': 1, 'Carpeta Carnes': 2,
+                               'Carpeta Marisco': 3, 'Carpeta Pasta': 4, 'Carpeta Pescados': 5,
+                               'Carpeta Platos Menores': 6, 'Carpeta Verduras': 7}
+
         print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
         print(self.seleccionados[0])
-        seleccion=[]
+        seleccion = []
         for i in range(len(self.seleccionados)):
             seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
-        
-        
-            
-        
-        
-        
-        
-        for index,content in enumerate(listaTextosCarpeta):
+
+        for index, content in enumerate(listaTextosCarpeta):
             if index in seleccion:
                 for i in range(len(content)):
-                    text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
-                    df=df.append({'receta':text,'clasif':index},ignore_index=True)
-                    
+                    text = procesarDocs.tratamientoTextos(
+                        listaTextosCarpeta[index][i])
+                    df = df.append(
+                        {'receta': text, 'clasif': index}, ignore_index=True)
+
         print(df['clasif'].unique())
-    
+
         return df
-        
-        
-        
+
     def vista_previa(self):
         self.vista.setText('')
         i = 0
-        self.total_archivos=0
+        self.total_archivos = 0
 
-        carpetas=''
-        #verificamos si hay seleccionados
+        carpetas = ''
+        # verificamos si hay seleccionados
 
-        if len(self.seleccionados)==0 or self.ltitulo.text()=='Nombre Algoritmo' :
+        if len(self.seleccionados) == 0 or self.ltitulo.text() == 'Nombre Algoritmo':
 
             self.mensaje_error('Campos vacios.')
         else:
-            
-            self.df1=self.crearDF()
-            modelo=modelosTFIDF(self.df1,7000)
-            
-            if(self.algoritmo_clicked=="SVM"):
-                #self.seleccionados
-                self.modeloEntrenadoFinal=modelo.Entrenar_SVM()
+
+            self.df1 = self.crearDF()
+            modelo = modelosTFIDF(self.df1, 7000)
+
+            if(self.algoritmo_clicked == "SVM"):
+                # self.seleccionados
+                self.modeloEntrenadoFinal = modelo.Entrenar_SVM()
                 print('SVM')
-            elif(self.algoritmo_clicked=="MR"):
-                self.modeloEntrenadoFinal=modelo.Entrenar_RegresionMultinomial()
+            elif(self.algoritmo_clicked == "MR"):
+                self.modeloEntrenadoFinal = modelo.Entrenar_RegresionMultinomial()
                 print('MR')
-            elif(self.algoritmo_clicked=="RF"):  
-                self.modeloEntrenadoFinal=modelo.Entrenar_RF()
+            elif(self.algoritmo_clicked == "RF"):
+                self.modeloEntrenadoFinal = modelo.Entrenar_RF()
                 print('RF')
-            
+
             print(self.df1.head())
-            
+
             print("El modelo ha sido entrenado correctamente! :)")
-            
-            #verificamos si hay algoritmo seleccionado
+
+            # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
                 size = len(os.listdir('recetastextos/' + i))
 
                 self.total_archivos = size + self.total_archivos
-                texto=i + ': ' + str(size) + ' archivos\n'
+                texto = i + ': ' + str(size) + ' archivos\n'
 
-                carpetas=carpetas+'\n'+texto
-
-
+                carpetas = carpetas+'\n'+texto
 
         # le añado todos los que esten en listbox
-        self.vista.setText(carpetas+'\n'+'TOTAL: ' + ': ' + str(self.total_archivos) + ' archivos\n')
+        self.vista.setText(carpetas+'\n'+'TOTAL: ' + ': ' +
+                           str(self.total_archivos) + ' archivos\n')
 
-    def mensaje_error(self,mensaje):
+    def mensaje_error(self, mensaje):
         QMessageBox.critical(
             self,
             "Error",
@@ -1323,59 +1335,64 @@ class Train(QWidget):
         )
 
     def aniadir_boton(self):
-        self.add=QCheckBox(self.cbcategoria.currentText())
+        self.add = QCheckBox(self.cbcategoria.currentText())
         if any(i == self.cbcategoria.currentText() for i in self.seleccionados):
-            self.mensaje_error(self.cbcategoria.currentText()+' ya esta seleccionada.')
+            self.mensaje_error(
+                self.cbcategoria.currentText()+' ya esta seleccionada.')
         else:
-            
+
             self.seleccionados.append(str(self.cbcategoria.currentText()))
             self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
                                                   'black;color:white}')
-    
+
             self.seleccionlayout.addWidget(self.add)
             self.checkboxes.append(self.add)
         print(self.seleccionados)
 
     def eliminar_boton(self):
 
-        i=0
+        i = 0
         for c in self.checkboxes:
-            if c.isChecked()==True:
+            if c.isChecked() == True:
 
                 c.deleteLater()
                 self.checkboxes.pop(i)
                 self.seleccionados.pop(i)
                 print(c.text())
 
-            i=i+1
+            i = i+1
 
     def aniadir_categoria(self):
-        r=QFileDialog.getExistingDirectory(self, "Select Directory",directory=os.getcwd())
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
         print(os.listdir(r))
         print(r)
-        ultimo=r.split('/')[-1]
-        print('ult',ultimo)
+        ultimo = r.split('/')[-1]
+        print('ult', ultimo)
         # recorremos cada file del nuevo directorio
         for file_name in os.listdir(r):
-            source = r +'/'+ file_name
+            source = r + '/' + file_name
             destination = 'recetastextos/'+ultimo+'/' + file_name
-            print('se va al destino',destination)
-            #si existe el archivo de source lo movemos al destino
+            print('se va al destino', destination)
+            # si existe el archivo de source lo movemos al destino
 
-            if os.path.exists('recetastextos/'+ultimo)==False:
+            if os.path.exists('recetastextos/'+ultimo) == False:
                 os.makedirs('recetastextos/'+ultimo)
                 shutil.move(source, destination)
                 print('Moved:', file_name)
             else:
-                #aqui va a haber un error
+                # aqui va a haber un error
                 shutil.move(source, destination)
                 print('Moved:', file_name)
-        #actualizamos el combobox
+        # actualizamos el combobox
         self.cbcategoria.clear()
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
+
     def aniadir_directorio(self):
-        r=QFileDialog.getExistingDirectory(self, "Select Directory",directory=os.getcwd())
-        self.varableSeleccionCarpetaGuardarModelo=r
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
+        self.varableSeleccionCarpetaGuardarModelo = r
+
     def volver(self):
         self.gui = Index()
         self.gui.show()
@@ -1383,31 +1400,29 @@ class Train(QWidget):
         self.close()
 
     def guardarModelo(self, modeloEntrenado):
-        if(self.varableSeleccionCarpetaGuardarModelo==""):
+        if(self.varableSeleccionCarpetaGuardarModelo == ""):
             #print("no hay ruta")
             self.mensaje_error("No hay una ruta seleccionada")
-        elif(self.formguardar.text()==""):
+        elif(self.formguardar.text() == ""):
             #print("no hay nombre de archivo")
             self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
-            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + "/" + self.formguardar.text() + ".pkl"
+            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + \
+                "/" + self.formguardar.text() + ".pkl"
             joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
-
-
-
 
 
 class Test(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Eat Easer Test page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"));
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         # variables globales
-        self.nombrecarpeta=''
-        self.info=self.Informacion()
-        self.varableRutaModeloEntrenado=""
-        self.nombrecarpetaTestosTest=""
+        self.nombrecarpeta = ''
+        self.info = self.Informacion()
+        self.varableRutaModeloEntrenado = ""
+        self.nombrecarpetaTestosTest = ""
 
         # layout grande
         self.layout = QGridLayout()
@@ -1473,7 +1488,6 @@ class Test(QWidget):
         # grjd guardar
         self.guardar = QGridLayout()
 
-
         # botones de grid guardar
         self.path_btn = QPushButton('')
         self.btn_guardar = QPushButton()
@@ -1484,13 +1498,11 @@ class Test(QWidget):
         self.btn_guardar.setStyleSheet(sbotones)
         self.path_btn.setStyleSheet(sbotones)
 
-
-
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
-        #self.path_btn.clicked.connect()
-        #self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
+        # self.path_btn.clicked.connect()
+        # self.btn_guardar.clicked.connect(self.recuperarModeloEntrenado)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         # form del grid guardar
         self.formguardar = QLineEdit()
@@ -1507,15 +1519,11 @@ class Test(QWidget):
 
         self.grafico = QVBoxLayout()
 
-
-        #agregamos la tabla
+        # agregamos la tabla
         self.tableWidget = QTableWidget()
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
-
-
-
 
         self.grafico.addWidget(self.tableWidget)
 
@@ -1536,7 +1544,6 @@ class Test(QWidget):
         self.izqlayout.setRowStretch(3, 2)
         self.izqlayout.setRowStretch(4, 1)
 
-
         # zona derecha del layout labels
         self.linfo = QPushButton()
         self.ltitulo = QLabel('Nombre Algoritmo')
@@ -1553,10 +1560,14 @@ class Test(QWidget):
 
         # aniadimos widgets en lado derecho
         self.derlayout.addWidget(self.fondo, 0, 0, 6, 1)
-        self.derlayout.addWidget(self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.derlayout.addWidget(
+            self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
         self.derlayout.rowStretch(1)
 
         # aniadimos los layouts al total
@@ -1574,42 +1585,42 @@ class Test(QWidget):
         self.ver = QButtonGroup()
         self.ver.buttonClicked[int].connect(self.info.ver_)
 
-
-
     class Informacion(QWidget):
         def __init__(self):
             super().__init__()
             self.setWindowTitle("EatEaser-Visualizar Texto")
-            scategorias='font-family:"NSimSun";font-size:20px;border:1px solid black;border-radius:12px;'
-            stexto='line-height: 0.9;font-family:"NSimSun";font-size:24px;background-color:white;border:1px solid black;text-align:justify;text-transform:capitalize;padding:20px;'
-            sventana='background-color:black;color:white;font-family:"NSimSun";font-size:20px;text-align:center;'
-            self.layout=QGridLayout()
-            #self.varableRutaModeloEntrenado=""
-            self.nombre=QLabel('Nombre')
-            self.categoria=QLabel('Categoria')
-            self.texto=QLabel('Texto')
-            self.informacion= QScrollArea()
+            scategorias = 'font-family:"NSimSun";font-size:20px;border:1px solid black;border-radius:12px;'
+            stexto = 'line-height: 0.9;font-family:"NSimSun";font-size:24px;background-color:white;border:1px solid black;text-align:justify;text-transform:capitalize;padding:20px;'
+            sventana = 'background-color:black;color:white;font-family:"NSimSun";font-size:20px;text-align:center;'
+            self.layout = QGridLayout()
+            # self.varableRutaModeloEntrenado=""
+            self.nombre = QLabel('Nombre')
+            self.categoria = QLabel('Categoria')
+            self.texto = QLabel('Texto')
+            self.informacion = QScrollArea()
             self.texto.setWordWrap(True)
             self.texto.setStyleSheet(stexto)
             self.categoria.setStyleSheet(scategorias)
             self.nombre.setStyleSheet(scategorias)
-            self.id_ventana=QLabel('Visualizacion de texto')
+            self.id_ventana = QLabel('Visualizacion de texto')
             self.id_ventana.setStyleSheet(sventana)
             self.informacion.setWidget(self.texto)
             self.informacion.setWidgetResizable(True)
             self.layout.addWidget(self.id_ventana, 0, 0, 1, 4)
-            self.layout.addWidget(self.nombre, 1, 0,1,1,QtCore.Qt.AlignCenter)
-            self.layout.addWidget(self.categoria, 1, 1,1,1,QtCore.Qt.AlignCenter)
-            self.layout.addWidget(self.informacion, 2, 0,6,4)
+            self.layout.addWidget(self.nombre, 1, 0, 1,
+                                  1, QtCore.Qt.AlignCenter)
+            self.layout.addWidget(self.categoria, 1, 1, 1,
+                                  1, QtCore.Qt.AlignCenter)
+            self.layout.addWidget(self.informacion, 2, 0, 6, 4)
 
             self.setLayout(self.layout)
-            self.ruta=[]
-            self.carpeta_seleccionada=''
+            self.ruta = []
+            self.carpeta_seleccionada = ''
 
-        def ver_(self,list):
+        def ver_(self, list):
             with open(self.carpeta_seleccionada+'/'+self.ruta[list], "r") as archivo:
                 for linea in archivo:
-                    resultado=linea
+                    resultado = linea
 
             self.texto.setText(resultado)
             self.nombre.setText(self.ruta[list])
@@ -1620,51 +1631,52 @@ class Test(QWidget):
             # setting  the fixed size of window
             self.gui.setFixedSize(width, height)
 
-
     def informacion(self, titulo, descripcion):
         self.ltitulo.setText(titulo)
         self.ldescrip.setText(descripcion)
-    
+
     def recuperarRutaModeloEntrenado(self):
-        r = QFileDialog.getOpenFileName(parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+        r = QFileDialog.getOpenFileName(
+            parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
         self.varableRutaModeloEntrenado = r[0]
-        #print(self.varableRutaModeloEntrenado)
-     
-    
+        # print(self.varableRutaModeloEntrenado)
+
     def cargarModeloTest(self):
-        if(self.varableRutaModeloEntrenado!=""):
+        if(self.varableRutaModeloEntrenado != ""):
             print("modelo cargado")
-            
-            self.modelo_entrenado = joblib.load(self.varableRutaModeloEntrenado)
-            self.tableWidget.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
+
+            self.modelo_entrenado = joblib.load(
+                self.varableRutaModeloEntrenado)
+            self.tableWidget.setRowCount(
+                len(os.listdir(self.cbcategoria.placeholderText())))
             self.tableWidget.setColumnCount(3)
-            self.info.ruta=os.listdir(self.cbcategoria.placeholderText())
-            self.info.carpeta_seleccionada=self.cbcategoria.placeholderText()
-            self.tableWidget.setHorizontalHeaderLabels(["Texto", "Categoria", "Ver Texto"])
+            self.info.ruta = os.listdir(self.cbcategoria.placeholderText())
+            self.info.carpeta_seleccionada = self.cbcategoria.placeholderText()
+            self.tableWidget.setHorizontalHeaderLabels(
+                ["Texto", "Categoria", "Ver Texto"])
             header = self.tableWidget.horizontalHeader()
             header.setSectionResizeMode(0, QHeaderView.Stretch)
             header.setSectionResizeMode(1, QHeaderView.Stretch)
             header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-            self.nombrecarpetaTestosTest= "".join(self.cbcategoria.placeholderText())
-            self.nombrecarpeta=self.cbcategoria.placeholderText().split('/')[-1]
-    
+            self.nombrecarpetaTestosTest = "".join(
+                self.cbcategoria.placeholderText())
+            self.nombrecarpeta = self.cbcategoria.placeholderText().split(
+                '/')[-1]
+
     def setData(self):
-        
-        
-        
-        i=0
 
-        
+        i = 0
+
         for key in os.listdir(self.cbcategoria.placeholderText()):
-            boton=QPushButton()
+            boton = QPushButton()
             self.ver.addButton(boton)
-            self.ver.setId(boton,i)
+            self.ver.setId(boton, i)
             boton.setIcon(QIcon('imagenes/ojo.png'))
-            self.tableWidget.setItem(i,0,QTableWidgetItem(key))
-            self.tableWidget.setItem(i, 1, QTableWidgetItem("{}".format(self.prediccion[i])))
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(key))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem(
+                "{}".format(self.prediccion[i])))
             self.tableWidget.setCellWidget(i, 2, boton)
-            i=i+1
-
+            i = i+1
 
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.resizeRowsToContents()
@@ -1672,9 +1684,9 @@ class Test(QWidget):
         self.tableWidget.show()
 
     def aniadir_categoria(self):
-        r = QFileDialog.getExistingDirectory(self, "Select Directory", directory=os.getcwd())
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
         self.cbcategoria.setPlaceholderText(r)
-
 
     def volver(self):
         self.gui = Index()
@@ -1682,8 +1694,7 @@ class Test(QWidget):
         self.gui.showMaximized()
         self.close()
 
-
-    def mensaje_error(self,mensaje):
+    def mensaje_error(self, mensaje):
         QMessageBox.critical(
             self,
             "Error",
@@ -1691,79 +1702,82 @@ class Test(QWidget):
             buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
             defaultButton=QMessageBox.Discard,
         )
-    
+
     def cargarDF_Completo(self):
         import pandas as pd
-        df=pd.DataFrame()
-        df['receta']=None
-        df['clasif']=None
-        procesarDocs=ProcesarDocumentos()
-        listaTextosCarpeta=procesarDocs.lectura()
-        for index,content in enumerate(listaTextosCarpeta):
+        df = pd.DataFrame()
+        df['receta'] = None
+        df['clasif'] = None
+        procesarDocs = ProcesarDocumentos()
+        listaTextosCarpeta = procesarDocs.lectura()
+        for index, content in enumerate(listaTextosCarpeta):
             for i in range(len(content)):
-                text=procesarDocs.tratamientoTextos(listaTextosCarpeta[index][i])
-                df=df.append({'receta':text,'clasif':index},ignore_index=True)
+                text = procesarDocs.tratamientoTextos(
+                    listaTextosCarpeta[index][i])
+                df = df.append(
+                    {'receta': text, 'clasif': index}, ignore_index=True)
         return df
-        
+
     def vista_previa(self):
         self.vista.setText('')
         i = 0
-        self.total_archivos=0
+        self.total_archivos = 0
 
-        carpetas=''
-        #verificamos si hay seleccionados
+        carpetas = ''
+        # verificamos si hay seleccionados
 
-        if self.cbcategoria.placeholderText()=='' or self.ltitulo.text()=='Nombre Algoritmo' :
+        if self.cbcategoria.placeholderText() == '' or self.ltitulo.text() == 'Nombre Algoritmo':
 
             self.mensaje_error('Campos vacios.')
         else:
             self.cargarModeloTest()
-            modelo=self.modelo_entrenado
-            numeroFeature=modelo.n_features_in_
-            df_completo=self.cargarDF_Completo()
-            rutaCarpetaTesting=self.nombrecarpetaTestosTest+"/" #"c:/ddjashdashdjkash/../carpeta testing"
-            mod=modelosTFIDF(df_completo,numeroFeature)
-            print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(rutaCarpetaTesting))
-            prediccion=mod.predecir_Carpeta(rutaCarpetaTesting,modelo)
+            modelo = self.modelo_entrenado
+            numeroFeature = modelo.n_features_in_
+            df_completo = self.cargarDF_Completo()
+            rutaCarpetaTesting = self.nombrecarpetaTestosTest + \
+                "/"  # "c:/ddjashdashdjkash/../carpeta testing"
+            mod = modelosTFIDF(df_completo, numeroFeature)
+            print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(
+                rutaCarpetaTesting))
+            prediccion = mod.predecir_Carpeta(rutaCarpetaTesting, modelo)
             print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
-            diccionario={0:"Arroz",1:"Bebida" , 2:"Carne" , 3:"Marisco",4:"Pasta",5:"Pescado",6:"Platos menores",7:"Verdura"}
-            resultado=[]
+            diccionario = {0: "Arroz", 1: "Bebida", 2: "Carne", 3: "Marisco",
+                           4: "Pasta", 5: "Pescado", 6: "Platos menores", 7: "Verdura"}
+            resultado = []
             for i in prediccion:
                 resultado.append(diccionario[i])
-            self.prediccion=resultado
+            self.prediccion = resultado
             self.setData()
             # carpeta de entrenamiento
             # Vectorizer
             # usar metodo para predecir
-            #si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
+            # si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
             #mod.predecir_Carpeta(self.nombrecarpetaTestosTest, varableRutaModeloEntrenado)
-            
+
             size = len(os.listdir(self.cbcategoria.placeholderText()))
-                
+
             self.total_archivos = size
-            texto=self.nombrecarpeta + ': ' + str(size) + ' archivos\n'
-            
-
-
-
+            texto = self.nombrecarpeta + ': ' + str(size) + ' archivos\n'
 
             # le añado todos los que esten en listbox
-            self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' + str(self.total_archivos) + ' archivos\n')
-
+            self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
+                               str(self.total_archivos) + ' archivos\n')
 
 
 class WebScraping:
-    def __init__(self,kw):
-        self.keyword=kw
-        self.listaNombres=[]
-        self.listaTiempos= []
-        self.listaImagenes=[]
+    def __init__(self, kw):
+        self.keyword = kw
+        self.listaNombres = []
+        self.listaTiempos = []
+        self.listaImagenes = []
         self.listaPrecios = []
-        self.listaURL=[]
+        self.listaURL = []
+
     def conexionPaginaWebLidl(self):
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
-        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+        driver = webdriver.Chrome(
+            ChromeDriverManager().install(), chrome_options=options)
         urlLidl = "https://recetas.lidl.es/"
         driver.get(urlLidl)
         time.sleep(0.5)
@@ -1771,6 +1785,7 @@ class WebScraping:
         time.sleep(1)
         self.sacarInfoLidl(driver)
         return driver
+
     def conexionPaginaWebAhorraMas(self):
 
         urlAhorraMas = "https://www.ahorramas.com/buscador?q=" + self.keyword
@@ -1779,18 +1794,19 @@ class WebScraping:
         time.sleep(0.5)
         self.sacarInfoAhorraMas(soup)
 
-
     def quitarCookiesLidl(self, driver):
         # si sale el boton de las koockies lo acepta
         try:
-            driver.find_element(By.CLASS_NAME, "cookie-alert-extended-button").click()
+            driver.find_element(
+                By.CLASS_NAME, "cookie-alert-extended-button").click()
             print("Boton aceptar coquies seleccionado")
         except:
             print("No sale boton de aceptar coquies")
 
     def sacarInfoLidl(self, driver):
         # Para entrar en el alimento que nosotros queremos
-        escribirIngrediente = driver.find_element(By.CLASS_NAME, "inputField.js_mIngredientSearchGroup-input")
+        escribirIngrediente = driver.find_element(
+            By.CLASS_NAME, "inputField.js_mIngredientSearchGroup-input")
         escribirIngrediente.send_keys(self.keyword)
         # hay que darle un poco de tiempo para que despues de escribir seleccione el enter sino no lo ejecuta bien
         time.sleep(2)
@@ -1798,9 +1814,11 @@ class WebScraping:
 
         time.sleep(2)
         # PARA COGER EL NOMBRE DE LA RECETA DEL PRODUCTO
-        todasRecetas = driver.find_element(By.CLASS_NAME, "oRecipeFeed-resultContainer.js_oRecipeFeed-resultContainer")
+        todasRecetas = driver.find_element(
+            By.CLASS_NAME, "oRecipeFeed-resultContainer.js_oRecipeFeed-resultContainer")
         time.sleep(1)
-        nombre = todasRecetas.find_elements(By.CLASS_NAME, "mRecipeTeaser-title")
+        nombre = todasRecetas.find_elements(
+            By.CLASS_NAME, "mRecipeTeaser-title")
         self.listaNombres = []
         for n in nombre:
             self.listaNombres.append(n.text)
@@ -1812,7 +1830,8 @@ class WebScraping:
             self.listaTiempos.append(t.text)
         time.sleep(0.5)
         # PARA COGER LA IMAGEN DEL PRODUCTO
-        src = todasRecetas.find_elements(By.CLASS_NAME, "picture-img.mRecipeTeaser-image.lazyloaded")
+        src = todasRecetas.find_elements(
+            By.CLASS_NAME, "picture-img.mRecipeTeaser-image.lazyloaded")
         self.listaImagenes = []
         for s in src:
             self.listaImagenes.append(s.get_attribute("src"))
@@ -1822,8 +1841,6 @@ class WebScraping:
         self.listaURL = []
         for h in href:
             self.listaURL.append(h.get_attribute("href"))
-
-
 
     def sacarInfoAhorraMas(self, soup):
         # PARA COGER EL NOMBRE DEL PRODUCTO
@@ -1862,7 +1879,6 @@ class WebScraping:
             # print(len(listaURLSinDuplicados))
 
 
-import mmap
 class Download(QtWidgets.QMainWindow):
     def __init__(self):
         super(Download, self).__init__()
@@ -1870,102 +1886,108 @@ class Download(QtWidgets.QMainWindow):
         uic.loadUi('download.ui', self)
         self.info = self.Informacion()
         self.grid = self.findChild(QGridLayout, 'grid_descargas')
-        
-        self.btn_descarga=self.findChild(QPushButton,'descarga')
+
+        self.btn_descarga = self.findChild(QPushButton, 'descarga')
         self.enlace = self.findChild(QLineEdit, 'enlace')
         self.volver = self.findChild(QPushButton, 'volver')
         self.btn_descarga.clicked.connect(self.descargar)
         self.volver.clicked.connect(self.volver_)
-        self.btn_group=QButtonGroup()
+        self.btn_group = QButtonGroup()
         self.btn_group.buttonClicked[int].connect(self.info.setTexto)
+
     class Informacion(QMainWindow):
         def __init__(self):
             super().__init__()
             # Cargamos el .ui file
             uic.loadUi('vista.ui', self)
 
-            rc=RecursosAdicionales()
+            rc = RecursosAdicionales()
             self.texto = self.findChild(QLabel, 'texto')
             self.nombre = self.findChild(QLabel, 'nombre')
 
             self.copiar = self.findChild(QPushButton, 'copiar')
             self.copiar.clicked.connect(self.copiar_)
-        def setTexto(self,id):
+
+        def setTexto(self, id):
             with open('recetastextos/receta' + str(id) + '.txt', "r") as archivo:
                 for linea in archivo:
-                    resultado=linea
+                    resultado = linea
             self.texto.setText(resultado)
             self.nombre.setText('receta' + str(id) + '.txt')
             self.show()
             width = 900
             height = 500
             self.setFixedSize(width, height)
+
         def copiar_(self):
             clipboard.copy(self.texto.text())
-
-
 
     def volver_(self):
         self.gui = Index()
         self.gui.show()
         self.gui.showMaximized()
         self.close()
+
     def descargar(self):
         col = 0
         fila = 0
         print(self.enlace.text())
         dp = Depurador(self.enlace.text())
         dp.video()
-        
+
         for i in range(4):
-            #si es una lista vamos a rellenarlo todo
-            
-            if (col <4):
-                if dp.esLista()==True:
+            # si es una lista vamos a rellenarlo todo
+
+            if (col < 4):
+                if dp.esLista() == True:
                     frame = QFrame()
                     self.grid.addWidget(frame, fila, col)
-    
+
                     frame_grid = QVBoxLayout()
-    
+
                     frame.setLayout(frame_grid)
                     grid_titulo = QVBoxLayout()
                     grid_boton = QVBoxLayout()
                     frame_grid.addLayout(grid_titulo)
                     titulo = QLabel(dp.cv.nombrevideo)
-                    titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
+                    titulo.setStyleSheet(
+                        'font-family:"Bahnschrift Light";font-size:16px;')
                     grid_titulo.addWidget(titulo)
                     frame_grid.addLayout(grid_boton)
                     ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver,dp.cv._idvideo)
+                    self.btn_group.addButton(ver, dp.cv._idvideo)
                     ver.setStyleSheet(
                         'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
                     ver.setFixedSize(100, 60)
                     grid_boton.addWidget(ver)
-                    frame.setStyleSheet('background-color:white;border-radius:20px;')
+                    frame.setStyleSheet(
+                        'background-color:white;border-radius:20px;')
                     col = col + 1
-                else: 
+                else:
                     frame = QFrame()
                     self.grid.addWidget(frame, fila, col)
-    
+
                     frame_grid = QVBoxLayout()
-    
+
                     frame.setLayout(frame_grid)
                     grid_titulo = QVBoxLayout()
                     grid_boton = QVBoxLayout()
                     frame_grid.addLayout(grid_titulo)
                     titulo = QLabel(dp.cv.nombrevideo)
-                    titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
+                    titulo.setStyleSheet(
+                        'font-family:"Bahnschrift Light";font-size:16px;')
                     grid_titulo.addWidget(titulo)
                     frame_grid.addLayout(grid_boton)
                     ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver,dp.cv._idvideo)
+                    self.btn_group.addButton(ver, dp.cv._idvideo)
                     ver.setStyleSheet(
                         'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
                     ver.setFixedSize(100, 60)
                     grid_boton.addWidget(ver)
-                    frame.setStyleSheet('background-color:white;border-radius:20px;')
-                
-                    if col!=0:
+                    frame.setStyleSheet(
+                        'background-color:white;border-radius:20px;')
+
+                    if col != 0:
                         titulo.hide()
                         ver.hide()
                     col = col + 1
@@ -1973,94 +1995,103 @@ class Download(QtWidgets.QMainWindow):
                 col = 0
                 fila = fila + 1
 
+
 class App(QtWidgets.QMainWindow):
     def __init__(self):
         super(App, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('app.ui', self)
 
-        #ponemos unos estilos
-        scategorias='border-radius:100px;}QPushButton:hover{border:4px solid black;}'
+        # ponemos unos estilos
+        scategorias = 'border-radius:100px;}QPushButton:hover{border:4px solid black;}'
 
-        #llamamos a los botones
-        self.btnplatos= self.findChild(QtWidgets.QPushButton, 'btnplatos')
-        self.btnplatos.setStyleSheet("QPushButton{border-image:url(imagenes/platos.jpg);"+scategorias)
+        # llamamos a los botones
+        self.btnplatos = self.findChild(QtWidgets.QPushButton, 'btnplatos')
+        self.btnplatos.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/platos.jpg);"+scategorias)
         self.btnplatos.setFixedSize(200, 200)
-        self.btnverdura= self.findChild(QtWidgets.QPushButton, 'btnverdura')
-        self.btnverdura.setStyleSheet("QPushButton{border-image:url(imagenes/verdura.jpg);"+scategorias)
+        self.btnverdura = self.findChild(QtWidgets.QPushButton, 'btnverdura')
+        self.btnverdura.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/verdura.jpg);"+scategorias)
         self.btnverdura.setFixedSize(200, 200)
-        self.btnarroz= self.findChild(QtWidgets.QPushButton, 'btnarroz')
-        self.btnarroz.setStyleSheet("QPushButton{border-image:url(imagenes/arroz.jpg);"+scategorias)
+        self.btnarroz = self.findChild(QtWidgets.QPushButton, 'btnarroz')
+        self.btnarroz.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/arroz.jpg);"+scategorias)
         self.btnarroz.setFixedSize(200, 200)
         self.btnpasta = self.findChild(QtWidgets.QPushButton, 'btnpasta')
-        self.btnpasta.setStyleSheet("QPushButton{border-image:url(imagenes/pasta.jpg);"+scategorias)
+        self.btnpasta.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/pasta.jpg);"+scategorias)
         self.btnpasta.setFixedSize(200, 200)
         self.btnmarisco = self.findChild(QtWidgets.QPushButton, 'btnmarisco')
-        self.btnmarisco.setStyleSheet("QPushButton{border-image:url(imagenes/marisco.jpg);"+scategorias)
+        self.btnmarisco.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/marisco.jpg);"+scategorias)
         self.btnmarisco.setFixedSize(200, 200)
         self.btnpescado = self.findChild(QtWidgets.QPushButton, 'btnpescado')
-        self.btnpescado.setStyleSheet("QPushButton{border-image:url(imagenes/pescado.jpg);"+scategorias)
+        self.btnpescado.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/pescado.jpg);"+scategorias)
         self.btnpescado.setFixedSize(200, 200)
         self.btnbebidas = self.findChild(QPushButton, 'btnbebidas')
-        self.btnbebidas.setStyleSheet("QPushButton{border-image:url(imagenes/bebida.jpg);"+scategorias)
+        self.btnbebidas.setStyleSheet(
+            "QPushButton{border-image:url(imagenes/bebida.jpg);"+scategorias)
         self.btnbebidas.setFixedSize(200, 200)
         self.btncarne = self.findChild(QPushButton, 'btncarne')
-        self.btncarne.setStyleSheet("QPushButton{background-image:url(imagenes/carne.jpg);"+scategorias)
+        self.btncarne.setStyleSheet(
+            "QPushButton{background-image:url(imagenes/carne.jpg);"+scategorias)
         self.btncarne.setFixedSize(200, 200)
         self.busqueda = self.findChild(QLineEdit, 'busqueda')
         self.btnbuscar = self.findChild(QPushButton, 'buscar')
         self.btnbuscar.setIcon(QIcon('imagenes/lupa.png'))
-        self.busqueda.setStyleSheet("QPushButton{border-radius:10px;border:1px solid black;background-color:transparent;")
+        self.busqueda.setStyleSheet(
+            "QPushButton{border-radius:10px;border:1px solid black;background-color:transparent;")
         #self.volver = self.findChild(QPushButton, 'back')
-        #self.volver.setIcon(QIcon('imagenes/menu.png'))
-        self.txt_frame=self.findChild(QGridLayout, 'gridLayout_8')
+        # self.volver.setIcon(QIcon('imagenes/menu.png'))
+        self.txt_frame = self.findChild(QGridLayout, 'gridLayout_8')
 
-        self.grupo_botones=QButtonGroup()
+        self.grupo_botones = QButtonGroup()
         self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
 
-        #agrego primer frame
-
+        # agrego primer frame
 
         self.buscar_recetas('cebolla')
         self.buscar_texto('Carpeta Arroz')
-        #ponemos acciones a los botones
-        self.btnbuscar.clicked.connect(lambda: self.buscar_recetas(self.busqueda.text()))
-        self.btncarne.clicked.connect(lambda :self.buscar_recetas('carne'))
+        # ponemos acciones a los botones
+        self.btnbuscar.clicked.connect(
+            lambda: self.buscar_recetas(self.busqueda.text()))
+        self.btncarne.clicked.connect(lambda: self.buscar_recetas('carne'))
         self.btnpasta.clicked.connect(lambda: self.buscar_recetas('pasta'))
         self.btnpescado.clicked.connect(lambda: self.buscar_recetas('pescado'))
         self.btnmarisco.clicked.connect(lambda: self.buscar_recetas('marisco'))
         self.btnbebidas.clicked.connect(lambda: self.buscar_recetas('bebida'))
         self.btnplatos.clicked.connect(lambda: self.buscar_recetas('pan'))
         self.btnverdura.clicked.connect(lambda: self.buscar_recetas('lechuga'))
-        #ponemos un default de recetas
-        #self.buscar_recetas('cebolla')
+        # ponemos un default de recetas
+        # self.buscar_recetas('cebolla')
 
         self.setStyleSheet('background-color:white;')
         self.show()
-    def buscar_texto(self,categoria):
-        directorio=os.listdir('recetastextos/'+categoria)
 
-        j=0
-        fila=0
-        for i,texto in enumerate(directorio):
-            #quiero que sean 10 columnas
+    def buscar_texto(self, categoria):
+        directorio = os.listdir('recetastextos/'+categoria)
 
-            if j<10:
+        j = 0
+        fila = 0
+        for i, texto in enumerate(directorio):
+            # quiero que sean 10 columnas
+
+            if j < 10:
 
                 self.boton = QPushButton(texto)
-                self.boton.setStyleSheet('QPushButton{border-radius:20px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
-                self.txt_frame.addWidget(self.boton,fila,j)
-                j=j+1
+                self.boton.setStyleSheet(
+                    'QPushButton{border-radius:20px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
+                self.txt_frame.addWidget(self.boton, fila, j)
+                j = j+1
             else:
-                j=0
-                fila=fila+1
+                j = 0
+                fila = fila+1
 
-
-
-    def buscar_productos(self,producto):
+    def buscar_productos(self, producto):
         ws = WebScraping(producto)
         cont = 0
-
 
         ws.conexionPaginaWebAhorraMas()
         for i, element in enumerate(ws.listaNombres):
@@ -2083,8 +2114,8 @@ class App(QtWidgets.QMainWindow):
                 imagen.setScaledContents(True)
 
             cont = cont + 1
-            
-    def buscar_recetas(self,categoria):
+
+    def buscar_recetas(self, categoria):
         j = 0
         fila = 2
         ws2 = WebScraping(categoria)
@@ -2098,7 +2129,8 @@ class App(QtWidgets.QMainWindow):
                     if response.status_code == 200:
                         with open("sample" + str(i) + ".jpg", 'wb') as f:
                             f.write(response.content)
-                    imagen.setStyleSheet("border-image:url(sample" + str(i) + ".jpg);border-radius:100%;")
+                    imagen.setStyleSheet(
+                        "border-image:url(sample" + str(i) + ".jpg);border-radius:100%;")
                     imagen.setFixedSize(200, 200)
 
                 except:
@@ -2141,9 +2173,12 @@ class App(QtWidgets.QMainWindow):
 
                     n.setStyleSheet(
                         'background-color:#ede8e1;border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;')
-                    n2.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
-                    n3.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
-                    n4.setStyleSheet('background-color:white;text-decoration: underline;border:1px solid white;')
+                    n2.setStyleSheet(
+                        'background-color:white;text-decoration: underline;border:1px solid white;')
+                    n3.setStyleSheet(
+                        'background-color:white;text-decoration: underline;border:1px solid white;')
+                    n4.setStyleSheet(
+                        'background-color:white;text-decoration: underline;border:1px solid white;')
                     j = j + 1
             else:
                 j = 0
@@ -2152,18 +2187,12 @@ class App(QtWidgets.QMainWindow):
         self.buscar_productos(categoria)
 
 
+if __name__ == '__main__':
 
+    app = QApplication(sys.argv)
 
-if __name__=='__main__':
-    
-    
-    
-    app=QApplication(sys.argv)
-
-    gui=Index()
+    gui = Index()
     gui.show()
     gui.showMaximized()
 
     sys.exit(app.exec_())
-
-
