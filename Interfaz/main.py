@@ -250,11 +250,11 @@ class Depurador:
        |enlace: es un string que se colocara el enlace del video"""
 
 
-    def filtroDescarga(self):
+    def esLista(self):
         if(re.search("/playlist?", self.enlace)):
-            self.lista()
+            return True
         else:
-            self.video()
+            return False
 
     def video(self):
         try:
@@ -1914,33 +1914,60 @@ class Download(QtWidgets.QMainWindow):
         fila = 0
         print(self.enlace.text())
         dp = Depurador(self.enlace.text())
-        dp.filtroDescarga()
-
+        dp.video()
+        
         for i in range(4):
-
+            #si es una lista vamos a rellenarlo todo
+            
             if (col <4):
-
-                frame = QFrame()
-                self.grid.addWidget(frame, fila, col)
-
-                frame_grid = QVBoxLayout()
-
-                frame.setLayout(frame_grid)
-                grid_titulo = QVBoxLayout()
-                grid_boton = QVBoxLayout()
-                frame_grid.addLayout(grid_titulo)
-                titulo = QLabel(dp.cv.nombrevideo)
-                titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
-                grid_titulo.addWidget(titulo)
-                frame_grid.addLayout(grid_boton)
-                ver = QPushButton('Ver texto')
-                self.btn_group.addButton(ver,dp.cv._idvideo)
-                ver.setStyleSheet(
-                    'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
-                ver.setFixedSize(100, 60)
-                grid_boton.addWidget(ver)
-                frame.setStyleSheet('background-color:white;border-radius:20px;')
-                col = col + 1
+                if dp.esLista()==True:
+                    frame = QFrame()
+                    self.grid.addWidget(frame, fila, col)
+    
+                    frame_grid = QVBoxLayout()
+    
+                    frame.setLayout(frame_grid)
+                    grid_titulo = QVBoxLayout()
+                    grid_boton = QVBoxLayout()
+                    frame_grid.addLayout(grid_titulo)
+                    titulo = QLabel(dp.cv.nombrevideo)
+                    titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
+                    grid_titulo.addWidget(titulo)
+                    frame_grid.addLayout(grid_boton)
+                    ver = QPushButton('Ver texto')
+                    self.btn_group.addButton(ver,dp.cv._idvideo)
+                    ver.setStyleSheet(
+                        'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                    ver.setFixedSize(100, 60)
+                    grid_boton.addWidget(ver)
+                    frame.setStyleSheet('background-color:white;border-radius:20px;')
+                    col = col + 1
+                else: 
+                    frame = QFrame()
+                    self.grid.addWidget(frame, fila, col)
+    
+                    frame_grid = QVBoxLayout()
+    
+                    frame.setLayout(frame_grid)
+                    grid_titulo = QVBoxLayout()
+                    grid_boton = QVBoxLayout()
+                    frame_grid.addLayout(grid_titulo)
+                    titulo = QLabel(dp.cv.nombrevideo)
+                    titulo.setStyleSheet('font-family:"Bahnschrift Light";font-size:16px;')
+                    grid_titulo.addWidget(titulo)
+                    frame_grid.addLayout(grid_boton)
+                    ver = QPushButton('Ver texto')
+                    self.btn_group.addButton(ver,dp.cv._idvideo)
+                    ver.setStyleSheet(
+                        'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                    ver.setFixedSize(100, 60)
+                    grid_boton.addWidget(ver)
+                    frame.setStyleSheet('background-color:white;border-radius:20px;')
+                
+                    if col!=0:
+                        titulo.hide()
+                        ver.hide()
+                    col = col + 1
             else:
                 col = 0
                 fila = fila + 1
