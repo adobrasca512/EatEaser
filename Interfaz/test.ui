@@ -38,7 +38,7 @@ border-radius:20px;</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="volver">
             <property name="styleSheet">
              <string notr="true">background-color:transparent;</string>
             </property>
@@ -88,7 +88,7 @@ border-radius:10px;</string>
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="aniadir">
             <property name="styleSheet">
              <string notr="true">background-color:white;
 border-radius:5px;</string>
@@ -260,7 +260,7 @@ border-radius:10px;</string>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="selectmodelo">
             <property name="maximumSize">
              <size>
               <width>50</width>
@@ -290,6 +290,33 @@ border-radius:5px;</string>
             </property>
             <property name="text">
              <string>Seleciona un modelo:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="play">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:white;
+border-radius:20px;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>imagenes/boton-de-play.png</normaloff>imagenes/boton-de-play.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>40</width>
+              <height>40</height>
+             </size>
             </property>
            </widget>
           </item>
