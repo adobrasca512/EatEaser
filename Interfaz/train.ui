@@ -161,6 +161,9 @@ border-radius:10px;</string>
               <pointsize>11</pointsize>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius:5px;</string>
+            </property>
            </widget>
           </item>
           <item>

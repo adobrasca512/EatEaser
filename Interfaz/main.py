@@ -968,17 +968,23 @@ class Index(QtWidgets.QMainWindow):
     def openWindow(self):
         if self.state == 'Fase de Entrenamiento':
             self.gui = Train()
+            self.gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
+
             self.gui.show()
             self.gui.showMaximized()
             self.close()
         if self.state == 'Fase de Testeo':
             self.gui = Test()
+            self.gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
+
             self.gui.show()
             self.gui.showMaximized()
             self.close()
         if self.state == 'Aplicación':
             QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.gui = App()
+            self.gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
+
             self.gui.show()
             self.gui.showMaximized()
             QApplication.restoreOverrideCursor()
@@ -986,6 +992,7 @@ class Index(QtWidgets.QMainWindow):
         if self.state == 'Descargar':
             # QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.gui = Download()
+            self.gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
             self.gui.show()
             self.gui.showMaximized()
             # QApplication.restoreOverrideCursor()
@@ -1001,14 +1008,17 @@ class Test_(QMainWindow):
         uic.loadUi('test.ui', self)
    
 
-class Train_(Index):
+class Train(Index):
     def __init__(self):
         super().__init__()
         uic.loadUi('train.ui', self)
+        self.setWindowTitle("Eat Easer Train page")
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         self.cbcategoria =self.findChild(QComboBox,'comboBox')
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
         self.varableSeleccionCarpetaGuardarModelo = ""
         self.setWidgets()
+        self.df = pd.DataFrame()
         
         self.switchButtons()
     def setWidgets(self):
@@ -1197,7 +1207,7 @@ class Train_(Index):
         r = QFileDialog.getExistingDirectory(
             self, "Select Directory", directory=os.getcwd())
         self.varableSeleccionCarpetaGuardarModelo = r
-
+        self.formguardar.setText(r)
     
 
     def guardarModelo(self, modeloEntrenado):
@@ -1212,369 +1222,6 @@ class Train_(Index):
                 "/" + self.formguardar.text() + ".pkl"
             joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
-class Train(Index):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Eat Easer Train page")
-        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
-        # variables globales
-        self.setWidgets()
-        self.setLayouts()
-        self.stylesheet()
-        self.addlayout_to_layouts()
-        self.addwindgets_to_layouts()
-        self.activarBotones()
-        self.df = pd.DataFrame()
-        
-        # self.modeloTfIdfEjecucion=cargarDFParaModelo()#mama
-
-    def setLayouts(self):
-        # layout grande
-        self.layout = QGridLayout()
-        # partes del layout grande
-        self.izqlayout = QGridLayout()
-        self.derlayout = QGridLayout()
-        # grid de la ruta
-        self.rutalayout = QGridLayout()
-        # grid de algoritmos
-        self.algoritmolayout = QGridLayout()
-        # grjd guardar
-        self.guardar = QGridLayout()
-        self.seleccionlayout = QHBoxLayout()
-        self.grafico = QVBoxLayout()
-        self.setLayout(self.layout)
-
-    def setWidgets(self):
-        # variable que almacena las carpetas de textos que ya han sido añadidas/seleccionadas
-        self.seleccionados = []
-        self.checkboxes = []
-        self.varableSeleccionCarpetaGuardarModelo = ""
-        # variable que almacena el algoritmo que se ha seleccionado con los botones
-        self.algoritmo_clicked = ""
-        # labels de ruta
-        self.lcategoria = QLabel('Selecciona la categoria')
-        # combobox de ruta
-        self.cbcategoria = QComboBox()
-        self.cbcategoria.setFixedSize(800, 40)
-        self.cbcategoria.addItems(os.listdir('recetastextos/'))
-        # zona derecha del layout labels
-        self.linfo = QPushButton()
-        self.ltitulo = QLabel('Nombre Algoritmo')
-        self.ldescrip = QLabel('Descripcion Algoritmo')
-        self.vista = QLabel('Vista Algoritmo')
-        self.fondo = QLabel()
-        # estilizar labels
-        self.linfo.setIcon(QIcon('imagenes/informacion.png'))
-        self.linfo.setFixedSize(QtCore.QSize(400, 80))
-        size = QSize(50, 50)
-        self.linfo.setIconSize(size)
-        # labels algoritmo
-        self.lalgoritmo = QLabel('Algoritmo:')
-        # botones de algorimos
-        self.btn_svm = QPushButton('SVM')
-        self.btn_rf = QPushButton('Random-Forest')
-        self.btn_mr = QPushButton('Multinomial Regression')
-        self.btnalgoritmo = QPushButton()
-        # estilizamos botones
-        self.btn_svm.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_rf.setFixedSize(QtCore.QSize(400, 80))
-        self.btn_mr.setFixedSize(QtCore.QSize(400, 80))
-        # grid del grafico
-        self.layout13 = QLabel('d')
-        size = QSize(50, 50)
-        self.btnalgoritmo.setIconSize(size)
-        self.btnalgoritmo.setIcon(QIcon('imagenes/boton-de-play.png'))
-        self.btnalgoritmo.setFixedSize(QtCore.QSize(80, 80))
-        # botones de ruta
-        self.anadir = QPushButton()
-        self.anadir.setIcon(QIcon('imagenes/cargar.png'))
-        self.anadir.setFixedSize(QtCore.QSize(40, 40))
-        self.nuevo = QPushButton()
-        self.nuevo.setIcon(QIcon('imagenes/add.png'))
-        self.nuevo.setFixedSize(QtCore.QSize(40, 40))
-        # botones de grid guardar
-        self.borrar = QPushButton()
-        self.path_btn = QPushButton('')
-        self.btn_guardar = QPushButton()
-        # estilizamos botones
-        self.borrar.setFixedSize(QtCore.QSize(80, 80))
-        self.borrar.setIcon(QIcon('imagenes/delete.png'))
-        self.path_btn.setIcon(QIcon('imagenes/lupa.png'))
-        self.btn_guardar.setIcon(QIcon('imagenes/guardar-el-archivo.png'))
-        # form del grid guardar
-        self.formguardar = QLineEdit()
-        self.lform = QLabel("Guardar modelo:")
-        # boton de retorno izquierdo
-        self.retorno = QPushButton(u"\u2190" + ' Main Page/ Entrenamiento')
-
-    def stylesheet(self):
-        # stylesheet
-        scategoria = "font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%;padding:5px;"
-        scbcategoria = "color :black;background-color:white;border-bottom:3px solid black;font-weight:lighter;font-size:22px;font-family:'Bahnschrift Light';letter-spacing:3px;"
-        sbtnruta = 'QPushButton{background-color:transparent;border:1px solid transparent}QPushButton:hover{border:1px solid black;border-radius:12px;}'
-        sbotones = 'QPushButton{border:transparent;background-color:transparent;}QPushButton:hover{border:2px solid black;border-radius:12px;}'
-        salgoritmo = "font-family:'Bahnschrift Light';font-size:24px;letter-spacing:3px;padding:0%"
-        sbtnalgoritmo = 'QPushButton{color:white;border-radius:12px;background-color:black;margin:0;font-family:"Bahnschrift Light";font-size:24px;}QPushButton:hover{color:black;background-color:transparent;border:2px solid black;}'
-        sform = "font-family:'Bahnschrift Light';font-style:italic;font-size:24px;letter-spacing:3px;padding:0%"
-        sinfo = 'background-color:white;border-radius:12px;border:1px white;'
-        stextos_derecha = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;'
-        sretorno = 'font-family:"NSimSun";font-size:24px;overflow:hidden;white-space: nowrap;color:white;background-color:black;'
-        # estilizamos los botones
-        self.btnalgoritmo.setStyleSheet(sbotones)
-        self.btn_svm.setStyleSheet(sbtnalgoritmo)
-        self.btn_rf.setStyleSheet(sbtnalgoritmo)
-        self.btn_mr.setStyleSheet(sbtnalgoritmo)
-        self.nuevo.setStyleSheet(sbtnruta)
-        self.anadir.setStyleSheet(sbtnruta)
-        self.cbcategoria.setStyleSheet(scbcategoria)
-        self.lcategoria.setStyleSheet(scategoria)
-        # estilizamos zona derecha
-        self.ltitulo.setStyleSheet(stextos_derecha)
-        self.ldescrip.setStyleSheet(stextos_derecha)
-        self.vista.setStyleSheet(stextos_derecha)
-        self.fondo.setStyleSheet(sinfo)
-        self.linfo.setStyleSheet(sinfo)
-        self.lalgoritmo.setStyleSheet(salgoritmo)
-        self.retorno.setStyleSheet(sretorno)
-        self.btn_guardar.setStyleSheet(sbotones)
-        self.path_btn.setStyleSheet(sbotones)
-        self.lform.setStyleSheet(sform)
-        self.layout13.setStyleSheet('background-color:white')
-
-    def addlayout_to_layouts(self):
-        # aniadimos los layouts al total
-        self.layout.addLayout(self.izqlayout, 0, 0)
-        self.layout.addLayout(self.derlayout, 0, 1)
-        self.layout.setColumnStretch(0, 3)
-        self.layout.setColumnStretch(1, 1)
-        # aniadimos los layouts al lado izq
-        self.izqlayout.addLayout(self.rutalayout, 1, 0)
-        self.izqlayout.addLayout(self.algoritmolayout, 2, 0)
-        self.izqlayout.addLayout(self.seleccionlayout, 3, 0)
-        self.izqlayout.addLayout(self.grafico, 4, 0)
-        self.izqlayout.addLayout(self.guardar, 5, 0)
-        # estilizamos los layouts
-        self.izqlayout.setRowStretch(0, 1)
-        self.izqlayout.setRowStretch(1, 1)
-        self.izqlayout.setRowStretch(2, 1)
-        self.izqlayout.setRowStretch(3, 1)
-        self.izqlayout.setRowStretch(4, 2)
-        self.izqlayout.setRowStretch(5, 1)
-
-    def addwindgets_to_layouts(self):
-        # aniadimos al layout de ruta
-        self.rutalayout.addWidget(self.lcategoria, 0, 0, 1, 1)
-        self.rutalayout.addWidget(self.cbcategoria, 0, 1, 1, 1)
-        self.rutalayout.addWidget(self.anadir, 0, 2, 1, 1)
-        self.rutalayout.addWidget(self.nuevo, 0, 3, 1, 1)
-        # aniadimos widgets en lado derecho
-        self.derlayout.addWidget(self.fondo, 0, 0, 6, 1)
-        self.derlayout.addWidget(
-            self.linfo, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(
-            self.ltitulo, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(
-            self.ldescrip, 2, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.addWidget(
-            self.vista, 3, 0, 3, 1, QtCore.Qt.AlignHCenter)
-        self.derlayout.rowStretch(1)
-        # aniadimos los widgets a guardar
-        self.guardar.addWidget(self.lform, 0, 0, 1, 1)
-        self.guardar.addWidget(self.formguardar, 0, 1, 1, 1)
-        self.guardar.addWidget(self.btn_guardar, 0, 2)
-        self.guardar.addWidget(self.path_btn, 0, 3)
-        # aniadimos al grid de algoritmos
-        self.algoritmolayout.addWidget(self.lalgoritmo, 0, 0, 1, 4)
-        self.algoritmolayout.addWidget(self.btn_svm, 1, 0, 2, 1)
-        self.algoritmolayout.addWidget(self.btn_rf, 1, 1, 2, 1)
-        self.algoritmolayout.addWidget(self.btn_mr, 1, 2, 2, 1)
-        self.algoritmolayout.addWidget(self.btnalgoritmo, 1, 3, 2, 1)
-        # aniadimos a la seleccion
-        self.seleccionlayout.addWidget(self.borrar, 1, QtCore.Qt.AlignLeft)
-        self.grafico.addWidget(self.layout13)
-        self.izqlayout.addWidget(self.retorno, 0, 0)
-
-    def activarBotones(self):
-        # eventos de botones
-        self.anadir.clicked.connect(self.aniadir_boton)
-        self.borrar.clicked.connect(self.eliminar_boton)
-        self.path_btn.clicked.connect(self.aniadir_directorio)
-        self.btn_guardar.clicked.connect(self.guardarModelo)
-        self.btn_svm.clicked.connect(
-            lambda: (self.informacion('Algoritmo SVM', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("SVM")))
-        self.btn_mr.clicked.connect(
-            lambda: (self.informacion('Algoritmo Multinomial Regression', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("MR")))
-        self.btn_rf.clicked.connect(
-            lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("RF")))
-        self.btnalgoritmo.clicked.connect(self.vista_previa)
-        self.nuevo.clicked.connect(self.aniadir_categoria)
-        self.retorno.clicked.connect(self.volver_)
-
-    def cambiar_algoritmo(self, nombre):
-        self.algoritmo_clicked = nombre
-
-    def informacion(self, titulo, descripcion):
-        self.ltitulo.setText(titulo)
-        self.ldescrip.setText(descripcion)
-    # FUNCION PARA REALIZAR EL ALGORITMO
-
-    def crearDF(self):
-
-        df = pd.DataFrame()
-        df['receta'] = None
-        df['clasif'] = None
-        procesarDocs = ProcesarDocumentos()
-        listaTextosCarpeta = procesarDocs.lectura()
-        diccionarioCarpetas = {'Carpeta Arroz': 0, 'Carpeta Bebidas': 1, 'Carpeta Carnes': 2,
-                               'Carpeta Marisco': 3, 'Carpeta Pasta': 4, 'Carpeta Pescados': 5,
-                               'Carpeta Platos Menores': 6, 'Carpeta Verduras': 7}
-
-        print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
-        print(self.seleccionados[0])
-        seleccion = []
-        for i in range(len(self.seleccionados)):
-            seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
-
-        for index, content in enumerate(listaTextosCarpeta):
-            if index in seleccion:
-                for i in range(len(content)):
-                    text = procesarDocs.tratamientoTextos(
-                        listaTextosCarpeta[index][i])
-                    df = df.append(
-                        {'receta': text, 'clasif': index}, ignore_index=True)
-
-        print(df['clasif'].unique())
-
-        return df
-
-    def vista_previa(self):
-        self.vista.setText('')
-        i = 0
-        self.total_archivos = 0
-
-        carpetas = ''
-        # verificamos si hay seleccionados
-
-        if len(self.seleccionados) == 0 or self.ltitulo.text() == 'Nombre Algoritmo':
-
-            self.mensaje_error('Campos vacios.')
-        else:
-
-            self.df1 = self.crearDF()
-            modelo = modelosTFIDF(self.df1, 7000)
-
-            if(self.algoritmo_clicked == "SVM"):
-                # self.seleccionados
-                self.modeloEntrenadoFinal = modelo.Entrenar_SVM()
-                print('SVM')
-            elif(self.algoritmo_clicked == "MR"):
-                self.modeloEntrenadoFinal = modelo.Entrenar_RegresionMultinomial()
-                print('MR')
-            elif(self.algoritmo_clicked == "RF"):
-                self.modeloEntrenadoFinal = modelo.Entrenar_RF()
-                print('RF')
-
-            print(self.df1.head())
-
-            print("El modelo ha sido entrenado correctamente! :)")
-
-            # verificamos si hay algoritmo seleccionado
-            for i in self.seleccionados:
-
-                size = len(os.listdir('recetastextos/' + i))
-
-                self.total_archivos = size + self.total_archivos
-                texto = i + ': ' + str(size) + ' archivos\n'
-
-                carpetas = carpetas+'\n'+texto
-
-        # le añado todos los que esten en listbox
-        self.vista.setText(carpetas+'\n'+'TOTAL: ' + ': ' +
-                           str(self.total_archivos) + ' archivos\n')
-
-    def mensaje_error(self, mensaje):
-        QMessageBox.critical(
-            self,
-            "Error",
-            mensaje,
-            buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
-            defaultButton=QMessageBox.Discard,
-        )
-
-    def aniadir_boton(self):
-        self.add = QCheckBox(self.cbcategoria.currentText())
-        if any(i == self.cbcategoria.currentText() for i in self.seleccionados):
-            self.mensaje_error(
-                self.cbcategoria.currentText()+' ya esta seleccionada.')
-        else:
-
-            self.seleccionados.append(str(self.cbcategoria.currentText()))
-            self.add.setStyleSheet('QPushButton{'+'background-color:transparent;border-radius:12px;border:2px solid black;font-family:"Bahnschrift Light";font-size:20px;letter-spacing:3px;}QPushButton:hover{background-color:'
-                                                  'black;color:white}')
-
-            self.seleccionlayout.addWidget(self.add)
-            self.checkboxes.append(self.add)
-        print(self.seleccionados)
-
-    def eliminar_boton(self):
-
-        i = 0
-        for c in self.checkboxes:
-            if c.isChecked() == True:
-
-                c.deleteLater()
-                self.checkboxes.pop(i)
-                self.seleccionados.pop(i)
-                print(c.text())
-
-            i = i+1
-
-    def aniadir_categoria(self):
-        r = QFileDialog.getExistingDirectory(
-            self, "Select Directory", directory=os.getcwd())
-        print(os.listdir(r))
-        print(r)
-        ultimo = r.split('/')[-1]
-        print('ult', ultimo)
-        # recorremos cada file del nuevo directorio
-        for file_name in os.listdir(r):
-            source = r + '/' + file_name
-            destination = 'recetastextos/'+ultimo+'/' + file_name
-            print('se va al destino', destination)
-            # si existe el archivo de source lo movemos al destino
-
-            if os.path.exists('recetastextos/'+ultimo) == False:
-                os.makedirs('recetastextos/'+ultimo)
-                shutil.move(source, destination)
-                print('Moved:', file_name)
-            else:
-                # aqui va a haber un error
-                shutil.move(source, destination)
-                print('Moved:', file_name)
-        # actualizamos el combobox
-        self.cbcategoria.clear()
-        self.cbcategoria.addItems(os.listdir('recetastextos/'))
-
-    def aniadir_directorio(self):
-        r = QFileDialog.getExistingDirectory(
-            self, "Select Directory", directory=os.getcwd())
-        self.varableSeleccionCarpetaGuardarModelo = r
-
-    
-
-    def guardarModelo(self, modeloEntrenado):
-        if(self.varableSeleccionCarpetaGuardarModelo == ""):
-            #print("no hay ruta")
-            self.mensaje_error("No hay una ruta seleccionada")
-        elif(self.formguardar.text() == ""):
-            #print("no hay nombre de archivo")
-            self.mensaje_error("Pon un nombre al archivo que se va a guardar")
-        else:
-            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + \
-                "/" + self.formguardar.text() + ".pkl"
-            joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
-            print(rutaGuardarModelo)
-
 
 class Test(Index):
     def __init__(self):
@@ -2379,7 +2026,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    gui = Train_()
+    gui = Index()
     gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
