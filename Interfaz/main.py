@@ -1234,6 +1234,8 @@ class Test_(Index):
         self.btn_seleccion_modelo=self.findChild(QPushButton,'selectmodelo')
         self.nuevo=self.findChild(QPushButton,'aniadir')
         self.btnalgoritmo=self.findChild(QPushButton,'play')
+        self.ltitulo=self.findChild(QLabel,'titulo')
+        self.ltitulo=self.findChild(QLabel,'descripcion')
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1243,6 +1245,10 @@ class Test_(Index):
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
+        self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
+        self.tableWidget=QTableWidget()
+        self.grafico.addWidget(self.tableWidget)
+        self.vista =self.findChild(QLabel,'vista')
     def informacion(self, titulo, descripcion):
          self.ltitulo.setText(titulo)
          self.ldescrip.setText(descripcion)
@@ -1250,6 +1256,8 @@ class Test_(Index):
     def recuperarRutaModeloEntrenado(self):
          r = QFileDialog.getOpenFileName(
              parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+         direct=self.findChild(QLabel,'direccion')
+         direct.setText(r)
          self.varableRutaModeloEntrenado = r[0]
          # print(self.varableRutaModeloEntrenado)
 
