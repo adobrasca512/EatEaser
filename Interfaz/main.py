@@ -9,7 +9,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-
+import webbrowser
 import glob
 import re
 import requests
@@ -197,39 +197,26 @@ class ControladorVideo:
 
     def repetido(self):
         return self.rec.buscar_json('recetastextos/indice.json', 'nombre', self.titulovideo)
-
-
-class Depurador:
-
-    def __init__(self, enlace):
-        self.rec = RecursosAdicionales()
-        self.enlace = enlace
-        self.cv = ControladorVideo(self.enlace)
-    """|VIDEO: proceso etl donde extraemos al informacion del video 
-       |enlace: es un string que se colocara el enlace del video"""
-
     def esLista(self):
-        if(re.search("/playlist?", self.enlace)):
+        if(re.search("/playlist?", self.enlacevideo)):
             return True
         else:
             return False
-
     def video(self):
         try:
             # instanciamos el controlador de videos
-            self.cv = ControladorVideo(self.enlace)
             fb = Firebase('recetastextos/')
 
             # paso 1: verificamos si existe en la database
-            if fb.validar_database(self.cv.titulovideo) == False:
+            if fb.validar_database(self.titulovideo) == False:
                 # paso 2: guardamos en database datos principales
 
                 # paso 3: descargamos el video
-                self.cv.nombrevideo = self.cv.descargarVideoURL()
-                print("id: "+str(self.cv._idvideo))
-                fb.guardar_database(self.cv.data_json(), self.cv._idvideo)
+                self.nombrevideo = self.descargarVideoURL()
+                print("id: "+str(self._idvideo))
+                fb.guardar_database(self.data_json(), self._idvideo)
                 # paso 4: pasamos el video a .wav
-                nombre = self.cv.parseoVideo(self.cv.nombrevideo)
+                nombre = self.parseoVideo(self.nombrevideo)
                 # paso 5: evaluamos los silencios
                 try:
                     num_segm = self.rec.segcionarXsilencios(nombre)
@@ -237,7 +224,7 @@ class Depurador:
                     for i in range(num_segm):
                         try:
                             result = result + \
-                                str(self.cv.speech_text(
+                                str(self.speech_text(
                                     "../temp_audios/{}_extracto{}.wav".format(nombre, i+1)))
                             result = result+" "
                         except BaseException:
@@ -258,27 +245,27 @@ class Depurador:
                     try:
                         quitarEmojis = dict.fromkeys(
                             range(0x10000, sys.maxunicode + 1), 'NULL')
-                        tituloSinEmojis = self.cv.titulovideo.translate(
+                        tituloSinEmojis = self.titulovideo.translate(
                             quitarEmojis)
-                        autorSinEmojis = self.cv.autorvideo.translate(
+                        autorSinEmojis = self.autorvideo.translate(
                             quitarEmojis)
                         # paso 7: escribimos el texto recibido en un txt->se guarda en local
-                        resultado = self.rec.escritura(self.cv.nombrevideo, "Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(
-                            self.cv.fechavideo)+"\n"+"Enlace: "+str(self.cv.enlacevideo)+"\n"+"Entradilla:"+result)
+                        resultado = self.rec.escritura(self.nombrevideo, "Titulo:"+tituloSinEmojis+"\n"+"Autor:"+autorSinEmojis+"\n"+"Fecha Publicacion:"+str(
+                            self.fechavideo)+"\n"+"Enlace: "+str(self.enlacevideo)+"\n"+"Entradilla:"+result)
                         # paso 8: guardamos el texto en una base de datos
-                        fb.guardar_firebase(self.cv.nombrevideo+'.txt')
+                        fb.guardar_firebase(self.nombrevideo+'.txt')
                         # paso 9: eliminamos los mp4
                         self.rec.eliminacion_audio("recetasvideos", "mp4")
                     except BaseException:
                         logging.exception("An exception was thrown!")
                         print("No se ha podido eliminar los caracteres corruptos el video: " +
-                              self.cv.nombrevideo + " - " + self.cv.titulovideo)
+                              self.nombrevideo + " - " + self.titulovideo)
                         self.rec.eliminacion_audio("recetasvideos", "mp4")
                         return None
                 except BaseException:
                     logging.exception("An exception was thrown!")
-                    print("No se ha podido transcribir el video: " + self.cv.nombrevideo +
-                          " - " + self.cv.titulovideo+" - "+self.cv.enlacevideo)
+                    print("No se ha podido transcribir el video: " + self.nombrevideo +
+                          " - " + self.titulovideo+" - "+self.enlacevideo)
                     self.rec.eliminacion_audio("recetasvideos", "mp4")
                     self.rec.eliminacion_audio("temp_audios", "wav")
                     return None
@@ -289,13 +276,17 @@ class Depurador:
         except BaseException:
             logging.exception("An exception was thrown!")
             print("No se ha podido descargar el video: " +
-                  self.cv.nombrevideo + " - " + self.cv.titulovideo)
+                  self.nombrevideo + " - " + self.titulovideo)
             return None
-
     def lista(self):
-        playlist_urls = Playlist(self.enlace)
+        playlist_urls = Playlist(self.enlacevideo)
         for url in playlist_urls:
             self.video(url)
+
+
+
+    
+    
 
 
 class RecursosAdicionales:
@@ -999,9 +990,229 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             # QApplication.restoreOverrideCursor()
             self.close()
+    def volver_(self):
+        self.gui = Index()
+        self.gui.show()
+        self.gui.showMaximized()
+        self.close
+class Test_(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('test.ui', self)
+   
 
+class Train_(Index):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('train.ui', self)
+        self.cbcategoria =self.findChild(QComboBox,'comboBox')
+        self.cbcategoria.addItems(os.listdir('recetastextos/'))
+        self.varableSeleccionCarpetaGuardarModelo = ""
+        self.setWidgets()
+        
+        self.switchButtons()
+    def setWidgets(self):
+        
+        self.seleccionados = []
+        self.checkboxes = []
+        
+        self.seleccionlayout=self.findChild(QHBoxLayout,'box')
+        self.anadir =self.findChild(QPushButton,'anadir')
+        self.nuevo =self.findChild(QPushButton,'nuevo')
+       
+        
+        
+        self.volver =self.findChild(QPushButton,'volver')
+        self.ltitulo  =self.findChild(QLabel,'ltitulo')
+        self.ldescrip =self.findChild(QLabel,'ldescripcion')
+        self.vista  =self.findChild(QLabel,'lvista')
+        self.btn_svm=self.findChild(QPushButton,'svm')
+        self.btn_rf =self.findChild(QPushButton,'rforest')
+        self.btn_mr=self.findChild(QPushButton,'regression')
+        self.btnalgoritmo=self.findChild(QPushButton,'play')
+        self.formguardar =self.findChild(QLineEdit,'guardarform')
+        self.borrar =self.findChild(QPushButton,'borrar')
+        self.path_btn =self.findChild(QPushButton,'search_path')
+        self.btn_guardar =self.findChild(QPushButton,'guardar_modelo')
+    def switchButtons(self):
+        # eventos de botones
+        self.anadir.clicked.connect(self.aniadir_boton)
+        self.borrar.clicked.connect(self.eliminar_boton)
+        self.path_btn.clicked.connect(self.aniadir_directorio)
+        self.btn_guardar.clicked.connect(self.guardarModelo)
+        self.btn_svm.clicked.connect(
+            lambda: (self.informacion('Algoritmo SVM', 'El entrenamiento de support vector machine se asemeja a resolver un problema de optimización cuadrática para ajustar un hiperplano que minimice el margen flexible entre las clases. El número de características transformadas está determinado por el número de vectores de soporte'), self.cambiar_algoritmo("SVM")))
+        self.btn_mr.clicked.connect(
+            lambda: (self.informacion('Algoritmo Multinomial Regression', 'la regresión logística multinomial generaliza el método de regresión logística para problemas multiclase, es decir, con más de dos posibles resultados discretos.1​ Es decir, se trata de un modelo que se utiliza para predecir las probabilidades de los diferentes resultados posibles de una distribución categórica como variable dependiente, dado un conjunto de variables independientes (que pueden ser de valor real, valor binario, categórico-valorado, etc.)'), self.cambiar_algoritmo("MR")))
+        self.btn_rf.clicked.connect(
+            lambda: (self.informacion('Algoritmo Random Forest', 'El algoritmo de bosque aleatorio es una extensión del método de embolsado, ya que utiliza tanto el embolsado como la aleatoriedad de características para crear un bosque de árboles de decisión no correlacionado. La aleatoriedad de características, también conocida como empaquetado de características o “ el método del subespacio aleatorio ”, genera un subconjunto aleatorio de características, lo que garantiza una baja correlación entre los árboles de decisión.'), self.cambiar_algoritmo("RF")))
+        self.btnalgoritmo.clicked.connect(self.vista_previa)
+        self.nuevo.clicked.connect(self.aniadir_categoria)
+        self.volver.clicked.connect(self.volver_)
+    def cambiar_algoritmo(self, nombre):
+        self.algoritmo_clicked = nombre
 
-class Train(QWidget):
+    def informacion(self, titulo, descripcion):
+        self.ltitulo.setText(titulo)
+        self.ldescrip.setText(descripcion)
+    # FUNCION PARA REALIZAR EL ALGORITMO
+
+    def crearDF(self):
+
+        df = pd.DataFrame()
+        df['receta'] = None
+        df['clasif'] = None
+        procesarDocs = ProcesarDocumentos()
+        listaTextosCarpeta = procesarDocs.lectura()
+        diccionarioCarpetas = {'Carpeta Arroz': 0, 'Carpeta Bebidas': 1, 'Carpeta Carnes': 2,
+                               'Carpeta Marisco': 3, 'Carpeta Pasta': 4, 'Carpeta Pescados': 5,
+                               'Carpeta Platos Menores': 6, 'Carpeta Verduras': 7}
+
+        print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
+        print(self.seleccionados[0])
+        seleccion = []
+        for i in range(len(self.seleccionados)):
+            seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
+
+        for index, content in enumerate(listaTextosCarpeta):
+            if index in seleccion:
+                for i in range(len(content)):
+                    text = procesarDocs.tratamientoTextos(
+                        listaTextosCarpeta[index][i])
+                    df = df.append(
+                        {'receta': text, 'clasif': index}, ignore_index=True)
+
+        print(df['clasif'].unique())
+
+        return df
+
+    def vista_previa(self):
+        self.vista.setText('')
+        i = 0
+        self.total_archivos = 0
+
+        carpetas = ''
+        # verificamos si hay seleccionados
+
+        if len(self.seleccionados) == 0 or self.ltitulo.text() == 'Nombre Algoritmo':
+
+            self.mensaje_error('Campos vacios.')
+        else:
+
+            self.df1 = self.crearDF()
+            modelo = modelosTFIDF(self.df1, 7000)
+
+            if(self.algoritmo_clicked == "SVM"):
+                # self.seleccionados
+                self.modeloEntrenadoFinal = modelo.Entrenar_SVM()
+                print('SVM')
+            elif(self.algoritmo_clicked == "MR"):
+                self.modeloEntrenadoFinal = modelo.Entrenar_RegresionMultinomial()
+                print('MR')
+            elif(self.algoritmo_clicked == "RF"):
+                self.modeloEntrenadoFinal = modelo.Entrenar_RF()
+                print('RF')
+
+            print(self.df1.head())
+
+            print("El modelo ha sido entrenado correctamente! :)")
+
+            # verificamos si hay algoritmo seleccionado
+            for i in self.seleccionados:
+
+                size = len(os.listdir('recetastextos/' + i))
+
+                self.total_archivos = size + self.total_archivos
+                texto = i + ': ' + str(size) + ' archivos\n'
+
+                carpetas = carpetas+'\n'+texto
+
+        # le añado todos los que esten en listbox
+        self.vista.setText(carpetas+'\n'+'TOTAL: ' + ': ' +
+                           str(self.total_archivos) + ' archivos\n')
+
+    def mensaje_error(self, mensaje):
+        QMessageBox.critical(
+            self,
+            "Error",
+            mensaje,
+            buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
+            defaultButton=QMessageBox.Discard,
+        )
+
+    def aniadir_boton(self):
+        self.add = QCheckBox(self.cbcategoria.currentText())
+        if any(i == self.cbcategoria.currentText() for i in self.seleccionados):
+            self.mensaje_error(
+                self.cbcategoria.currentText()+' ya esta seleccionada.')
+        else:
+
+            self.seleccionados.append(str(self.cbcategoria.currentText()))
+            self.add.setStyleSheet('font-family:NSimsun')
+
+            self.seleccionlayout.addWidget(self.add)
+            self.checkboxes.append(self.add)
+        print(self.seleccionados)
+
+    def eliminar_boton(self):
+
+        i = 0
+        for c in self.checkboxes:
+            if c.isChecked() == True:
+
+                c.deleteLater()
+                self.checkboxes.pop(i)
+                self.seleccionados.pop(i)
+                print(c.text())
+
+            i = i+1
+
+    def aniadir_categoria(self):
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
+        print(os.listdir(r))
+        print(r)
+        ultimo = r.split('/')[-1]
+        print('ult', ultimo)
+        # recorremos cada file del nuevo directorio
+        for file_name in os.listdir(r):
+            source = r + '/' + file_name
+            destination = 'recetastextos/'+ultimo+'/' + file_name
+            print('se va al destino', destination)
+            # si existe el archivo de source lo movemos al destino
+
+            if os.path.exists('recetastextos/'+ultimo) == False:
+                os.makedirs('recetastextos/'+ultimo)
+                shutil.move(source, destination)
+                print('Moved:', file_name)
+            else:
+                # aqui va a haber un error
+                shutil.move(source, destination)
+                print('Moved:', file_name)
+        # actualizamos el combobox
+        self.cbcategoria.clear()
+        self.cbcategoria.addItems(os.listdir('recetastextos/'))
+
+    def aniadir_directorio(self):
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
+        self.varableSeleccionCarpetaGuardarModelo = r
+
+    
+
+    def guardarModelo(self, modeloEntrenado):
+        if(self.varableSeleccionCarpetaGuardarModelo == ""):
+            #print("no hay ruta")
+            self.mensaje_error("No hay una ruta seleccionada")
+        elif(self.formguardar.text() == ""):
+            #print("no hay nombre de archivo")
+            self.mensaje_error("Pon un nombre al archivo que se va a guardar")
+        else:
+            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + \
+                "/" + self.formguardar.text() + ".pkl"
+            joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
+            print(rutaGuardarModelo)
+class Train(Index):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Eat Easer Train page")
@@ -1014,6 +1225,7 @@ class Train(QWidget):
         self.addwindgets_to_layouts()
         self.activarBotones()
         self.df = pd.DataFrame()
+        
         # self.modeloTfIdfEjecucion=cargarDFParaModelo()#mama
 
     def setLayouts(self):
@@ -1196,7 +1408,7 @@ class Train(QWidget):
             lambda: (self.informacion('Algoritmo Random Forest', 'Este algoritmo hace esto y esto y esto'), self.cambiar_algoritmo("RF")))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
-        self.retorno.clicked.connect(self.volver)
+        self.retorno.clicked.connect(self.volver_)
 
     def cambiar_algoritmo(self, nombre):
         self.algoritmo_clicked = nombre
@@ -1348,11 +1560,7 @@ class Train(QWidget):
             self, "Select Directory", directory=os.getcwd())
         self.varableSeleccionCarpetaGuardarModelo = r
 
-    def volver(self):
-        self.gui = Index()
-        self.gui.show()
-        self.gui.showMaximized()
-        self.close()
+    
 
     def guardarModelo(self, modeloEntrenado):
         if(self.varableSeleccionCarpetaGuardarModelo == ""):
@@ -1368,7 +1576,7 @@ class Train(QWidget):
             print(rutaGuardarModelo)
 
 
-class Test(QWidget):
+class Test(Index):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Eat Easer Test page")
@@ -1485,7 +1693,7 @@ class Test(QWidget):
         # boton de retorno izquierdo
         self.retorno = QPushButton(u"\u2190" + ' Main Page/ Test')
         self.retorno.setStyleSheet(sretorno)
-        self.retorno.clicked.connect(self.volver)
+        self.retorno.clicked.connect(self.volver_)
         # aniadimos los layouts al lado izq
         self.izqlayout.addWidget(self.retorno, 0, 0)
         self.izqlayout.addLayout(self.rutalayout, 1, 0)
@@ -1540,7 +1748,7 @@ class Test(QWidget):
         self.ver = QButtonGroup()
         self.ver.buttonClicked[int].connect(self.info.ver_)
 
-    class Informacion(QWidget):
+    class Informacion(Index):
         def __init__(self):
             super().__init__()
             self.setWindowTitle("EatEaser-Visualizar Texto")
@@ -1643,11 +1851,7 @@ class Test(QWidget):
             self, "Select Directory", directory=os.getcwd())
         self.cbcategoria.setPlaceholderText(r)
 
-    def volver(self):
-        self.gui = Index()
-        self.gui.show()
-        self.gui.showMaximized()
-        self.close()
+
 
     def mensaje_error(self, mensaje):
         QMessageBox.critical(
@@ -1777,6 +1981,7 @@ class WebScraping:
         self.listaNombres = []
         for n in nombre:
             self.listaNombres.append(n.text)
+           
 
         # PARA COGER EL TIEMPO DEL PRUDUCTO EN COCINARSE
         tiempoReceta = todasRecetas.find_elements(By.CLASS_NAME, "mTimer-time")
@@ -1804,6 +2009,7 @@ class WebScraping:
         for np in bodyInformacion:
             nombreProducto = np.find(class_="link product-name-gtm")
             self.listaNombres.append(nombreProducto.text)
+            print('Hola',nombreProducto.text)
 
         # PARA COGER EL PRECIO DEL PRODUCTO
         bodyInformacion = soup.find_all(class_="tile-body")
@@ -1834,7 +2040,7 @@ class WebScraping:
             # print(len(listaURLSinDuplicados))
 
 
-class Download(QtWidgets.QMainWindow):
+class Download(Index):
     def __init__(self):
         super(Download, self).__init__()
         # Cargamos el .ui file
@@ -1877,17 +2083,12 @@ class Download(QtWidgets.QMainWindow):
         def copiar_(self):
             clipboard.copy(self.texto.text())
 
-    def volver_(self):
-        self.gui = Index()
-        self.gui.show()
-        self.gui.showMaximized()
-        self.close()
+   
 
     def descargar(self):
         col = 0
         fila = 0
-        print(self.enlace.text())
-        dp = Depurador(self.enlace.text())
+        dp = ControladorVideo(self.enlace.text())
         dp.video()
 
         for i in range(4):
@@ -1910,7 +2111,7 @@ class Download(QtWidgets.QMainWindow):
                     grid_titulo.addWidget(titulo)
                     frame_grid.addLayout(grid_boton)
                     ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver, dp.cv._idvideo)
+                    self.btn_group.addButton(ver, dp._idvideo)
                     ver.setStyleSheet(
                         'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
                     ver.setFixedSize(100, 60)
@@ -1928,13 +2129,13 @@ class Download(QtWidgets.QMainWindow):
                     grid_titulo = QVBoxLayout()
                     grid_boton = QVBoxLayout()
                     frame_grid.addLayout(grid_titulo)
-                    titulo = QLabel(dp.cv.nombrevideo)
+                    titulo = QLabel(dp.nombrevideo)
                     titulo.setStyleSheet(
                         'font-family:"Bahnschrift Light";font-size:16px;')
                     grid_titulo.addWidget(titulo)
                     frame_grid.addLayout(grid_boton)
                     ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver, dp.cv._idvideo)
+                    self.btn_group.addButton(ver, dp._idvideo)
                     ver.setStyleSheet(
                         'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
                     ver.setFixedSize(100, 60)
@@ -1951,7 +2152,7 @@ class Download(QtWidgets.QMainWindow):
                 fila = fila + 1
 
 
-class App(QtWidgets.QMainWindow):
+class App(Index):
     def __init__(self):
         super(App, self).__init__()
         # Cargamos el .ui file
@@ -2001,12 +2202,14 @@ class App(QtWidgets.QMainWindow):
         #self.volver = self.findChild(QPushButton, 'back')
         # self.volver.setIcon(QIcon('imagenes/menu.png'))
         self.txt_frame = self.findChild(QGridLayout, 'gridLayout_8')
-
+        self.volver = self.findChild(QPushButton, 'volver')
         self.grupo_botones = QButtonGroup()
         self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
-
+       
+        self.productos_lt=self.findChild(QHBoxLayout,'lt_productos')
         # agrego primer frame
-
+        self.productos=QButtonGroup()
+        self.ws = WebScraping('cebolla')
         self.buscar_recetas('cebolla')
         self.buscar_texto('Carpeta Arroz')
         # ponemos acciones a los botones
@@ -2019,12 +2222,18 @@ class App(QtWidgets.QMainWindow):
         self.btnbebidas.clicked.connect(lambda: self.buscar_recetas('bebida'))
         self.btnplatos.clicked.connect(lambda: self.buscar_recetas('pan'))
         self.btnverdura.clicked.connect(lambda: self.buscar_recetas('lechuga'))
+        self.productos.buttonClicked[int].connect(self.mostrar_pagina)
+        self.volver.clicked.connect(self.volver_)
         # ponemos un default de recetas
-        # self.buscar_recetas('cebolla')
+       
 
         self.setStyleSheet('background-color:white;')
         self.show()
-
+    def mostrar_pagina(self,id_):
+        print('boton press')
+        print(self.ws.listaURL[id_])
+        webbrowser.open(self.ws.listaURL[id_]) 
+        pass
     def buscar_texto(self, categoria):
         directorio = os.listdir('recetastextos/'+categoria)
 
@@ -2037,7 +2246,7 @@ class App(QtWidgets.QMainWindow):
 
                 self.boton = QPushButton(texto)
                 self.boton.setStyleSheet(
-                    'QPushButton{border-radius:20px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
+                    'QPushButton{font-family:Lucida Bright;border-radius:5px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
                 self.txt_frame.addWidget(self.boton, fila, j)
                 j = j+1
             else:
@@ -2045,53 +2254,70 @@ class App(QtWidgets.QMainWindow):
                 fila = fila+1
 
     def buscar_productos(self, producto):
-        ws = WebScraping(producto)
+        
         cont = 0
-
-        ws.conexionPaginaWebAhorraMas()
-        for i, element in enumerate(ws.listaNombres):
-            print('imagen')
-            # si la columna ya va a mas de uno
-            if (cont == 4):
+      
+        self.ws.conexionPaginaWebAhorraMas()
+        
+        for i, element in enumerate(self.ws.listaNombres):
+            if(cont==8):
                 break
-            else:
-                imagen = self.findChild(QLabel, 'imgs_' + str(i))
-                nombre = self.findChild(QLabel, 'nm_' + str(i))
-                descripcion = self.findChild(QLabel, 'prc_' + str(i))
-
-                nombre.setText(element)
-                descripcion.setText(ws.listaPrecios[i])
-                data = urllib.request.urlopen(ws.listaImagenes[i]).read()
-                image = QtGui.QImage()
-                image.loadFromData(data)
-                pix = QtGui.QPixmap(image)
-                imagen.setPixmap(pix)
-                imagen.setScaledContents(True)
+            print(element)
+            # si la columna ya va a mas de uno
+            
+                
+                
+            lt=QVBoxLayout()
+            self.productos_lt.addLayout(lt)
+          
+            imagen=QPushButton()
+            
+            nombre=QLabel()
+            nombre.setWordWrap(True)
+            descripcion=QLabel()
+            lt.addWidget(imagen)
+            lt.addWidget(nombre)
+            lt.addWidget(descripcion)
+        
+            nombre.setText(element)
+            nombre.setStyleSheet('font-family:Simsun;color:white;')
+            descripcion.setText(self.ws.listaPrecios[i])
+            descripcion.setStyleSheet('font-family:Lucida Bright;color:white;font-weight:bold;')
+            print('seteando text')
+            response = requests.get(self.ws.listaImagenes[i])
+            if response.status_code == 200:
+                with open("imagenes/sample_producto" + str(i) + ".jpg", 'wb') as f:
+                    f.write(response.content)
+            imagen.setStyleSheet(
+                "border-image:url(imagenes/sample_producto" + str(i) + ".jpg);")
+            imagen.setFixedSize(200, 200)
+            self.productos.addButton(imagen,i)
+                
 
             cont = cont + 1
 
     def buscar_recetas(self, categoria):
-        j = 0
+        col = 0
         fila = 2
         ws2 = WebScraping(categoria)
         ws2.conexionPaginaWebLidl()
         for i, element in enumerate(ws2.listaNombres):
-            if j < 4:
+            if col < 4:
                 img = True
                 try:
                     imagen = QPushButton('')
                     response = requests.get(ws2.listaImagenes[i])
                     if response.status_code == 200:
-                        with open("sample" + str(i) + ".jpg", 'wb') as f:
+                        with open("imagenes/sample" + str(i) + ".jpg", 'wb') as f:
                             f.write(response.content)
                     imagen.setStyleSheet(
-                        "border-image:url(sample" + str(i) + ".jpg);border-radius:100%;")
+                        "border-image:url(imagenes/sample" + str(i) + ".jpg);border-radius:100%;")
                     imagen.setFixedSize(200, 200)
 
                 except:
                     print('imagen no obtenida')
                     img = False
-                print(img)
+               
                 if (img == True):
                     n = QFrame()
                     n2 = QFrame()
@@ -2099,21 +2325,28 @@ class App(QtWidgets.QMainWindow):
                     n4 = QFrame()
                     vlt = QVBoxLayout()
                     n.setLayout(vlt)
-                    self.grid_productos.addWidget(n, fila, j)
+                    n.setMinimumHeight(470)
+                    n.setMaximumHeight(470)
+                    
+                    
+                    self.grid_productos.addWidget(n, fila, col)
                     # vlt2 = QVBoxLayout()
                     # n.layout().addWidget(vlt2)
                     vlt.addWidget(n2)
                     n2.setLayout(QVBoxLayout())
                     n3.setLayout(QVBoxLayout())
                     n4.setLayout(QHBoxLayout())
+                    
                     # parte de arriba
                     n2.layout().addWidget(QLabel(element))
-
+                   
                     n2.layout().addWidget(imagen)
                     n2.layout().setAlignment(QtCore.Qt.AlignHCenter)
                     n3.layout().addWidget(QLabel('Descripción'))
+                    #n3.setMinimumHeight(300)
                     n3.layout().addWidget(QLabel(ws2.listaTiempos[i]))
                     n4.layout().addWidget(QLabel('♡'))
+                   # n4.setMinimumHeight(300)
                     btn = QPushButton('')
 
                     btn.setIcon(QIcon('imagenes/exterior.png'))
@@ -2125,18 +2358,18 @@ class App(QtWidgets.QMainWindow):
                     vlt.addWidget(n3)
                     vlt.addWidget(n4)
                     # parte de abajo
-
+                    
                     n.setStyleSheet(
-                        'background-color:#ede8e1;border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;')
+                        'border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;border-radius:20px;')
                     n2.setStyleSheet(
                         'background-color:white;text-decoration: underline;border:1px solid white;')
                     n3.setStyleSheet(
                         'background-color:white;text-decoration: underline;border:1px solid white;')
                     n4.setStyleSheet(
                         'background-color:white;text-decoration: underline;border:1px solid white;')
-                    j = j + 1
+                    col = col + 1
             else:
-                j = 0
+                col = 0
                 fila = fila + 1
 
         self.buscar_productos(categoria)
@@ -2146,8 +2379,10 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    gui = Index()
+    gui = Train_()
+    gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
 
     sys.exit(app.exec_())
+    
