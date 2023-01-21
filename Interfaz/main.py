@@ -1060,7 +1060,7 @@ class Train(Index):
                                'Carpeta Platos Menores': 6, 'Carpeta Verduras': 7}
 
         print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
-        print(self.seleccionados[0])
+        
         seleccion = []
         for i in range(len(self.seleccionados)):
             seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
