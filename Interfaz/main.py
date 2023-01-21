@@ -147,20 +147,15 @@ class ControladorVideo:
        |return: devuelve una ruta absoluta"""
 
     def descargarVideoURL(self):
-        recetasVideos = 'recetasvideos/'
         # aqui creo un nuevo id para el nuevo video
         self._idvideo = self._idvideo+1
-        # esta sera el archivo del video y su nuevo nombre
-        nombre = 'receta'+str(self._idvideo)
         # le pedimos al pytube que solo nos descargue el audio y lo descargamos
-        t = self.yt.streams.filter(file_extension='mp4').first().download(
-            output_path=recetasVideos, filename=nombre+'.mp4')
-        # devolvemos el nombre
-        return nombre
+        self.yt.streams.filter(file_extension='mp4').first().download(
+            output_path='recetasvideos/', filename='receta'+str(self._idvideo)+'.mp4')
+     
     """|PARSEO VIDEO: pasa el video de .mp4 a .wav
        |nombre: es un string que se colocara el nombre del video
        |return: devuelve el nuevo nombre del audio en .wav"""
-
     def parseoVideo(self, nombre):
         recetasVideos = 'recetasvideos/'
         # tomamos el video en mp4
@@ -1203,7 +1198,7 @@ class Train(Index):
         r = QFileDialog.getExistingDirectory(
             self, "Select Directory", directory=os.getcwd())
         self.varableSeleccionCarpetaGuardarModelo = r
-        self.formguardar.setText(r)
+       
     
 
     def guardarModelo(self, modeloEntrenado):
@@ -2215,7 +2210,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    gui = Test_()
+    gui = Index()
     gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
