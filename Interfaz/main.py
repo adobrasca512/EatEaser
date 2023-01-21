@@ -1047,7 +1047,7 @@ class Index(QtWidgets.QMainWindow):
         self.gui = Index()
         self.gui.show()
         self.gui.showMaximized()
-        self.close
+        self.close()
 
 
 class Train(Index):
@@ -1286,6 +1286,12 @@ class Test(Index):
         self.btnalgoritmo=self.findChild(QPushButton,'play')
         self.ltitulo=self.findChild(QLabel,'titulo')
         self.ltitulo=self.findChild(QLabel,'descripcion')
+        
+        self.ltablaAEliminar=self.findChild(QLabel,'resultadosTesting')
+
+        self.ltablaResultadosTesting=QTabWidget()
+        self.gridTablaResultados=self.findChild(QHBoxLayout, 'horizontalLayout')
+        
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1339,16 +1345,16 @@ class Test(Index):
              self.ver.addButton(boton)
              self.ver.setId(boton, i)
              boton.setIcon(QIcon('imagenes/ojo.png'))
-             self.tableWidget.setItem(i, 0, QTableWidgetItem(key))
-             self.tableWidget.setItem(i, 1, QTableWidgetItem(
+             self.ltablaResultadosTesting.setItem(i, 0, QTableWidgetItem(key))
+             self.ltablaResultadosTesting.setItem(i, 1, QTableWidgetItem(
                  "{}".format(self.prediccion[i])))
-             self.tableWidget.setCellWidget(i, 2, boton)
+             self.ltablaResultadosTesting.setCellWidget(i, 2, boton)
              i = i+1
 
-         self.tableWidget.resizeColumnsToContents()
-         self.tableWidget.resizeRowsToContents()
+         self.ltablaResultadosTesting.resizeColumnsToContents()
+         self.ltablaResultadosTesting.resizeRowsToContents()
 
-         self.tableWidget.show()
+         self.ltablaResultadosTesting.show()
 
     def aniadir_categoria(self):
          r = QFileDialog.getExistingDirectory(
@@ -1453,6 +1459,11 @@ class Test(Index):
              # le añado todos los que esten en listbox
              self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                 str(self.total_archivos) + ' archivos\n')
+             self.ltablaAEliminar.setVisible(False)
+             
+             self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
+             self.setData()
+             
     class Informacion(Index):
         def __init__(self):
             super().__init__()
