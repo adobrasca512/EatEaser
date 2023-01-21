@@ -1118,7 +1118,7 @@ class Train(Index):
             elif(self.algoritmo_clicked == "RF"):
                 self.modeloEntrenadoFinal = modelo.Entrenar_RF()
                 print('RF')
-
+            self.vectorizer=modelo.vect
             print(self.df1.head())
 
             print("El modelo ha sido entrenado correctamente! :)")
@@ -1218,6 +1218,10 @@ class Train(Index):
                 "/" + self.formguardar.text() + ".pkl"
             joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
+            rutaGuardarVect = self.varableSeleccionCarpetaGuardarModelo + \
+                "/" + self.formguardar.text() + "_vect.pkl"
+            joblib.dump(self.vectorizer,rutaGuardarVect)
+            
 class Test_(Index):
     def __init__(self):
         super().__init__()
@@ -1732,6 +1736,8 @@ class Test(Index):
             rutaCarpetaTesting = self.nombrecarpetaTestosTest + \
                 "/"  # "c:/ddjashdashdjkash/../carpeta testing"
             mod = modelosTFIDF(df_completo, numeroFeature)
+            #vectorizer=mod.vect
+            
             print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(
                 rutaCarpetaTesting))
             prediccion = mod.predecir_Carpeta(rutaCarpetaTesting, modelo)
