@@ -1058,6 +1058,7 @@ class Train(Index):
         self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         self.cbcategoria =self.findChild(QComboBox,'comboBox')
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
+       # self.cbcategoria.setStyleSheet('background-color:white; nborder-radius:10px;')
         self.varableSeleccionCarpetaGuardarModelo = ""
         self.setWidgets()
         self.df = pd.DataFrame()

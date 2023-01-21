@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1248</width>
+    <height>829</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -445,7 +445,8 @@ border-radius:20px;</string>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color:#94D4E1;
-border-radius:20px;</string>
+border-radius:20px;
+</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -621,8 +622,12 @@ border-radius:5px;</string>
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color:white;
+             <string notr="true">
+background-color:white;
 border-radius:10px;</string>
+            </property>
+            <property name="editable">
+             <bool>false</bool>
             </property>
             <property name="iconSize">
              <size>
