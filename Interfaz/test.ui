@@ -217,18 +217,22 @@ border-radius:20px;</string>
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_10">
-            <property name="font">
-             <font>
-              <family>NSimSun</family>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>No hay nada que mostrar</string>
-            </property>
-           </widget>
+          <item>
+           <layout class="QHBoxLayout" name="hresultados">
+            <item>
+             <widget class="QLabel" name="lresultadosTabla">
+              <property name="font">
+               <font>
+                <family>NSimSun</family>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>No hay nada que mostrar</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
