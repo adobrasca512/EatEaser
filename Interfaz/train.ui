@@ -414,6 +414,9 @@ border-radius:20px;</string>
             <property name="text">
              <string>Descripcion del Algoritmo</string>
             </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
