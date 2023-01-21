@@ -992,11 +992,11 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             # QApplication.restoreOverrideCursor()
             self.close()
-    def volver_(self):
+    def volver_(self,ventana):
         self.gui = Index()
         self.gui.show()
         self.gui.showMaximized()
-        self.close
+        ventana.close()
 
 
 class Train(Index):
@@ -1051,7 +1051,7 @@ class Train(Index):
             lambda: (self.informacion('Algoritmo Random Forest', 'El algoritmo de bosque aleatorio es una extensión del método de embolsado, ya que utiliza tanto el embolsado como la aleatoriedad de características para crear un bosque de árboles de decisión no correlacionado. La aleatoriedad de características, también conocida como empaquetado de características o “ el método del subespacio aleatorio ”, genera un subconjunto aleatorio de características, lo que garantiza una baja correlación entre los árboles de decisión.'), self.cambiar_algoritmo("RF")))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
-        self.volver.clicked.connect(self.volver_)
+        self.volver.clicked.connect(lambda:self.volver_(self))
     def cambiar_algoritmo(self, nombre):
         self.algoritmo_clicked = nombre
 
@@ -1238,7 +1238,7 @@ class Test_(Index):
             lambda: self.recuperarRutaModeloEntrenado())
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno=self.findChild(QPushButton,'volver')
-        self.retorno.clicked.connect(self.volver_)
+        self.retorno.clicked.connect(lambda:self.volver_(self))
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
@@ -1863,7 +1863,7 @@ class Download(Index):
         self.enlace = self.findChild(QLineEdit, 'enlace')
         self.volver = self.findChild(QPushButton, 'volver')
         self.btn_descarga.clicked.connect(self.descargar)
-        self.volver.clicked.connect(self.volver_)
+        self.volver.clicked.connect(lambda:self.volver_(self))
         self.btn_group = QButtonGroup()
         self.btn_group.buttonClicked[int].connect(self.info.setTexto)
 
@@ -2034,7 +2034,7 @@ class App(Index):
         self.btnplatos.clicked.connect(lambda: self.buscar_recetas('pan'))
         self.btnverdura.clicked.connect(lambda: self.buscar_recetas('lechuga'))
         self.productos.buttonClicked[int].connect(self.mostrar_pagina)
-        self.volver.clicked.connect(self.volver_)
+        self.volver.clicked.connect(lambda:self.volver_(self))
         # ponemos un default de recetas
        
 
@@ -2190,7 +2190,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    gui = Test()
+    gui = Index()
     #gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
