@@ -219,7 +219,7 @@ border-radius:20px;</string>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <layout class="QHBoxLayout" name="hresultados">
-            <item>
+            <item alignment="Qt::AlignHCenter">
              <widget class="QLabel" name="lresultadosTabla">
               <property name="font">
                <font>
