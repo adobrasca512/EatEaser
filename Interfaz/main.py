@@ -1003,6 +1003,8 @@ class Train(Index):
         
         self.switchButtons()
     def setWidgets(self):
+        #
+        self.matrizlt=self.findChild(QVBoxLayout,'verticalLayout_3')
         
         self.seleccionados = []
         self.checkboxes = []
@@ -1034,7 +1036,7 @@ class Train(Index):
         self.btn_svm.clicked.connect(
             lambda: (self.informacion('Algoritmo SVM', 'El entrenamiento de support vector machine se asemeja a resolver un problema de optimización cuadrática para ajustar un hiperplano que minimice el margen flexible entre las clases. El número de características transformadas está determinado por el número de vectores de soporte'), self.cambiar_algoritmo("SVM")))
         self.btn_mr.clicked.connect(
-            lambda: (self.informacion('Algoritmo Multinomial Regression', 'la regresión logística multinomial generaliza el método de regresión logística para problemas multiclase, es decir, con más de dos posibles resultados discretos.1​ Es decir, se trata de un modelo que se utiliza para predecir las probabilidades de los diferentes resultados posibles de una distribución categórica como variable dependiente, dado un conjunto de variables independientes (que pueden ser de valor real, valor binario, categórico-valorado, etc.)'), self.cambiar_algoritmo("MR")))
+            lambda: (self.informacion('Algoritmo Multinomial Regression', 'La regresión logística multinomial generaliza el método de regresión logística para problemas multiclase, es decir, con más de dos posibles resultados discretos.1​ Es decir, se trata de un modelo que se utiliza para predecir las probabilidades de los diferentes resultados posibles de una distribución categórica como variable dependiente, dado un conjunto de variables independientes (que pueden ser de valor real, valor binario, categórico-valorado, etc.)'), self.cambiar_algoritmo("MR")))
         self.btn_rf.clicked.connect(
             lambda: (self.informacion('Algoritmo Random Forest', 'El algoritmo de bosque aleatorio es una extensión del método de embolsado, ya que utiliza tanto el embolsado como la aleatoriedad de características para crear un bosque de árboles de decisión no correlacionado. La aleatoriedad de características, también conocida como empaquetado de características o “ el método del subespacio aleatorio ”, genera un subconjunto aleatorio de características, lo que garantiza una baja correlación entre los árboles de decisión.'), self.cambiar_algoritmo("RF")))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
@@ -1213,8 +1215,8 @@ class Test(Index):
     def __init__(self):
         super().__init__()
         uic.loadUi('test.ui', self)
-        
         self.setWindowTitle("Eat Easer Test page")
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         # variables globales
         self.nombrecarpeta = ''
         self.info = self.Informacion()
@@ -1409,8 +1411,7 @@ class Test(Index):
              # le añado todos los que esten en listbox
              self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                 str(self.total_archivos) + ' archivos\n')
-             
-             
+
     class Informacion(QWidget):
         def __init__(self):
             super().__init__()
@@ -1456,9 +1457,9 @@ class Test(Index):
             height = 500
             # setting  the fixed size of window
             self.gui.setFixedSize(width, height)      
-        
 
   
+
 
 class WebScraping:
     def __init__(self, kw):
@@ -1688,7 +1689,36 @@ class Download(Index):
                 col = 0
                 fila = fila + 1
 
+class Informacion(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        # Cargamos el .ui file
+        uic.loadUi('vista.ui', self)
 
+        rc = RecursosAdicionales()
+        self.texto = self.findChild(QLabel, 'texto')
+        self.nombre = self.findChild(QLabel, 'nombre')
+
+        self.copiar = self.findChild(QPushButton, 'copiar')
+        self.copiar.clicked.connect(self.copiar_)
+
+    def setTexto(self, id):
+        carpetas=os.listdir('recetastextos')
+        for carpeta in carpetas:
+            if os.path.exists('recetastextos/'+carpeta+'/receta' + str(id) + '.txt')==True:
+                with open('recetastextos/'+carpeta+'/receta' + str(id) + '.txt', "r") as archivo:
+                    for linea in archivo:
+                        resultado = linea
+                    
+        self.texto.setText(resultado)
+        self.nombre.setText('receta' + str(id) + '.txt')
+        self.show()
+        width = 900
+        height = 500
+        self.setFixedSize(width, height)
+
+    def copiar_(self):
+        clipboard.copy(self.texto.text())
 class App(Index):
     def __init__(self):
         super(App, self).__init__()
@@ -1697,7 +1727,7 @@ class App(Index):
 
         # ponemos unos estilos
         scategorias = 'border-radius:100px;}QPushButton:hover{border:4px solid black;}'
-
+        self.txt_group=QButtonGroup()
         # llamamos a los botones
         self.btnplatos = self.findChild(QtWidgets.QPushButton, 'btnplatos')
         self.btnplatos.setStyleSheet(
@@ -1763,7 +1793,9 @@ class App(Index):
         self.volver.clicked.connect(self.volver_)
         # ponemos un default de recetas
        
-
+        
+        self.info=Informacion()
+        self.txt_group.buttonClicked[int].connect(self.info.setTexto)
         self.setStyleSheet('background-color:white;')
         self.show()
     def mostrar_pagina(self,id_):
@@ -1781,10 +1813,14 @@ class App(Index):
 
             if j < 10:
 
-                self.boton = QPushButton(texto)
-                self.boton.setStyleSheet(
+                boton = QPushButton(texto)
+                id_=re.findall(r'\d+',texto)
+                print(id_)
+                boton.setStyleSheet(
                     'QPushButton{font-family:Lucida Bright;border-radius:5px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
-                self.txt_frame.addWidget(self.boton, fila, j)
+                print(id_)
+                self.txt_group.addButton(boton,int(id_[0]))
+                self.txt_frame.addWidget(boton, fila, j)
                 j = j+1
             else:
                 j = 0
@@ -1917,7 +1953,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     gui = Index()
-    gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
+    #gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
 
