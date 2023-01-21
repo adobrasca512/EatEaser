@@ -1797,7 +1797,36 @@ class Download(Index):
                 col = 0
                 fila = fila + 1
 
+class Informacion(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        # Cargamos el .ui file
+        uic.loadUi('vista.ui', self)
 
+        rc = RecursosAdicionales()
+        self.texto = self.findChild(QLabel, 'texto')
+        self.nombre = self.findChild(QLabel, 'nombre')
+
+        self.copiar = self.findChild(QPushButton, 'copiar')
+        self.copiar.clicked.connect(self.copiar_)
+
+    def setTexto(self, id):
+        carpetas=os.listdir('recetastextos')
+        for carpeta in carpetas:
+            if os.path.exists('recetastextos/'+carpeta+'/receta' + str(id) + '.txt')==True:
+                with open('recetastextos/'+carpeta+'/receta' + str(id) + '.txt', "r") as archivo:
+                    for linea in archivo:
+                        resultado = linea
+                    
+        self.texto.setText(resultado)
+        self.nombre.setText('receta' + str(id) + '.txt')
+        self.show()
+        width = 900
+        height = 500
+        self.setFixedSize(width, height)
+
+    def copiar_(self):
+        clipboard.copy(self.texto.text())
 class App(Index):
     def __init__(self):
         super(App, self).__init__()
@@ -1806,7 +1835,7 @@ class App(Index):
 
         # ponemos unos estilos
         scategorias = 'border-radius:100px;}QPushButton:hover{border:4px solid black;}'
-
+        self.txt_group=QButtonGroup()
         # llamamos a los botones
         self.btnplatos = self.findChild(QtWidgets.QPushButton, 'btnplatos')
         self.btnplatos.setStyleSheet(
@@ -1872,7 +1901,9 @@ class App(Index):
         self.volver.clicked.connect(self.volver_)
         # ponemos un default de recetas
        
-
+        
+        self.info=Informacion()
+        self.txt_group.buttonClicked[int].connect(self.info.setTexto)
         self.setStyleSheet('background-color:white;')
         self.show()
     def mostrar_pagina(self,id_):
@@ -1890,10 +1921,14 @@ class App(Index):
 
             if j < 10:
 
-                self.boton = QPushButton(texto)
-                self.boton.setStyleSheet(
+                boton = QPushButton(texto)
+                id_=re.findall(r'\d+',texto)
+                print(id_)
+                boton.setStyleSheet(
                     'QPushButton{font-family:Lucida Bright;border-radius:5px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
-                self.txt_frame.addWidget(self.boton, fila, j)
+                print(id_)
+                self.txt_group.addButton(boton,int(id_[0]))
+                self.txt_frame.addWidget(boton, fila, j)
                 j = j+1
             else:
                 j = 0
@@ -2025,7 +2060,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    gui = Test()
+    gui = Index()
     #gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
