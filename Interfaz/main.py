@@ -454,7 +454,7 @@ class ProcesarDocumentos:
         for lc in listaCarpetas:
             # cogemos el nombre de la carpeta y se lo concatenamos a la ruta anterior
             rutaPorCarpeta = rutaCarpetasPorCategoria + lc + '/'
-            print(str(i)+rutaPorCarpeta+'-----------------')
+            #print(str(i)+rutaPorCarpeta+'-----------------')
             if(i == 0):
                 carpetaArroz = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 # print(carpetaArroz)
@@ -496,7 +496,7 @@ class ProcesarDocumentos:
         strCarpeta = []
         # vemos el contenido de la carpeta en la que estamos iterando
         listaTxt = os.listdir(rutaPorCarpeta)
-        print(listaTxt)
+        #print(listaTxt)
         # recorremos todos los archivos de la carpeta
         for lt in listaTxt:
             # concatenamos la ruta de la carpeta con el nombre de los archivos que contiene esta
@@ -545,37 +545,7 @@ class ProcesarDocumentos:
         listaStems = [stemmer.stem(word) for word in pasarStopWords]
         return listaStems
 
-    def Entrenar_SVM(self):
-        # self.preprocesamiento()
-
-        # Create a svm Classifier
-        clf = svm.SVC(kernel='linear')  # Linear Kernel
-
-        # Train the model using the training sets
-        clf.fit(self.X_train, self.Y_train)
-
-        predictions = clf.predict(self.X_cv)
-        self.Y_cv = list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
-
-        cv = cross_val_score(clf, self.X_train, self.Y_train, cv=10)
-
-        print("CV -> {}".format(cv))
-
-    def Entrenar_SVM_CV(self):
-
-        Cs = np.logspace(-6, -1, 10)
-        svc = svm.SVC()
-        clf = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
-                           n_jobs=-1)
-        clf.fit(self.X_train, self.Y_train)
-
-        print("best score-> {}".format(clf.best_score_))
-
-        print("best estimator-> {}".format(clf.best_estimator_.C))
-
-        # Prediction performance on test set is not as good as on train set
-        print("mi score".format(clf.score(self.X_cv, self.Y_cv)))
+    
 
 
 class modelosTFIDF:
@@ -604,6 +574,25 @@ class modelosTFIDF:
         self.Y_cv = list(self.Y_cv)
 
     def Entrenar_RF(self):
+        # self.preprocesamiento()
+
+        # Create a svm Classifier
+        m_RF = RandomForestClassifier()  # Linear Kernel
+
+        # Train the model using the training sets
+        m_RF.fit(self.X_train, self.Y_train)
+
+        predictions = m_RF.predict(self.X_cv)
+        self.Y_cv = list(self.Y_cv)
+        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+
+        #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        self.m_RF = m_RF
+
+        #print("CV -> {}".format(cv))
+        return self.m_RF
+    
+    def Entrenar_RF_Malo(self):
         # Grid de hiperparámetros evaluados
         # ==============================================================================
 
@@ -717,26 +706,13 @@ class modelosTFIDF:
         self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
 
-        cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
         self.m_SVM = m_SVM
 
         print("CV -> {}".format(cv))
         return self.m_SVM
 
-    def Entrenar_SVM_CV(self):
-
-        Cs = np.logspace(-6, -1, 10)
-        svc = svm.SVC()
-        m_SVM_CV = GridSearchCV(estimator=svc, param_grid=dict(C=Cs),
-                                n_jobs=-1)
-        m_SVM_CV.fit(self.X_train, self.Y_train)
-
-        print("best score-> {}".format(m_SVM_CV.best_score_))
-
-        print("best estimator-> {}".format(m_SVM_CV.best_estimator_.C))
-
-        # Prediction performance on test set is not as good as on train set
-        print("mi score".format(m_SVM_CV.score(self.X_cv, self.Y_cv)))
+    
 
     def Entrenar_Bayes(self):
 
@@ -768,42 +744,9 @@ class modelosTFIDF:
         #print("CV -> {}".format(cv))
         return self.M_mult
 
-    def predecir_RF(self, txt):
+   
 
-        self.pred = self.vectorizers.transform(txt)
-        self.pred = self.pred.toarray()
-        predictions = self.M_mult.predict(self.pred)
-        print("resultado: ", predictions)
-
-    def clasificar(self, modelo, txt):
-
-        self.pred = self.vectorizers.transform(txt)
-        self.pred = self.pred.toarray()
-        predictions = modelo.predict(self.pred)
-        print("resultado: ", predictions)
-
-    def predecir_Carpeta(self, rutaModelo, modeloSeleccionado):
-
-        p = ProcesarDocumentos()
-        carpeta = p.resultadoStringCarpeta(rutaModelo)
-
-        # resultados=[]
-        # for i in range(len(carpeta)):
-        #    text=p.tratamientoTextos(carpeta[i])
-        #    hey=[" ".join(text)]
-        #    resultados.append(self.predecir_RF(hey))
-        #print("Resultados: {}".format(resultados))
-
-        resultados = []
-        for i in range(len(carpeta)):
-            text = p.tratamientoTextos(carpeta[i])
-            hey = " ".join(text)
-            resultados.append(hey)
-        self.pred1 = self.vectorizers.transform(resultados)
-        self.pred1 = self.pred1.toarray()
-        predictions = modeloSeleccionado.predict(self.pred1)
-        #print("resultado: " , predictions)
-        return predictions
+   
 
     def Entrenar_KNN(self):
         # self.preprocesamiento()
@@ -1468,7 +1411,7 @@ class Test(Index):
                                 str(self.total_archivos) + ' archivos\n')
              
              
-    class Informacion(Index):
+    class Informacion(QWidget):
         def __init__(self):
             super().__init__()
             self.setWindowTitle("EatEaser-Visualizar Texto")
@@ -1499,11 +1442,20 @@ class Test(Index):
             self.setLayout(self.layout)
             self.ruta = []
             self.carpeta_seleccionada = ''
-        
+
         def ver_(self, list):
             with open(self.carpeta_seleccionada+'/'+self.ruta[list], "r") as archivo:
                 for linea in archivo:
-                    resultado = linea        
+                    resultado = linea
+
+            self.texto.setText(resultado)
+            self.nombre.setText(self.ruta[list])
+            self.gui = self
+            self.gui.show()
+            width = 900
+            height = 500
+            # setting  the fixed size of window
+            self.gui.setFixedSize(width, height)      
         
 
   
