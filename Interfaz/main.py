@@ -860,10 +860,7 @@ class modelosTFIDF:
         loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
         print("Testing Accuracy:  {:.4f}".format(accuracy))
 
-    def guardarModelo(self, modelo, nombre):
-
-        # Guardo el modelo.
-        joblib.dump(modelo, './Interfaz/modelos/{}.pkl'.format(nombre))
+    
 
     def cargarModelo(self, nombre):
 
@@ -878,7 +875,7 @@ class modelosTFIDF_Test:
         self.pred = self.pred.toarray()
         predictions = self.M_mult.predict(self.pred)
         print("resultado: ", predictions)
-
+        
     def clasificar(self, modelo, txt):
 
         self.pred = self.vectorizers.transform(txt)
@@ -903,18 +900,16 @@ class modelosTFIDF_Test:
             text = p.tratamientoTextos(carpeta[i])
             hey = " ".join(text)
             resultados.append(hey)
-        self.pred1 = vectorizer.transform()
+        self.pred1 = vectorizer.transform(resultados)
+        self.arr=self.pred1.toarray()
         #self.pred1 = self.pred1.toarray()
-        predictions = modeloSeleccionado.predict()
+        predictions = modeloSeleccionado.predict(self.arr)
         #print("resultado: " , predictions)
         return predictions
 
    
 
-    def guardarModelo(self, modelo, nombre):
-
-        # Guardo el modelo.
-        joblib.dump(modelo, './Interfaz/modelos/{}.pkl'.format(nombre))
+    
 
     def cargarModelo(self, nombre):
 
@@ -1164,9 +1159,9 @@ class Train(Index):
             elif(self.algoritmo_clicked == "RF"):
                 self.modeloEntrenadoFinal = modelo.Entrenar_RF()
                 print('RF')
-            self.vectorizer=modelo.vect
+            
             print(self.df1.head())
-
+            self.vectorizer_train = modelo.vectorizers
             print("El modelo ha sido entrenado correctamente! :)")
 
             # verificamos si hay algoritmo seleccionado
@@ -1252,7 +1247,7 @@ class Train(Index):
        
     
 
-    def guardarModelo(self, modeloEntrenado):
+    def guardarModelo(self):
         if(self.varableSeleccionCarpetaGuardarModelo == ""):
             #print("no hay ruta")
             self.mensaje_error("No hay una ruta seleccionada")
@@ -1260,13 +1255,15 @@ class Train(Index):
             #print("no hay nombre de archivo")
             self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
+            
+            print("guardando modelo y vectorizer")
             rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + \
                 "/" + self.formguardar.text() + ".pkl"
             joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
             rutaGuardarVect = self.varableSeleccionCarpetaGuardarModelo + \
                 "/" + self.formguardar.text() + "_vect.pkl"
-            joblib.dump(self.vectorizer,rutaGuardarVect)
+            joblib.dump(self.vectorizer_train,rutaGuardarVect)
             
 class Test(Index):
     def __init__(self):
@@ -1290,8 +1287,8 @@ class Test(Index):
 
         
         
-        self.ltablaAEliminar=self.findChild(QLabel,'resultadosTesting')
-
+        self.ltablaAEliminar=self.findChild(QLabel,'label_10')
+        
         self.ltablaResultadosTesting=QTabWidget()
         self.gridTablaResultados=self.findChild(QHBoxLayout, 'horizontalLayout')
         
@@ -1306,8 +1303,8 @@ class Test(Index):
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
-        self.tableWidget=QTableWidget()
-        self.grafico.addWidget(self.tableWidget)
+        #self.tableWidget=QTableWidget()
+        #self.grafico.addWidget(self.tableWidget)
         self.vista =self.findChild(QLabel,'vista')
         
     def informacion(self, titulo, descripcion):
@@ -1330,7 +1327,7 @@ class Test(Index):
         if(self.varableRutaModeloEntrenado != ""):
              print("modelo cargado")
              print("ruta modelo: " + self.varableRutaModeloEntrenado)
-             ruta_vect=self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find('.pkl')]+"_vect.joblib"
+             ruta_vect=self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find('.pkl')]+"_vect.pkl"
              print("ruta vectorizer: " + ruta_vect)
              self.modelo_entrenado = joblib.load(
                  self.varableRutaModeloEntrenado)
@@ -1427,15 +1424,18 @@ class Test(Index):
              diccionario = {0: "Arroz", 1: "Bebida", 2: "Carne", 3: "Marisco",
                             4: "Pasta", 5: "Pescado", 6: "Platos menores", 7: "Verdura"}
              
+             self.ltablaAEliminar.setVisible(False)
              
-             self.tableWidget.setRowCount(
-                 len(os.listdir(self.cbcategoria.placeholderText())))
-             self.tableWidget.setColumnCount(3)
+             self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
+             
+             self.ltablaResultadosTesting.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
+             self.ltablaResultadosTesting.setColumnCount(3)
+             self.setData()
              self.info.ruta = os.listdir(self.cbcategoria.placeholderText())
              self.info.carpeta_seleccionada = self.cbcategoria.placeholderText()
-             self.tableWidget.setHorizontalHeaderLabels(
+             self.ltablaResultadosTesting.setHorizontalHeaderLabels(
                  ["Texto", "Categoria", "Ver Texto"])
-             header = self.tableWidget.horizontalHeader()
+             header = self.ltablaResultadosTesting.horizontalHeader()
              header.setSectionResizeMode(0, QHeaderView.Stretch)
              header.setSectionResizeMode(1, QHeaderView.Stretch)
              header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
@@ -1463,10 +1463,7 @@ class Test(Index):
              # le añado todos los que esten en listbox
              self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                 str(self.total_archivos) + ' archivos\n')
-             self.ltablaAEliminar.setVisible(False)
              
-             self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
-             self.setData()
              
     class Informacion(Index):
         def __init__(self):
