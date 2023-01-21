@@ -1288,12 +1288,12 @@ class Test(Index):
 
         
         
-        self.ltablaAEliminar=self.findChild(QLabel,'label_10')
+        self.ltablaAEliminar=self.findChild(QLabel,'lresultadosTabla')
         
-        self.ltablaResultadosTesting=QTabWidget()
-        self.gridTablaResultados=self.findChild(QHBoxLayout, 'horizontalLayout')
+        self.ltablaResultadosTesting=QTableWidget()
+        self.gridTablaResultados=self.findChild(QHBoxLayout, 'hresultados')
         
-
+        
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1303,10 +1303,12 @@ class Test(Index):
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
-        self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
+        #self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
         #self.tableWidget=QTableWidget()
         #self.grafico.addWidget(self.tableWidget)
         self.vista =self.findChild(QLabel,'vista')
+        self.ver = QButtonGroup()
+        self.ver.buttonClicked[int].connect(self.info.ver_)
         
     def informacion(self, titulo, descripcion):
          print(titulo)
@@ -1424,7 +1426,10 @@ class Test(Index):
              print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
              diccionario = {0: "Arroz", 1: "Bebida", 2: "Carne", 3: "Marisco",
                             4: "Pasta", 5: "Pescado", 6: "Platos menores", 7: "Verdura"}
-             
+             resultado = []
+             for i in prediccion:
+                 resultado.append(diccionario[i])
+             self.prediccion = resultado
              self.ltablaAEliminar.setVisible(False)
              
              self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
@@ -1445,11 +1450,8 @@ class Test(Index):
                  '/')[-1]
              
              
-             resultado = []
-             for i in prediccion:
-                 resultado.append(diccionario[i])
-             self.prediccion = resultado
-             self.setData()
+             
+            
              # carpeta de entrenamiento
              # Vectorizer
              # usar metodo para predecir
@@ -1498,7 +1500,10 @@ class Test(Index):
             self.ruta = []
             self.carpeta_seleccionada = ''
         
-                    
+        def ver_(self, list):
+            with open(self.carpeta_seleccionada+'/'+self.ruta[list], "r") as archivo:
+                for linea in archivo:
+                    resultado = linea        
         
 
   
