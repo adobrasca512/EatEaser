@@ -1013,6 +1013,8 @@ class Train(Index):
         
         self.switchButtons()
     def setWidgets(self):
+        #
+        self.matrizlt=self.findChild(QVBoxLayout,'verticalLayout_3')
         
         self.seleccionados = []
         self.checkboxes = []
