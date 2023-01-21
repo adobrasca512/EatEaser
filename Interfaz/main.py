@@ -887,7 +887,7 @@ class modelosTFIDF_Test:
         print("resultado: ", predictions)
 
     def predecir_Carpeta(self, rutaModelo, modeloSeleccionado,vectorizer):
-
+        
         p = ProcesarDocumentos()
         carpeta = p.resultadoStringCarpeta(rutaModelo)
 
@@ -903,9 +903,9 @@ class modelosTFIDF_Test:
             text = p.tratamientoTextos(carpeta[i])
             hey = " ".join(text)
             resultados.append(hey)
-        self.pred1 = vectorizer.transform(resultados)
-        self.pred1 = self.pred1.toarray()
-        predictions = modeloSeleccionado.predict(self.pred1)
+        self.pred1 = vectorizer.transform()
+        #self.pred1 = self.pred1.toarray()
+        predictions = modeloSeleccionado.predict()
         #print("resultado: " , predictions)
         return predictions
 
@@ -1285,7 +1285,7 @@ class Test(Index):
         self.nuevo=self.findChild(QPushButton,'aniadir')
         self.btnalgoritmo=self.findChild(QPushButton,'play')
         self.ltitulo=self.findChild(QLabel,'titulo')
-        self.ltitulo=self.findChild(QLabel,'descripcion')
+        self.ldescripcion=self.findChild(QLabel,'descripcion')
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1302,8 +1302,8 @@ class Test(Index):
         
     def informacion(self, titulo, descripcion):
          print(titulo)
-         #self.ltitulo.setText(titulo)
-         #self.ldescrip.setText(descripcion)
+         self.ltitulo.setText(titulo)
+         self.ldescripcion.setText(descripcion)
 
     def recuperarRutaModeloEntrenado(self):
          r = QFileDialog.getOpenFileName(
@@ -1320,7 +1320,7 @@ class Test(Index):
         if(self.varableRutaModeloEntrenado != ""):
              print("modelo cargado")
              print("ruta modelo: " + self.varableRutaModeloEntrenado)
-             ruta_vect=self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find('.pkl')]+"_vect.pkl"
+             ruta_vect=self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find('.pkl')]+"_vect.joblib"
              print("ruta vectorizer: " + ruta_vect)
              self.modelo_entrenado = joblib.load(
                  self.varableRutaModeloEntrenado)
