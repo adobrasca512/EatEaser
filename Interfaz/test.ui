@@ -114,7 +114,7 @@ border-radius:5px;</string>
              <string notr="true">color:white;</string>
             </property>
             <property name="text">
-             <string>Esta sección te permitira seleccionar un modelo en el cual podras entrenar una carpeta que selecciones.</string>
+             <string>Esta sección te permitira seleccionar un modelo con el cual podrás testear una carpeta que selecciones.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -378,7 +378,7 @@ border-radius:20px;</string>
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="titulo">
+           <widget class="QLabel" name="ltitulo">
             <property name="font">
              <font>
               <family>NSimSun</family>
@@ -399,7 +399,7 @@ border-radius:20px;</string>
              </font>
             </property>
             <property name="text">
-             <string>Descripcion del algoritmo testeado</string>
+             <string>Carpeta de Testeo:</string>
             </property>
            </widget>
           </item>

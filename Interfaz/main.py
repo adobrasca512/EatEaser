@@ -1227,7 +1227,7 @@ class Test(Index):
         self.btn_seleccion_modelo=self.findChild(QPushButton,'selectmodelo')
         self.nuevo=self.findChild(QPushButton,'aniadir')
         self.btnalgoritmo=self.findChild(QPushButton,'play')
-        self.ltitulo=self.findChild(QLabel,'titulo')
+        self.ltitulo=self.findChild(QLabel,'ltitulo')
 
         self.ldescripcion=self.findChild(QLabel,'descripcion')
 
@@ -1242,11 +1242,10 @@ class Test(Index):
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
+        
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.retorno=self.findChild(QPushButton,'volver')
         self.retorno.clicked.connect(self.volver_)
-        self.btn_seleccion_modelo.clicked.connect(
-            lambda: self.informacion('Modelo Seleccionado', 'Estos son sus archivos:'))
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         #self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
         #self.tableWidget=QTableWidget()
