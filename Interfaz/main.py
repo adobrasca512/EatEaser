@@ -1117,7 +1117,7 @@ class Train(Index):
             plt.show()
             fig.savefig('imagenes/matrizconfusion.png')
             pixmap = QtGui.QPixmap('imagenes/matrizconfusion.png')
-            self.lblImgMatriz.setPixmap(pixmap)
+            self.lblImgMatriz.setPixmap(pixmmap)
             print("ya esta la matriz de confusion")
             # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
@@ -1364,7 +1364,7 @@ class Test(Index):
                   self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text()+".csv")
             self.df_resultado.to_csv(
                 self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text()+".csv")
-            self.mensaje_info("Modelo guardado correctamente en: " +
+            self.mensaje_info("Resultados de Test guardados correctamente en: " +
                               self.variableSeleccionCarpetaGuardarModelo+" .")
 
     def cargarDF_Completo(self):
@@ -1629,9 +1629,9 @@ class Download(Index):
         super(Download, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('download.ui', self)
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         self.info = self.Informacion()
         self.grid = self.findChild(QGridLayout, 'grid_descargas')
-
         self.btn_descarga = self.findChild(QPushButton, 'descarga')
         self.enlace = self.findChild(QLineEdit, 'enlace')
         self.volver = self.findChild(QPushButton, 'volver')
@@ -1776,6 +1776,7 @@ class App(Index):
         super(App, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('app.ui', self)
+        self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
         self.txt_group = QButtonGroup()
         self.recetas_group = QButtonGroup()
         self.grupo_botones = QButtonGroup()
