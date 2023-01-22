@@ -1648,7 +1648,7 @@ class WebScraping:
         href = todasRecetas.find_elements(By.CLASS_NAME, "mRecipeTeaser-link")
         self.listaURL = []
         for h in href:
-            print('lidls'+h.get_attribute("href"))
+          
             self.listaURL.append(h.get_attribute("href"))
 
     def sacarInfoAhorraMas(self, soup):
@@ -1658,7 +1658,7 @@ class WebScraping:
         for np in bodyInformacion:
             nombreProducto = np.find(class_="link product-name-gtm")
             self.listaNombres.append(nombreProducto.text)
-            print('Hola',nombreProducto.text)
+           
 
         # PARA COGER EL PRECIO DEL PRODUCTO
         bodyInformacion = soup.find_all(class_="tile-body")
@@ -1672,7 +1672,7 @@ class WebScraping:
             self.listaImagenes = []
             for s in src:
                 self.listaImagenes.append(s["src"])
-                print(s["src"])
+                
 
             # PARA COGER LA URL DEL PRODUCTO
             href = soup.find_all(class_="product-pdp-link")
@@ -1845,7 +1845,7 @@ class App(Index):
         self.ws = WebScraping('cebolla')
         self.ws2 = WebScraping('cebolla')
         self.info=Informacion()
-        self.productos_lt=self.findChild(QHBoxLayout,'lt_productos')
+        self.productos_lt=self.findChild(QHBoxLayout,'productos')
         self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
         self.btnplatos = self.findChild(QtWidgets.QPushButton, 'btnplatos')
         self.btnverdura = self.findChild(QtWidgets.QPushButton, 'btnverdura')
@@ -1859,6 +1859,7 @@ class App(Index):
         self.txt_frame = self.findChild(QGridLayout, 'gridLayout_8')
         self.volver = self.findChild(QPushButton, 'volver')
         self.btnbuscar = self.findChild(QPushButton, 'buscar')
+        
         # ponemos unos estilos
         scategorias = 'border-radius:100px;}QPushButton:hover{border:4px solid black;}'
         self.btnplatos.setStyleSheet(
@@ -1914,6 +1915,9 @@ class App(Index):
         webbrowser.open(self.ws.listaURL[id_]) 
         
     def buscar_texto(self, categoria):
+        self.txt_group=QButtonGroup()
+        for i in reversed(range(self.txt_frame.count())): 
+            self.txt_frame.itemAt(i).widget().setParent(None)
         if os.path.exists('recetastextos/'+categoria)==True:
             directorio = os.listdir('recetastextos/'+categoria)
             col = 0
@@ -1942,7 +1946,9 @@ class App(Index):
             limite=0
             
             for i,carpeta in enumerate(carpetas):
+                print('limite'+str(limite))
                 if limite<50:
+                    
                     textos=os.listdir('recetastextos/'+carpeta)
                     for texto in textos:
                         with open('recetastextos/'+carpeta+'/'+texto, "r",errors="ignore") as archivo:
@@ -1950,7 +1956,7 @@ class App(Index):
                                 resultado = linea
                         
                         
-                        if categoria in resultado:
+                        if categoria in resultado and limite<50:
                            
                             
                             boton = QPushButton(texto)
@@ -1975,47 +1981,54 @@ class App(Index):
 
     def buscar_productos(self, producto):
         
-        cont = 0
+        self.productos=QButtonGroup()
         self.ws=WebScraping(producto)
         self.ws.conexionPaginaWebAhorraMas()
         
-        for i, element in enumerate(self.ws.listaNombres):
-            if(cont==8):
-                break
-            
-            # si la columna ya va a mas de uno
-            
-                
-                
-            lt=QVBoxLayout()
-            self.productos_lt.addLayout(lt)
-          
-            imagen=QPushButton()
-            
-            nombre=QLabel()
-            nombre.setWordWrap(True)
-            descripcion=QLabel()
-            lt.addWidget(imagen)
-            lt.addWidget(nombre)
-            lt.addWidget(descripcion)
+        print('intentando')
+        for i in reversed(range(self.productos_lt.count())): 
+            self.productos_lt.itemAt(i).layout().setParent(None)
         
-            nombre.setText(element)
-            nombre.setStyleSheet('font-family:Simsun;color:white;')
-            descripcion.setText(self.ws.listaPrecios[i])
-            descripcion.setStyleSheet('font-family:Lucida Bright;color:white;font-weight:bold;')
-           
-            response = requests.get(self.ws.listaImagenes[i])
-            if response.status_code == 200:
-                with open("imagenes/sample_producto" + str(i) + ".jpg", 'wb') as f:
-                    f.write(response.content)
-            imagen.setStyleSheet(
-                "border-image:url(imagenes/sample_producto" + str(i) + ".jpg);")
-            imagen.setFixedSize(200, 200)
-            self.productos.addButton(imagen,i)
+        cont = 0
+        
+        
+        for i, element in enumerate(self.ws.listaNombres):
+            print('contador'+str(cont))
+            if(cont<8):
                 
-
+                lt=QVBoxLayout()
+                
+                
+                self.productos_lt.addLayout(lt)
+              
+                imagen=QPushButton()
+                
+                nombre=QLabel()
+                nombre.setWordWrap(True)
+                descripcion=QLabel()
+                lt.addWidget(imagen)
+                lt.addWidget(nombre)
+                lt.addWidget(descripcion)
+            
+                nombre.setText(element)
+                nombre.setStyleSheet('font-family:Simsun;color:white;')
+                descripcion.setText(self.ws.listaPrecios[i])
+                descripcion.setStyleSheet('font-family:Lucida Bright;color:white;font-weight:bold;')
+               
+                response = requests.get(self.ws.listaImagenes[i])
+                if response.status_code == 200:
+                    with open("imagenes/sample_producto" + str(i) + ".jpg", 'wb') as f:
+                        f.write(response.content)
+                imagen.setStyleSheet(
+                    "border-image:url(imagenes/sample_producto" + str(i) + ".jpg);")
+                imagen.setFixedSize(200, 200)
+                self.productos.addButton(imagen,i)
+                    
+    
+                
+            else:
+                break
             cont = cont + 1
-
     def buscar_recetas(self, categoria):
         col = 0
         fila = 2
@@ -2095,16 +2108,18 @@ class App(Index):
                 fila = fila + 1
 
     def buscar_(self,categoria):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.buscar_texto(categoria)
         self.buscar_productos(categoria)
         self.buscar_recetas(categoria)
+        QApplication.restoreOverrideCursor()
 
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
     gui = Index()
-    #gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
+    gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
     gui.show()
     gui.showMaximized()
 
