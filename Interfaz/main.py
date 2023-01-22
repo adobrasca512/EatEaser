@@ -582,9 +582,9 @@ class modelosTFIDF:
         # Train the model using the training sets
         m_RF.fit(self.X_train, self.Y_train)
 
-        predictions = m_RF.predict(self.X_cv)
+        self.predictions = m_RF.predict(self.X_cv)
         self.Y_cv = list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
         #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
         self.m_RF = m_RF
@@ -702,14 +702,14 @@ class modelosTFIDF:
         # Train the model using the training sets
         m_SVM.fit(self.X_train, self.Y_train)
 
-        predictions = m_SVM.predict(self.X_cv)
+        self.predictions = m_SVM.predict(self.X_cv)
         self.Y_cv = list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
         #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
         self.m_SVM = m_SVM
 
-        print("CV -> {}".format(cv))
+        #print("CV -> {}".format(cv))
         return self.m_SVM
 
     
@@ -735,9 +735,9 @@ class modelosTFIDF:
         M_mult = LogisticRegression(multi_class='multinomial', solver='lbfgs')
         M_mult.fit(self.X_train, self.Y_train)
 
-        predictions = M_mult.predict(self.X_cv)
+        self.predictions = M_mult.predict(self.X_cv)
         self.Y_cv = list(self.Y_cv)
-        print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
+        print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
         #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
         self.M_mult = M_mult
@@ -1109,7 +1109,32 @@ class Train(Index):
             print(self.df1.head())
             self.vectorizer_train = modelo.vectorizers
             print("El modelo ha sido entrenado correctamente! :)")
+            import matplotlib.pyplot as plt
+            from sklearn import metrics
+            from sklearn.metrics import confusion_matrix
+            conf_matrix=confusion_matrix(modelo.Y_cv, modelo.predictions)
+            print(conf_matrix)
 
+            confusion_matrix = metrics.confusion_matrix(modelo.Y_cv,  modelo.predictions)
+
+            cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = ["Arroz","Bebida","Carne"])
+            fig, ax = plt.subplots(figsize=(12,10))
+            cm_display.plot()
+            
+            plt.show()
+            plt.draw()
+            fig.savefig('matrizconfusion.png')
+            
+            install('mlxtend')
+            from mlxtend.plotting import plot_confusion_matrix
+            import matplotlib.pyplot as plt
+            import numpy as np
+            class_names= ["Arroz","Bebida","Carne"]
+            matriz_confu=np.array(conf_matrix)
+            fig, ax = plot_confusion_matrix(conf_mat=matriz_confu, colorbar=True, show_absolute=True,show_normed=True,class_names=class_names)
+            plt.show()
+            fig.savefig('imagenes/matrizconfusion_2.png')
+            print("ya esta la matriz de confusion")
             # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
 
