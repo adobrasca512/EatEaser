@@ -155,6 +155,8 @@ class ControladorVideo:
         self.yt.streams.filter(file_extension='mp4').first().download(
             output_path='recetasvideos/', filename='receta'+str(self._idvideo)+'.mp4')
 
+        return 'receta'+str(self._idvideo)
+
     """|PARSEO VIDEO: pasa el video de .mp4 a .wav
        |nombre: es un string que se colocara el nombre del video
        |return: devuelve el nuevo nombre del audio en .wav"""
@@ -886,24 +888,24 @@ class Index(QtWidgets.QMainWindow):
 
     def activarBotones(self):
         self.about.clicked.connect(lambda: self.menuClicked('Startup Eateaser',
-                                                            'Compañia encargada para sugerirte las mejores recetas Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facilpara conocer la clasificacion de \n'
-                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            'Compañia encargada para sugerirte las mejores recetas Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicación fácil para conocer la clasificación de \n'
+                                                            'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
                                                             False, True, ''))
         self.train.clicked.connect(lambda: self.menuClicked('Fase de Entrenamiento',
-                                                            'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil para conocer la clasificacion de \n'
-                                                            'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicación fácil para conocer la clasificación de \n'
+                                                            'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
                                                             True, False, 'train.png'))
         self.test.clicked.connect(lambda: self.menuClicked('Fase de Testeo',
-                                                           'Compañia encargada para sugerirte las mejores recetas.\Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicacion facil\npara conocer la clasificacion de \n'
-                                                           'tus platillos favoritos. Ademas tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                           'Compañia encargada para sugerirte las mejores recetas.\Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicación fácil para conocer la clasificación de \n'
+                                                           'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
                                                            True, False, 'test.png'))
         self.app.clicked.connect(lambda: self.menuClicked('Aplicación',
-                                                          'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
-                                                          'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                          'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicación fácil para conocer la clasificación de '
+                                                          'tus platillos favoritos. Además tambien clasificamos resetas y te enseñamos nuestros algoritmos',
                                                           True, False, 'app.png'))
         self.downloads.clicked.connect(lambda: self.menuClicked('Descargar',
-                                                                'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicacion facil para conocer la clasificacion de '
-                                                                'tus platillos favoritos. Ademas tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                                'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicación fácil para conocer la clasificación de '
+                                                                'tus platillos favoritos. Además tambien clasificamos resetas y te enseñamos nuestros algoritmos',
                                                                 True, False, 'descarga.png'))
         self.acceder.clicked.connect(self.openWindow)
 
@@ -966,7 +968,6 @@ class Index(QtWidgets.QMainWindow):
             self.gui.setWindowIcon(QtGui.QIcon('imagenes/chef-logo.ico'))
             self.gui.show()
             self.gui.showMaximized()
-            # QApplication.restoreOverrideCursor()
             self.close()
 
     def volver_(self):
@@ -1117,7 +1118,7 @@ class Train(Index):
             plt.show()
             fig.savefig('imagenes/matrizconfusion.png')
             pixmap = QtGui.QPixmap('imagenes/matrizconfusion.png')
-            self.lblImgMatriz.setPixmap(pixmmap)
+            self.lblImgMatriz.setPixmap(pixmap)
             print("ya esta la matriz de confusion")
             # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
@@ -1470,12 +1471,10 @@ class Test(Index):
             self.layout = QGridLayout()
             # self.varableRutaModeloEntrenado=""
             self.nombre = QLabel('Nombre')
-            self.categoria = QLabel('Categoria')
             self.texto = QLabel('Texto')
             self.informacion = QScrollArea()
             self.texto.setWordWrap(True)
             self.texto.setStyleSheet(stexto)
-            self.categoria.setStyleSheet(scategorias)
             self.nombre.setStyleSheet(scategorias)
             self.id_ventana = QLabel('Visualizacion de texto')
             self.id_ventana.setStyleSheet(sventana)
@@ -1483,8 +1482,6 @@ class Test(Index):
             self.informacion.setWidgetResizable(True)
             self.layout.addWidget(self.id_ventana, 0, 0, 1, 4)
             self.layout.addWidget(self.nombre, 1, 0, 1,
-                                  1, QtCore.Qt.AlignCenter)
-            self.layout.addWidget(self.categoria, 1, 1, 1,
                                   1, QtCore.Qt.AlignCenter)
             self.layout.addWidget(self.informacion, 2, 0, 6, 4)
 
@@ -1670,7 +1667,7 @@ class Download(Index):
             pyperclip.copy(self.texto.text())
 
     def descargar(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        # QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         col = 0
         fila = 0
         dp = ControladorVideo(self.enlace.text())
@@ -1735,7 +1732,6 @@ class Download(Index):
             else:
                 col = 0
                 fila = fila + 1
-    QApplication.restoreOverrideCursor()
 
 
 class Informacion(QMainWindow):
