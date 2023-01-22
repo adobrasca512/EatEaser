@@ -366,7 +366,7 @@ class RecursosAdicionales:
             borrar = []
             guardado = 0
             for i in range(len(index)-1):
-                if index[i+1] <= index[i]+(20*segundo):
+                if index[i+1] <= (index)[i]+(20*segundo):
                     if i == 0:
                         tiempo = (index[i])/segundo
                     else:
@@ -892,20 +892,16 @@ class Index(QtWidgets.QMainWindow):
                                                             'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
                                                             False, True, ''))
         self.train.clicked.connect(lambda: self.menuClicked('Fase de Entrenamiento',
-                                                            'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicación fácil para conocer la clasificación de \n'
-                                                            'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                            'En esta ventana podremos entrenar los modelos de aprendizaje.',
                                                             True, False, 'train.png'))
         self.test.clicked.connect(lambda: self.menuClicked('Fase de Testeo',
-                                                           'Compañia encargada para sugerirte las mejores recetas.\Seremos tus aliados a la hora de cocinar.\nNosotros te permitimos una aplicación fácil para conocer la clasificación de \n'
-                                                           'tus platillos favoritos. Además tambien \clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                           'En esta ventana podemos hacer Test a los modelos entrenados',
                                                            True, False, 'test.png'))
         self.app.clicked.connect(lambda: self.menuClicked('Aplicación',
-                                                          'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicación fácil para conocer la clasificación de '
-                                                          'tus platillos favoritos. Además tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                          'En esta ventana podremos hacer visualizar recetas y buscar los precios de los alimentos',
                                                           True, False, 'app.png'))
         self.downloads.clicked.connect(lambda: self.menuClicked('Descargar',
-                                                                'Compañia encargada para sugerirte las mejores recetas.Seremos tus aliados a la hora de cocinar.Nosotros te permitimos una aplicación fácil para conocer la clasificación de '
-                                                                'tus platillos favoritos. Además tambien clasificamos resetas y te enseñamos nuestros algoritmos',
+                                                                'En esta venatna podremos descargar nuevos videos de youtube.',
                                                                 True, False, 'descarga.png'))
         self.acceder.clicked.connect(self.openWindow)
 
