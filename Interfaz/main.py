@@ -1247,11 +1247,14 @@ class Test(Index):
 
         self.ltablaResultadosTesting = QTableWidget()
         self.gridTablaResultados = self.findChild(QHBoxLayout, 'hresultados')
-
+        # Guardar resultados part
         self.path_btn = self.findChild(QPushButton, 'search_path')
         self.btn_guardar = self.findChild(QPushButton, 'guardar_modelo')
+        self.formguardar = self.findChild(QLineEdit, 'guardarform')
+        self.path_btn.clicked.connect(self.aniadir_directorio)
+        self.btn_guardar.clicked.connect(self.guardarModelo)
         self.variableSeleccionCarpetaGuardarModelo = ""
-
+        # Cierre Guardar resultados part
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1353,9 +1356,10 @@ class Test(Index):
         elif(self.formguardar.text() == ""):
             self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
-            print("guardando modelo y vectorizer")
+            print("Guardando resultados en: " +
+                  self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text()+".csv")
             self.df_resultado.to_csv(
-                self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text())
+                self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text()+".csv")
             self.mensaje_info("Modelo guardado correctamente en: " +
                               self.variableSeleccionCarpetaGuardarModelo+" .")
 
@@ -1451,8 +1455,7 @@ class Test(Index):
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                str(self.total_archivos) + ' archivos\n')
             self.mensaje_info("Modelo Entrenado correctamente.")
-            #lblImgMatriz????
-            
+            # lblImgMatriz????
 
     class Informacion(QWidget):
         def __init__(self):
