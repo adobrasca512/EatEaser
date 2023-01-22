@@ -166,7 +166,7 @@ border-radius:5px;</string>
            <widget class="QLineEdit" name="lineEdit_2"/>
           </item>
           <item>
-           <widget class="QPushButton" name="guardar_modelo">
+           <widget class="QPushButton" name="pushButton_4">
             <property name="styleSheet">
              <string notr="true">background-color:white;
 border-radius:5px;</string>
@@ -181,7 +181,7 @@ border-radius:5px;</string>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="search_path">
+           <widget class="QPushButton" name="pushButton_3">
             <property name="styleSheet">
              <string notr="true">background-color:white;
 border-radius:5px;</string>

@@ -1430,6 +1430,8 @@ class Test(Index):
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                str(self.total_archivos) + ' archivos\n')
             self.mensaje_info("Modelo Entrenado correctamente.")
+            #lblImgMatriz????
+            
 
     class Informacion(QWidget):
         def __init__(self):
