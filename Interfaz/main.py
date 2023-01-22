@@ -985,6 +985,8 @@ class Train(Index):
         self.cbcategoria = self.findChild(QComboBox, 'comboBox')
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
         self.variableSeleccionCarpetaGuardarModelo = ""
+        self.lblImgMatriz = self.findChild(QLabel, 'lblImgMatriz')
+        self.lblImgMatriz.setText("No hay modelos que mostrar2")
         self.setWidgets()
         self.df = pd.DataFrame()
 
@@ -1114,6 +1116,8 @@ class Train(Index):
                 conf_mat=matriz_confu, colorbar=True, show_absolute=True, show_normed=True, class_names=self.seleccionados)
             plt.show()
             fig.savefig('imagenes/matrizconfusion.png')
+            pixmap = QtGui.QPixmap('imagenes/matrizconfusion.png')
+            self.lblImgMatriz.setPixmap(pixmap)
             print("ya esta la matriz de confusion")
             # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
@@ -1451,7 +1455,6 @@ class Test(Index):
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                str(self.total_archivos) + ' archivos\n')
             self.mensaje_info("Modelo Entrenado correctamente.")
-            #lblImgMatriz????
             
 
     class Informacion(QWidget):
