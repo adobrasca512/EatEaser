@@ -154,10 +154,11 @@ class ControladorVideo:
         # le pedimos al pytube que solo nos descargue el audio y lo descargamos
         self.yt.streams.filter(file_extension='mp4').first().download(
             output_path='recetasvideos/', filename='receta'+str(self._idvideo)+'.mp4')
-     
+
     """|PARSEO VIDEO: pasa el video de .mp4 a .wav
        |nombre: es un string que se colocara el nombre del video
        |return: devuelve el nuevo nombre del audio en .wav"""
+
     def parseoVideo(self, nombre):
         recetasVideos = 'recetasvideos/'
         # tomamos el video en mp4
@@ -194,11 +195,13 @@ class ControladorVideo:
 
     def repetido(self):
         return self.rec.buscar_json('recetastextos/indice.json', 'nombre', self.titulovideo)
+
     def esLista(self):
         if(re.search("/playlist?", self.enlacevideo)):
             return True
         else:
             return False
+
     def video(self):
         try:
             # instanciamos el controlador de videos
@@ -210,7 +213,7 @@ class ControladorVideo:
 
                 # paso 3: descargamos el video
                 self.nombrevideo = self.descargarVideoURL()
-               
+
                 fb.guardar_database(self.data_json(), self._idvideo)
                 # paso 4: pasamos el video a .wav
                 nombre = self.parseoVideo(self.nombrevideo)
@@ -275,20 +278,16 @@ class ControladorVideo:
             print("No se ha podido descargar el video: " +
                   self.nombrevideo + " - " + self.titulovideo)
             return None
+
     def lista(self):
         playlist_urls = Playlist(self.enlacevideo)
         for url in playlist_urls:
             self.video(url)
 
 
-
-    
-    
-
-
 class RecursosAdicionales:
     """|ESCRITURA: escribe textos txt
-       |nombre: nombre del 
+       |nombre: nombre del
        |return: devuelve el audio en texto"""
 
     def escritura(self, nombre, texto):
@@ -456,7 +455,7 @@ class ProcesarDocumentos:
         for lc in listaCarpetas:
             # cogemos el nombre de la carpeta y se lo concatenamos a la ruta anterior
             rutaPorCarpeta = rutaCarpetasPorCategoria + lc + '/'
-            #print(str(i)+rutaPorCarpeta+'-----------------')
+            # print(str(i)+rutaPorCarpeta+'-----------------')
             if(i == 0):
                 carpetaArroz = procDoc.resultadoStringCarpeta(rutaPorCarpeta)
                 # print(carpetaArroz)
@@ -498,13 +497,13 @@ class ProcesarDocumentos:
         strCarpeta = []
         # vemos el contenido de la carpeta en la que estamos iterando
         listaTxt = os.listdir(rutaPorCarpeta)
-        #print(listaTxt)
+        # print(listaTxt)
         # recorremos todos los archivos de la carpeta
         for lt in listaTxt:
             # concatenamos la ruta de la carpeta con el nombre de los archivos que contiene esta
             rutaTxt = rutaPorCarpeta + lt
             # al ir iterando pasaremos por todos los archivos modificando la variable de la ruta para poder hacer un open con ella
-            #file = open(filename, encoding="utf8")
+            # file = open(filename, encoding="utf8")
             try:
                 with open(rutaTxt, 'r') as f:
                     # al hacer el open leemos lo que hay dentro del archivo con f.read(), y esto lo guardamos dentro de un string inicializado al inicio del todo
@@ -536,18 +535,16 @@ class ProcesarDocumentos:
         # una lista no tiene lower asique pasamos el lower con map a toda la lista
         textoMinusculas = (map(lambda x: x.lower(), textoTokenizado))
         # Le pasa un stopword de palabras en español a la lista de palabras que le llega
-        #stop_words_sp = set(stopwords.words('spanish'))
+        # stop_words_sp = set(stopwords.words('spanish'))
         stop_words_sp = self.leer_stopwords(
             "./rapidminer/stop_words_spanish.txt")
         pasarStopWords = [i for i in textoMinusculas if i not in stop_words_sp]
         # Aplicamos la normalizacion mediante stemming
-        #SnowStem = nltk.SnowballStemmer(language = 'spanish')
+        # SnowStem = nltk.SnowballStemmer(language = 'spanish')
         # Crear un objeto SnowballStemmer para el idioma español
         stemmer = RSLPStemmer()
         listaStems = [stemmer.stem(word) for word in pasarStopWords]
         return listaStems
-
-    
 
 
 class modelosTFIDF:
@@ -571,7 +568,7 @@ class modelosTFIDF:
             tf1.loc[i] = arr[i]
 
         self.X_train, self.X_cv, self.Y_train, self.Y_cv = train_test_split(
-            tf1, self.df['clasif'], test_size=0.2, random_state=42)
+            tf1, self.df['clasif'], test_size=0.3, random_state=42)
         self.Y_train = list(self.Y_train)
         self.Y_cv = list(self.Y_cv)
 
@@ -588,12 +585,12 @@ class modelosTFIDF:
         self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
-        #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        # cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
         self.m_RF = m_RF
 
-        #print("CV -> {}".format(cv))
+        # print("CV -> {}".format(cv))
         return self.m_RF
-    
+
     def Entrenar_RF_Malo(self):
         # Grid de hiperparámetros evaluados
         # ==============================================================================
@@ -636,10 +633,10 @@ class modelosTFIDF:
         print(resultados.head(4))
 
         '''
-        self.forest = RandomForestClassifier() 
+        self.forest = RandomForestClassifier()
         self.forest = self.forest.fit(self.X_train, self.Y_train)
 
-        predictions = self.forest.predict(self.X_cv) 
+        predictions = self.forest.predict(self.X_cv)
         self.Y_cv=list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
         '''
@@ -687,10 +684,10 @@ class modelosTFIDF:
         self.modelo_final = grid.best_estimator_
 
         '''
-        self.forest = RandomForestClassifier() 
+        self.forest = RandomForestClassifier()
         self.forest = self.forest.fit(self.X_train, self.Y_train)
 
-        predictions = self.forest.predict(self.X_cv) 
+        predictions = self.forest.predict(self.X_cv)
         self.Y_cv=list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, predictions))
         '''
@@ -708,13 +705,11 @@ class modelosTFIDF:
         self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
-        #cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
+        # cv = cross_val_score(m_SVM, self.X_train, self.Y_train, cv=10)
         self.m_SVM = m_SVM
 
-        #print("CV -> {}".format(cv))
+        # print("CV -> {}".format(cv))
         return self.m_SVM
-
-    
 
     def Entrenar_Bayes(self):
 
@@ -741,14 +736,10 @@ class modelosTFIDF:
         self.Y_cv = list(self.Y_cv)
         print("Accuracy: ", accuracy_score(self.Y_cv, self.predictions))
 
-        #cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
+        # cv=cross_val_score(M_mult, self.X_train, self.Y_train, cv=10)
         self.M_mult = M_mult
-        #print("CV -> {}".format(cv))
+        # print("CV -> {}".format(cv))
         return self.M_mult
-
-   
-
-   
 
     def Entrenar_KNN(self):
         # self.preprocesamiento()
@@ -805,22 +796,20 @@ class modelosTFIDF:
         loss, accuracy = model.evaluate(xcv, self.Y_cv, verbose=False)
         print("Testing Accuracy:  {:.4f}".format(accuracy))
 
-    
-
     def cargarModelo(self, nombre):
 
         return joblib.load('./Interfaz/modelos/{}.pkl'.format(nombre))
 
+
 class modelosTFIDF_Test:
-    
-   
+
     def predecir_RF(self, txt):
 
         self.pred = self.vectorizers.transform(txt)
         self.pred = self.pred.toarray()
         predictions = self.M_mult.predict(self.pred)
         print("resultado: ", predictions)
-        
+
     def clasificar(self, modelo, txt):
 
         self.pred = self.vectorizers.transform(txt)
@@ -828,8 +817,8 @@ class modelosTFIDF_Test:
         predictions = modelo.predict(self.pred)
         print("resultado: ", predictions)
 
-    def predecir_Carpeta(self, rutaModelo, modeloSeleccionado,vectorizer):
-        
+    def predecir_Carpeta(self, rutaModelo, modeloSeleccionado, vectorizer):
+
         p = ProcesarDocumentos()
         carpeta = p.resultadoStringCarpeta(rutaModelo)
 
@@ -838,29 +827,25 @@ class modelosTFIDF_Test:
         #    text=p.tratamientoTextos(carpeta[i])
         #    hey=[" ".join(text)]
         #    resultados.append(self.predecir_RF(hey))
-        #print("Resultados: {}".format(resultados))
+        # print("Resultados: {}".format(resultados))
 
         resultados = []
         for i in range(len(carpeta)):
             text = p.tratamientoTextos(carpeta[i])
-            hey = " ".join(text)
-            resultados.append(hey)
+            temp = " ".join(text)
+            resultados.append(temp)
         self.pred1 = vectorizer.transform(resultados)
-        self.arr=self.pred1.toarray()
-        #self.pred1 = self.pred1.toarray()
+        self.arr = self.pred1.toarray()
+        # self.pred1 = self.pred1.toarray()
         predictions = modeloSeleccionado.predict(self.arr)
-        #print("resultado: " , predictions)
+        # print("resultado: " , predictions)
         return predictions
-
-   
-
-    
 
     def cargarModelo(self, nombre):
 
         return joblib.load('./Interfaz/modelos/{}.pkl'.format(nombre))
-    
-    
+
+
 class Index(QtWidgets.QMainWindow):
     def __init__(self):
         super(Index, self).__init__()
@@ -983,6 +968,7 @@ class Index(QtWidgets.QMainWindow):
             self.gui.showMaximized()
             # QApplication.restoreOverrideCursor()
             self.close()
+
     def volver_(self):
         self.gui = Index()
         self.gui.show()
@@ -996,39 +982,38 @@ class Train(Index):
         uic.loadUi('train.ui', self)
         self.setWindowTitle("Eat Easer Train page")
         self.setWindowIcon(QIcon("imagenes/EatEaser-Logo.png"))
-        self.cbcategoria =self.findChild(QComboBox,'comboBox')
+        self.cbcategoria = self.findChild(QComboBox, 'comboBox')
         self.cbcategoria.addItems(os.listdir('recetastextos/'))
-       # self.cbcategoria.setStyleSheet('background-color:white; nborder-radius:10px;')
-        self.varableSeleccionCarpetaGuardarModelo = ""
+        self.variableSeleccionCarpetaGuardarModelo = ""
         self.setWidgets()
         self.df = pd.DataFrame()
-        
+
         self.switchButtons()
+
     def setWidgets(self):
         #
-        self.matrizlt=self.findChild(QVBoxLayout,'verticalLayout_3')
-        
+        self.matrizlt = self.findChild(QVBoxLayout, 'verticalLayout_3')
+
         self.seleccionados = []
         self.checkboxes = []
-        
-        self.seleccionlayout=self.findChild(QHBoxLayout,'box')
-        self.anadir =self.findChild(QPushButton,'anadir')
-        self.nuevo =self.findChild(QPushButton,'nuevo')
-       
-        
-        
-        self.volver =self.findChild(QPushButton,'volver')
-        self.ltitulo  =self.findChild(QLabel,'ltitulo')
-        self.ldescrip =self.findChild(QLabel,'ldescripcion')
-        self.vista  =self.findChild(QLabel,'lvista')
-        self.btn_svm=self.findChild(QPushButton,'svm')
-        self.btn_rf =self.findChild(QPushButton,'rforest')
-        self.btn_mr=self.findChild(QPushButton,'regression')
-        self.btnalgoritmo=self.findChild(QPushButton,'play')
-        self.formguardar =self.findChild(QLineEdit,'guardarform')
-        self.borrar =self.findChild(QPushButton,'borrar')
-        self.path_btn =self.findChild(QPushButton,'search_path')
-        self.btn_guardar =self.findChild(QPushButton,'guardar_modelo')
+
+        self.seleccionlayout = self.findChild(QHBoxLayout, 'box')
+        self.anadir = self.findChild(QPushButton, 'anadir')
+        self.nuevo = self.findChild(QPushButton, 'nuevo')
+
+        self.volver = self.findChild(QPushButton, 'volver')
+        self.ltitulo = self.findChild(QLabel, 'ltitulo')
+        self.ldescrip = self.findChild(QLabel, 'ldescripcion')
+        self.vista = self.findChild(QLabel, 'lvista')
+        self.btn_svm = self.findChild(QPushButton, 'svm')
+        self.btn_rf = self.findChild(QPushButton, 'rforest')
+        self.btn_mr = self.findChild(QPushButton, 'regression')
+        self.btnalgoritmo = self.findChild(QPushButton, 'play')
+        self.formguardar = self.findChild(QLineEdit, 'guardarform')
+        self.borrar = self.findChild(QPushButton, 'borrar')
+        self.path_btn = self.findChild(QPushButton, 'search_path')
+        self.btn_guardar = self.findChild(QPushButton, 'guardar_modelo')
+
     def switchButtons(self):
         # eventos de botones
         self.anadir.clicked.connect(self.aniadir_boton)
@@ -1044,6 +1029,7 @@ class Train(Index):
         self.btnalgoritmo.clicked.connect(self.vista_previa)
         self.nuevo.clicked.connect(self.aniadir_categoria)
         self.volver.clicked.connect(self.volver_)
+
     def cambiar_algoritmo(self, nombre):
         self.algoritmo_clicked = nombre
 
@@ -1064,19 +1050,18 @@ class Train(Index):
                                'Carpeta Platos Menores': 6, 'Carpeta Verduras': 7}
 
         print("++++++++++++++++++++++++++ {} ++++++++++++++++++++++++++++++".format(self.seleccionados))
-        
-        seleccion = []
+
+        self.seleccion = []
         for i in range(len(self.seleccionados)):
-            seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
+            self.seleccion.append(diccionarioCarpetas[self.seleccionados[i]])
 
         for index, content in enumerate(listaTextosCarpeta):
-            if index in seleccion:
+            if index in self.seleccion:
                 for i in range(len(content)):
                     text = procesarDocs.tratamientoTextos(
                         listaTextosCarpeta[index][i])
                     df = df.append(
                         {'receta': text, 'clasif': index}, ignore_index=True)
-
         print(df['clasif'].unique())
 
         return df
@@ -1098,44 +1083,37 @@ class Train(Index):
             modelo = modelosTFIDF(self.df1, 7000)
 
             if(self.algoritmo_clicked == "SVM"):
-                # self.seleccionados
                 self.modeloEntrenadoFinal = modelo.Entrenar_SVM()
+                self.mensaje_info(
+                    "Entrenamiento Support Vector Machines completado.")
                 print('SVM')
             elif(self.algoritmo_clicked == "MR"):
                 self.modeloEntrenadoFinal = modelo.Entrenar_RegresionMultinomial()
+                self.mensaje_info(
+                    "Entrenamiento Regresion Multinomial completado.")
                 print('MR')
             elif(self.algoritmo_clicked == "RF"):
                 self.modeloEntrenadoFinal = modelo.Entrenar_RF()
+                self.mensaje_info("Entrenamiento Random Forest completado.")
                 print('RF')
-            
+
             print(self.df1.head())
             self.vectorizer_train = modelo.vectorizers
+            self.seleccionados.sort()
             print("El modelo ha sido entrenado correctamente! :)")
-            import matplotlib.pyplot as plt
             from sklearn import metrics
             from sklearn.metrics import confusion_matrix
-            conf_matrix=confusion_matrix(modelo.Y_cv, modelo.predictions)
-            print(conf_matrix)
-
-            confusion_matrix = metrics.confusion_matrix(modelo.Y_cv,  modelo.predictions)
-
-            cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = ["Arroz","Bebida","Carne"])
-            fig, ax = plt.subplots(figsize=(12,10))
-            cm_display.plot()
-            
-            plt.show()
-            plt.draw()
-            fig.savefig('matrizconfusion.png')
-            
             install('mlxtend')
+            conf_matrix = confusion_matrix(modelo.Y_cv, modelo.predictions)
+            print(conf_matrix)
             from mlxtend.plotting import plot_confusion_matrix
-            import matplotlib.pyplot as plt
             import numpy as np
-            class_names= ["Arroz","Bebida","Carne"]
-            matriz_confu=np.array(conf_matrix)
-            fig, ax = plot_confusion_matrix(conf_mat=matriz_confu, colorbar=True, show_absolute=True,show_normed=True,class_names=class_names)
+            import matplotlib.pyplot as plt
+            matriz_confu = np.array(conf_matrix)
+            fig, ax = plot_confusion_matrix(
+                conf_mat=matriz_confu, colorbar=True, show_absolute=True, show_normed=True, class_names=self.seleccionados)
             plt.show()
-            fig.savefig('imagenes/matrizconfusion_2.png')
+            fig.savefig('imagenes/matrizconfusion.png')
             print("ya esta la matriz de confusion")
             # verificamos si hay algoritmo seleccionado
             for i in self.seleccionados:
@@ -1156,8 +1134,17 @@ class Train(Index):
             self,
             "Error",
             mensaje,
-            buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
+            buttons=QMessageBox.Discard,
             defaultButton=QMessageBox.Discard,
+        )
+
+    def mensaje_info(self, mensaje):
+        QMessageBox.information(
+            self,
+            "Aviso",
+            mensaje,
+            buttons=QMessageBox.Close,
+            defaultButton=QMessageBox.Close,
         )
 
     def aniadir_boton(self):
@@ -1216,28 +1203,26 @@ class Train(Index):
     def aniadir_directorio(self):
         r = QFileDialog.getExistingDirectory(
             self, "Select Directory", directory=os.getcwd())
-        self.varableSeleccionCarpetaGuardarModelo = r
-       
-    
+        self.variableSeleccionCarpetaGuardarModelo = r
 
     def guardarModelo(self):
-        if(self.varableSeleccionCarpetaGuardarModelo == ""):
-            #print("no hay ruta")
+        if(self.variableSeleccionCarpetaGuardarModelo == ""):
             self.mensaje_error("No hay una ruta seleccionada")
         elif(self.formguardar.text() == ""):
-            #print("no hay nombre de archivo")
             self.mensaje_error("Pon un nombre al archivo que se va a guardar")
         else:
-            
             print("guardando modelo y vectorizer")
-            rutaGuardarModelo = self.varableSeleccionCarpetaGuardarModelo + \
+            rutaGuardarModelo = self.variableSeleccionCarpetaGuardarModelo + \
                 "/" + self.formguardar.text() + ".pkl"
             joblib.dump(self.modeloEntrenadoFinal, rutaGuardarModelo)
             print(rutaGuardarModelo)
-            rutaGuardarVect = self.varableSeleccionCarpetaGuardarModelo + \
+            rutaGuardarVect = self.variableSeleccionCarpetaGuardarModelo + \
                 "/" + self.formguardar.text() + "_vect.pkl"
-            joblib.dump(self.vectorizer_train,rutaGuardarVect)
-            
+            joblib.dump(self.vectorizer_train, rutaGuardarVect)
+            self.mensaje_info("Modelo guardado correctamente en: " +
+                              self.variableSeleccionCarpetaGuardarModelo+" .")
+
+
 class Test(Index):
     def __init__(self):
         super().__init__()
@@ -1249,194 +1234,202 @@ class Test(Index):
         self.info = self.Informacion()
         self.varableRutaModeloEntrenado = ""
         self.nombrecarpetaTestosTest = ""
-        self.cbcategoria = self.findChild(QLineEdit,'lineEdit')
+        self.cbcategoria = self.findChild(QLineEdit, 'lineEdit')
         self.cbcategoria.setEnabled(False)
-        self.btn_seleccion_modelo=self.findChild(QPushButton,'selectmodelo')
-        self.nuevo=self.findChild(QPushButton,'aniadir')
-        self.btnalgoritmo=self.findChild(QPushButton,'play')
-        self.ltitulo=self.findChild(QLabel,'ltitulo')
+        self.btn_seleccion_modelo = self.findChild(QPushButton, 'selectmodelo')
+        self.nuevo = self.findChild(QPushButton, 'aniadir')
+        self.btnalgoritmo = self.findChild(QPushButton, 'play')
+        self.ltitulo = self.findChild(QLabel, 'ltitulo')
 
-        self.ldescripcion=self.findChild(QLabel,'descripcion')
+        self.ldescripcion = self.findChild(QLabel, 'descripcion')
 
-        
-        
-        self.ltablaAEliminar=self.findChild(QLabel,'lresultadosTabla')
-        
-        self.ltablaResultadosTesting=QTableWidget()
-        self.gridTablaResultados=self.findChild(QHBoxLayout, 'hresultados')
-        
-        
+        self.ltablaAEliminar = self.findChild(QLabel, 'lresultadosTabla')
+
+        self.ltablaResultadosTesting = QTableWidget()
+        self.gridTablaResultados = self.findChild(QHBoxLayout, 'hresultados')
+
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
-        
+
         self.nuevo.clicked.connect(self.aniadir_categoria)
-        self.retorno=self.findChild(QPushButton,'volver')
+        self.retorno = self.findChild(QPushButton, 'volver')
         self.retorno.clicked.connect(self.volver_)
         self.btnalgoritmo.clicked.connect(self.vista_previa)
-        #self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
-        #self.tableWidget=QTableWidget()
-        #self.grafico.addWidget(self.tableWidget)
-        self.vista =self.findChild(QLabel,'vista')
+        # self.grafico=self.findChild(QHBoxLayout,'horizontalLayout')
+        # self.tableWidget=QTableWidget()
+        # self.grafico.addWidget(self.tableWidget)
+        self.vista = self.findChild(QLabel, 'vista')
         self.ver = QButtonGroup()
         self.ver.buttonClicked[int].connect(self.info.ver_)
-        
+        self.df_resultado = pd.DataFrame(columns=['texto_real', 'prediccion'])
+
     def informacion(self, titulo, descripcion):
-         print(titulo)
-         self.ltitulo.setText(titulo)
-         self.ldescripcion.setText(descripcion)
+        print(titulo)
+        self.ltitulo.setText(titulo)
+        self.ldescripcion.setText(descripcion)
 
     def recuperarRutaModeloEntrenado(self):
-         r = QFileDialog.getOpenFileName(
-             parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
-         direct=self.findChild(QLabel,'direccion')
-         direct.setText(r[0])
-         print("Aqui está el ro:" + r[0])
-         self.varableRutaModeloEntrenado = r[0]
-         # print(self.varableRutaModeloEntrenado)
+        r = QFileDialog.getOpenFileName(
+            parent=None, caption='Select Directory', directory=os.getcwd(), filter='Pickle files (*.pkl)')
+        direct = self.findChild(QLabel, 'direccion')
+        direct.setText(r[0])
+        print("Aqui está el ro:" + r[0])
+        self.varableRutaModeloEntrenado = r[0]
+        # print(self.varableRutaModeloEntrenado)
 
     def cargarModeloTest(self):
-        
-        
+
         if(self.varableRutaModeloEntrenado != ""):
-             print("modelo cargado")
-             print("ruta modelo: " + self.varableRutaModeloEntrenado)
-             ruta_vect=self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find('.pkl')]+"_vect.pkl"
-             print("ruta vectorizer: " + ruta_vect)
-             self.modelo_entrenado = joblib.load(
-                 self.varableRutaModeloEntrenado)
-             
-             self.vect_entrenado = joblib.load(ruta_vect)
-             
-             
-             
+            print("modelo cargado")
+            print("ruta modelo: " + self.varableRutaModeloEntrenado)
+            ruta_vect = self.varableRutaModeloEntrenado[:self.varableRutaModeloEntrenado.find(
+                '.pkl')]+"_vect.pkl"
+            print("ruta vectorizer: " + ruta_vect)
+            self.modelo_entrenado = joblib.load(
+                self.varableRutaModeloEntrenado)
+
+            self.vect_entrenado = joblib.load(ruta_vect)
 
     def setData(self):
 
-         i = 0
+        i = 0
+        self.df_resultado = pd.DataFrame(
+            columns=['texto_real', 'prediccion'])
+        for key in os.listdir(self.cbcategoria.placeholderText()):
+            boton = QPushButton()
+            self.ver.addButton(boton)
+            self.ver.setId(boton, i)
+            boton.setIcon(QIcon('imagenes/ojo.png'))
+            self.ltablaResultadosTesting.setItem(i, 0, QTableWidgetItem(key))
+            self.df_resultado
+            self.ltablaResultadosTesting.setItem(i, 1, QTableWidgetItem(
+                "{}".format(self.prediccion[i])))
+            self.ltablaResultadosTesting.setCellWidget(i, 2, boton)
+            self.df_resultado.loc[len(self.df_resultado)] = [
+                key, self.prediccion[i]]
+            i = i+1
 
-         for key in os.listdir(self.cbcategoria.placeholderText()):
-             boton = QPushButton()
-             self.ver.addButton(boton)
-             self.ver.setId(boton, i)
-             boton.setIcon(QIcon('imagenes/ojo.png'))
-             self.ltablaResultadosTesting.setItem(i, 0, QTableWidgetItem(key))
-             self.ltablaResultadosTesting.setItem(i, 1, QTableWidgetItem(
-                 "{}".format(self.prediccion[i])))
-             self.ltablaResultadosTesting.setCellWidget(i, 2, boton)
-             i = i+1
+        self.ltablaResultadosTesting.resizeColumnsToContents()
+        self.ltablaResultadosTesting.resizeRowsToContents()
 
-         self.ltablaResultadosTesting.resizeColumnsToContents()
-         self.ltablaResultadosTesting.resizeRowsToContents()
-
-         self.ltablaResultadosTesting.show()
+        self.ltablaResultadosTesting.show()
 
     def aniadir_categoria(self):
-         r = QFileDialog.getExistingDirectory(
-             self, "Select Directory", directory=os.getcwd())
-         self.cbcategoria.setPlaceholderText(r)
-
-
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
+        self.cbcategoria.setPlaceholderText(r)
 
     def mensaje_error(self, mensaje):
-         QMessageBox.critical(
-             self,
-             "Error",
-             mensaje,
-             buttons=QMessageBox.Discard | QMessageBox.NoToAll | QMessageBox.Ignore,
-             defaultButton=QMessageBox.Discard,
-         )
+        QMessageBox.critical(
+            self,
+            "Error",
+            mensaje,
+            buttons=QMessageBox.Discard,
+            defaultButton=QMessageBox.Discard,
+        )
+
+    def mensaje_info(self, mensaje):
+        QMessageBox.information(
+            self,
+            "Aviso",
+            mensaje,
+            buttons=QMessageBox.Close,
+            defaultButton=QMessageBox.Close,
+        )
 
     def cargarDF_Completo(self):
-         import pandas as pd
-         df = pd.DataFrame()
-         df['receta'] = None
-         df['clasif'] = None
-         procesarDocs = ProcesarDocumentos()
-         listaTextosCarpeta = procesarDocs.lectura()
-         for index, content in enumerate(listaTextosCarpeta):
-             for i in range(len(content)):
-                 text = procesarDocs.tratamientoTextos(
-                     listaTextosCarpeta[index][i])
-                 df = df.append(
-                     {'receta': text, 'clasif': index}, ignore_index=True)
-         return df
+        import pandas as pd
+        df = pd.DataFrame()
+        df['receta'] = None
+        df['clasif'] = None
+        procesarDocs = ProcesarDocumentos()
+        listaTextosCarpeta = procesarDocs.lectura()
+        for index, content in enumerate(listaTextosCarpeta):
+            for i in range(len(content)):
+                text = procesarDocs.tratamientoTextos(
+                    listaTextosCarpeta[index][i])
+                df = df.append(
+                    {'receta': text, 'clasif': index}, ignore_index=True)
+                print(df)
+        return df
 
     def vista_previa(self):
-         self.vista.setText('')
-         i = 0
-         self.total_archivos = 0
+        self.vista.setText('')
+        i = 0
+        self.total_archivos = 0
 
-         carpetas = ''
-         # verificamos si hay seleccionados
+        carpetas = ''
+        # verificamos si hay seleccionados
 
-         if self.cbcategoria.placeholderText() == '':
+        if self.cbcategoria.placeholderText() == '':
 
-             self.mensaje_error('Campos vacios.')
-         else:
-             self.cargarModeloTest()
-             
-             modelo = self.modelo_entrenado
-             
-             vectorizer=self.vect_entrenado
-             
-             #numeroFeature = modelo.n_features_in_
-             #df_completo = self.cargarDF_Completo()
-             
-             self.nombrecarpetaTestosTest = "".join(
-                 self.cbcategoria.placeholderText())
-             
-             rutaCarpetaTesting = self.nombrecarpetaTestosTest + "/"
-                  # "c:/ddjashdashdjkash/../carpeta testing"
-             mod = modelosTFIDF_Test()
-             
-             print("\n \n \n \n \n Ruta: {} \n \n \n \n \n".format(rutaCarpetaTesting))
-             
-             prediccion = mod.predecir_Carpeta(rutaCarpetaTesting, modelo,vectorizer)
-             
-             print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
-             diccionario = {0: "Arroz", 1: "Bebida", 2: "Carne", 3: "Marisco",
-                            4: "Pasta", 5: "Pescado", 6: "Platos menores", 7: "Verdura"}
-             resultado = []
-             for i in prediccion:
-                 resultado.append(diccionario[i])
-             self.prediccion = resultado
-             self.ltablaAEliminar.setVisible(False)
-             
-             self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
-             
-             self.ltablaResultadosTesting.setRowCount(len(os.listdir(self.cbcategoria.placeholderText())))
-             self.ltablaResultadosTesting.setColumnCount(3)
-             self.setData()
-             self.info.ruta = os.listdir(self.cbcategoria.placeholderText())
-             self.info.carpeta_seleccionada = self.cbcategoria.placeholderText()
-             self.ltablaResultadosTesting.setHorizontalHeaderLabels(
-                 ["Texto", "Categoria", "Ver Texto"])
-             header = self.ltablaResultadosTesting.horizontalHeader()
-             header.setSectionResizeMode(0, QHeaderView.Stretch)
-             header.setSectionResizeMode(1, QHeaderView.Stretch)
-             header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-             
-             self.nombrecarpeta = self.cbcategoria.placeholderText().split(
-                 '/')[-1]
-             
-             
-             
-            
-             # carpeta de entrenamiento
-             # Vectorizer
-             # usar metodo para predecir
-             # si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
-             #mod.predecir_Carpeta(self.nombrecarpetaTestosTest, varableRutaModeloEntrenado)
+            self.mensaje_error('Campos vacios.')
+        else:
+            self.cargarModeloTest()
 
-             size = len(os.listdir(self.cbcategoria.placeholderText()))
+            modelo = self.modelo_entrenado
 
-             self.total_archivos = size
-             texto = self.nombrecarpeta + ': ' + str(size) + ' archivos\n'
+            vectorizer = self.vect_entrenado
 
-             # le añado todos los que esten en listbox
-             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
-                                str(self.total_archivos) + ' archivos\n')
+            # numeroFeature = modelo.n_features_in_
+            # df_completo = self.cargarDF_Completo()
+
+            self.nombrecarpetaTestosTest = "".join(
+                self.cbcategoria.placeholderText())
+
+            rutaCarpetaTesting = self.nombrecarpetaTestosTest + "/"
+            # "c:/ddjashdashdjkash/../carpeta testing"
+            mod = modelosTFIDF_Test()
+
+            print("\n \n  Ruta: {} \n \n ".format(
+                rutaCarpetaTesting))
+
+            prediccion = mod.predecir_Carpeta(
+                rutaCarpetaTesting, modelo, vectorizer)
+
+            print("------------------------------- \n {} \n------------------------------------------".format(prediccion))
+            diccionario = {0: "Arroz", 1: "Bebida", 2: "Carne", 3: "Marisco",
+                           4: "Pasta", 5: "Pescado", 6: "Platos menores", 7: "Verdura"}
+            resultado = []
+            for i in prediccion:
+                resultado.append(diccionario[i])
+            self.prediccion = resultado
+            self.ltablaAEliminar.setVisible(False)
+
+            self.gridTablaResultados.addWidget(self.ltablaResultadosTesting)
+
+            self.ltablaResultadosTesting.setRowCount(
+                len(os.listdir(self.cbcategoria.placeholderText())))
+            self.ltablaResultadosTesting.setColumnCount(3)
+            self.setData()
+            self.info.ruta = os.listdir(self.cbcategoria.placeholderText())
+            self.info.carpeta_seleccionada = self.cbcategoria.placeholderText()
+            self.ltablaResultadosTesting.setHorizontalHeaderLabels(
+                ["Texto", "Categoria", "Ver Texto"])
+            header = self.ltablaResultadosTesting.horizontalHeader()
+            header.setSectionResizeMode(0, QHeaderView.Stretch)
+            header.setSectionResizeMode(1, QHeaderView.Stretch)
+            header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+
+            self.nombrecarpeta = self.cbcategoria.placeholderText().split(
+                '/')[-1]
+
+            # carpeta de entrenamiento
+            # Vectorizer
+            # usar metodo para predecir
+            # si inicializamos el TFIDF hay q mandarle un df le mandamos uno con todo a piñon?
+            # mod.predecir_Carpeta(self.nombrecarpetaTestosTest, varableRutaModeloEntrenado)
+
+            size = len(os.listdir(self.cbcategoria.placeholderText()))
+
+            self.total_archivos = size
+            texto = self.nombrecarpeta + ': ' + str(size) + ' archivos\n'
+
+            # le añado todos los que esten en listbox
+            self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
+                               str(self.total_archivos) + ' archivos\n')
+            self.mensaje_info("Modelo Entrenado correctamente.")
 
     class Informacion(QWidget):
         def __init__(self):
@@ -1482,9 +1475,7 @@ class Test(Index):
             width = 900
             height = 500
             # setting  the fixed size of window
-            self.gui.setFixedSize(width, height)      
-
-  
+            self.gui.setFixedSize(width, height)
 
 
 class WebScraping:
@@ -1545,7 +1536,6 @@ class WebScraping:
         self.listaNombres = []
         for n in nombre:
             self.listaNombres.append(n.text)
-           
 
         # PARA COGER EL TIEMPO DEL PRUDUCTO EN COCINARSE
         tiempoReceta = todasRecetas.find_elements(By.CLASS_NAME, "mTimer-time")
@@ -1564,7 +1554,7 @@ class WebScraping:
         href = todasRecetas.find_elements(By.CLASS_NAME, "mRecipeTeaser-link")
         self.listaURL = []
         for h in href:
-          
+
             self.listaURL.append(h.get_attribute("href"))
 
     def sacarInfoAhorraMas(self, soup):
@@ -1574,7 +1564,6 @@ class WebScraping:
         for np in bodyInformacion:
             nombreProducto = np.find(class_="link product-name-gtm")
             self.listaNombres.append(nombreProducto.text)
-           
 
         # PARA COGER EL PRECIO DEL PRODUCTO
         bodyInformacion = soup.find_all(class_="tile-body")
@@ -1588,7 +1577,6 @@ class WebScraping:
             self.listaImagenes = []
             for s in src:
                 self.listaImagenes.append(s["src"])
-                
 
             # PARA COGER LA URL DEL PRODUCTO
             href = soup.find_all(class_="product-pdp-link")
@@ -1598,12 +1586,12 @@ class WebScraping:
                 self.listaURL.append("https://www.ahorramas.com" + h["href"])
             # Eliminamos los elementos duplicados ya que coge cada url duplicada
             # print(len(listaURL))
-            
+
             listaURLSinDuplicados = []
             for url in self.listaURL:
                 if url not in listaURLSinDuplicados:
                     listaURLSinDuplicados.append(url)
-            self.listaURL=listaURLSinDuplicados
+            self.listaURL = listaURLSinDuplicados
             # print(len(listaURLSinDuplicados))
 
 
@@ -1637,13 +1625,13 @@ class Download(Index):
             self.copiar.clicked.connect(self.copiar_)
 
         def setTexto(self, id):
-            
+
             with open('recetastextos/receta' + str(id) + '.txt', "r") as archivo:
                 for linea in archivo:
                     resultado = linea
             self.texto.setText(resultado)
             self.nombre.setText('receta' + str(id) + '.txt')
-            
+
             self.show()
             width = 900
             height = 500
@@ -1651,8 +1639,6 @@ class Download(Index):
 
         def copiar_(self):
             pyperclip.copy(self.texto.text())
-
-   
 
     def descargar(self):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -1722,6 +1708,7 @@ class Download(Index):
                 fila = fila + 1
     QApplication.restoreOverrideCursor()
 
+
 class Informacion(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1736,13 +1723,13 @@ class Informacion(QMainWindow):
         self.copiar.clicked.connect(self.copiar_)
 
     def setTexto(self, id):
-        carpetas=os.listdir('recetastextos')
+        carpetas = os.listdir('recetastextos')
         for carpeta in carpetas:
-            if os.path.exists('recetastextos/'+carpeta+'/receta' + str(id) + '.txt')==True:
+            if os.path.exists('recetastextos/'+carpeta+'/receta' + str(id) + '.txt') == True:
                 with open('recetastextos/'+carpeta+'/receta' + str(id) + '.txt', "r") as archivo:
                     for linea in archivo:
                         resultado = linea
-                    
+
         self.texto.setText(resultado)
         self.nombre.setText('receta' + str(id) + '.txt')
         self.show()
@@ -1753,19 +1740,21 @@ class Informacion(QMainWindow):
     def copiar_(self):
         self.copiar.setIcon(QIcon('imagenes/check.png'))
         pyperclip.copy(self.texto.text())
+
+
 class App(Index):
     def __init__(self):
         super(App, self).__init__()
         # Cargamos el .ui file
         uic.loadUi('app.ui', self)
-        self.txt_group=QButtonGroup()
-        self.recetas_group=QButtonGroup()
+        self.txt_group = QButtonGroup()
+        self.recetas_group = QButtonGroup()
         self.grupo_botones = QButtonGroup()
-        self.productos=QButtonGroup()
+        self.productos = QButtonGroup()
         self.ws = WebScraping('cebolla')
         self.ws2 = WebScraping('cebolla')
-        self.info=Informacion()
-        self.productos_lt=self.findChild(QHBoxLayout,'productos')
+        self.info = Informacion()
+        self.productos_lt = self.findChild(QHBoxLayout, 'productos')
         self.grid_productos = self.findChild(QGridLayout, 'grid_productos')
         self.btnplatos = self.findChild(QtWidgets.QPushButton, 'btnplatos')
         self.btnverdura = self.findChild(QtWidgets.QPushButton, 'btnverdura')
@@ -1779,12 +1768,12 @@ class App(Index):
         self.txt_frame = self.findChild(QGridLayout, 'gridLayout_8')
         self.volver = self.findChild(QPushButton, 'volver')
         self.btnbuscar = self.findChild(QPushButton, 'buscar')
-        
+
         # ponemos unos estilos
         scategorias = 'border-radius:100px;}QPushButton:hover{border:4px solid black;}'
         self.btnplatos.setStyleSheet(
             "QPushButton{border-image:url(imagenes/platos.jpg);"+scategorias)
-        self.btnplatos.setFixedSize(200, 200) 
+        self.btnplatos.setFixedSize(200, 200)
         self.btnverdura.setStyleSheet(
             "QPushButton{border-image:url(imagenes/verdura.jpg);"+scategorias)
         self.btnverdura.setFixedSize(200, 200)
@@ -1820,122 +1809,115 @@ class App(Index):
         self.btnverdura.clicked.connect(lambda: self.buscar_('lechuga'))
         self.productos.buttonClicked[int].connect(self.mostrar_pagina)
         self.volver.clicked.connect(self.volver_)
-        self.txt_group.buttonClicked[int].connect(self.info.setTexto)   
-        self.recetas_group.buttonClicked[int].connect(self.mostrar_pagina_lidl)   
+        self.txt_group.buttonClicked[int].connect(self.info.setTexto)
+        self.recetas_group.buttonClicked[int].connect(self.mostrar_pagina_lidl)
         self.buscar_('patatas')
-        
+
         self.setStyleSheet('background-color:white;')
         self.show()
-   
 
-        
-    def mostrar_pagina_lidl(self,id_):
-        webbrowser.open(self.ws2.listaURL[id_]) 
-    def mostrar_pagina(self,id_):
+    def mostrar_pagina_lidl(self, id_):
+        webbrowser.open(self.ws2.listaURL[id_])
+
+    def mostrar_pagina(self, id_):
         print('presiionado')
-        webbrowser.open(self.ws.listaURL[id_]) 
-        
+        webbrowser.open(self.ws.listaURL[id_])
+
     def buscar_texto(self, categoria):
-        
-        for i in reversed(range(self.txt_frame.count())): 
+
+        for i in reversed(range(self.txt_frame.count())):
             self.txt_frame.itemAt(i).widget().setParent(None)
-        if os.path.exists('recetastextos/'+categoria)==True:
+        if os.path.exists('recetastextos/'+categoria) == True:
             directorio = os.listdir('recetastextos/'+categoria)
             col = 0
             fila = 0
             for i, texto in enumerate(directorio):
                 # quiero que sean 10 columnas como maximo
                 if col < 10:
-                    #creamos el boton que nos enviara al texto
+                    # creamos el boton que nos enviara al texto
                     boton = QPushButton(texto)
-                    id_=re.findall(r'\d+',texto)
-                    #le pongo un estilos
+                    id_ = re.findall(r'\d+', texto)
+                    # le pongo un estilos
                     boton.setStyleSheet(
                         'QPushButton{font-family:Lucida Bright;border-radius:5px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
-                    #lo aniadimos al grupo y seteamos el id
-                    self.txt_group.addButton(boton,int(id_[0]))
-                    #aniadimos el widget a el frame
+                    # lo aniadimos al grupo y seteamos el id
+                    self.txt_group.addButton(boton, int(id_[0]))
+                    # aniadimos el widget a el frame
                     self.txt_frame.addWidget(boton, fila, col)
                     col = col+1
                 else:
                     col = 0
                     fila = fila+1
         else:
-            carpetas=os.listdir('recetastextos')
-            fila=0
-            col=0
-            limite=0
-            
-            for i,carpeta in enumerate(carpetas):
+            carpetas = os.listdir('recetastextos')
+            fila = 0
+            col = 0
+            limite = 0
+
+            for i, carpeta in enumerate(carpetas):
                 print('limite'+str(limite))
-                if limite<50:
-                    
-                    textos=os.listdir('recetastextos/'+carpeta)
+                if limite < 50:
+
+                    textos = os.listdir('recetastextos/'+carpeta)
                     for texto in textos:
-                        with open('recetastextos/'+carpeta+'/'+texto, "r",errors="ignore") as archivo:
+                        with open('recetastextos/'+carpeta+'/'+texto, "r", errors="ignore") as archivo:
                             for linea in archivo:
                                 resultado = linea
-                        
-                        
-                        if categoria in resultado and limite<50:
-                           
-                            
+
+                        if categoria in resultado and limite < 50:
+
                             boton = QPushButton(texto)
-                           
-                            id_=re.findall(r'\d+',texto)
+
+                            id_ = re.findall(r'\d+', texto)
                             boton.setStyleSheet(
                                 'QPushButton{font-family:Lucida Bright;border-radius:5px;border:1px solid black;}QPushButton:hover{border:1px solid white;background-color:black;color:white;}')
-                            #lo aniadimos al grupo y seteamos el id
-                            self.txt_group.addButton(boton,int(id_[0]))
-                            limite=limite+1
-                            #aniadimos el widget a el frame
+                            # lo aniadimos al grupo y seteamos el id
+                            self.txt_group.addButton(boton, int(id_[0]))
+                            limite = limite+1
+                            # aniadimos el widget a el frame
                             if col < 10:
                                 self.txt_frame.addWidget(boton, fila, col)
-                                col=col+1
+                                col = col+1
                             else:
                                 col = 0
                                 fila = fila+1
                 else:
                     break
-                        
-                
 
     def buscar_productos(self, producto):
-        
-       
-        self.ws=WebScraping(producto)
+
+        self.ws = WebScraping(producto)
         self.ws.conexionPaginaWebAhorraMas()
-        
+
         print('intentando')
-        for i in reversed(range(self.productos_lt.count())): 
+        for i in reversed(range(self.productos_lt.count())):
             self.productos_lt.itemAt(i).layout().setParent(None)
-        
+
         cont = 0
-        
-        
+
         for i, element in enumerate(self.ws.listaNombres):
             print('contador'+str(cont))
-            if(cont<8):
-                
-                lt=QVBoxLayout()
-                
-                
+            if(cont < 8):
+
+                lt = QVBoxLayout()
+
                 self.productos_lt.addLayout(lt)
-              
-                imagen=QPushButton()
-                
-                nombre=QLabel()
+
+                imagen = QPushButton()
+
+                nombre = QLabel()
                 nombre.setWordWrap(True)
-                descripcion=QLabel()
+                descripcion = QLabel()
                 lt.addWidget(imagen)
                 lt.addWidget(nombre)
                 lt.addWidget(descripcion)
-            
+
                 nombre.setText(element)
                 nombre.setStyleSheet('font-family:Simsun;color:white;')
                 descripcion.setText(self.ws.listaPrecios[i])
-                descripcion.setStyleSheet('font-family:Lucida Bright;color:white;font-weight:bold;')
-               
+                descripcion.setStyleSheet(
+                    'font-family:Lucida Bright;color:white;font-weight:bold;')
+
                 response = requests.get(self.ws.listaImagenes[i])
                 if response.status_code == 200:
                     with open("imagenes/sample_producto" + str(i) + ".jpg", 'wb') as f:
@@ -1943,13 +1925,12 @@ class App(Index):
                 imagen.setStyleSheet(
                     "border-image:url(imagenes/sample_producto" + str(i) + ".jpg);")
                 imagen.setFixedSize(200, 200)
-                self.productos.addButton(imagen,i)
-                    
-    
-                
+                self.productos.addButton(imagen, i)
+
             else:
                 break
             cont = cont + 1
+
     def buscar_recetas(self, categoria):
         col = 0
         fila = 2
@@ -1969,9 +1950,9 @@ class App(Index):
                     imagen.setFixedSize(200, 200)
 
                 except:
-                 
+
                     img = False
-               
+
                 if (img == True):
                     n = QFrame()
                     n2 = QFrame()
@@ -1979,10 +1960,9 @@ class App(Index):
                     n4 = QFrame()
                     vlt = QVBoxLayout()
                     n.setLayout(vlt)
-                    #n.setMinimumHeight(470)
+                    # n.setMinimumHeight(470)
                    # n.setMaximumHeight(470)
-                    
-                    
+
                     self.grid_productos.addWidget(n, fila, col)
                     # vlt2 = QVBoxLayout()
                     # n.layout().addWidget(vlt2)
@@ -1990,23 +1970,23 @@ class App(Index):
                     n2.setLayout(QVBoxLayout())
                     n3.setLayout(QVBoxLayout())
                     n4.setLayout(QHBoxLayout())
-                    
+
                     # parte de arriba
-                    titulo=QLabel(element)
+                    titulo = QLabel(element)
                     titulo.setWordWrap(True)
                     n2.layout().addWidget(titulo)
-                    n2.layout().addWidget(imagen,QtCore.Qt.AlignCenter)
-                    
+                    n2.layout().addWidget(imagen, QtCore.Qt.AlignCenter)
+
                     n2.layout().setAlignment(QtCore.Qt.AlignHCenter)
                     n3.layout().addWidget(QLabel('Duración'))
-                    #n3.setMinimumHeight(300)
+                    # n3.setMinimumHeight(300)
                     n3.layout().addWidget(QLabel(self.ws2.listaTiempos[i]))
-                    
+
                    # n4.setMinimumHeight(300)
                     btn = QPushButton('')
 
                     btn.setIcon(QIcon('imagenes/exterior.png'))
-                    self.recetas_group.addButton(btn,i)
+                    self.recetas_group.addButton(btn, i)
                     btn.setIconSize(QSize(15, 15))
                     n4.layout().addWidget(btn)
                     n4.layout().setAlignment(QtCore.Qt.AlignHCenter)
@@ -2014,7 +1994,7 @@ class App(Index):
                     vlt.addWidget(n3)
                     vlt.addWidget(n4)
                     # parte de abajo
-                    
+
                     n.setStyleSheet(
                         'border:1px solid black;font-family:"Segoe UI Semibold";font-size:16px;border-radius:20px;')
                     n2.setStyleSheet(
@@ -2028,12 +2008,13 @@ class App(Index):
                 col = 0
                 fila = fila + 1
 
-    def buscar_(self,categoria):
+    def buscar_(self, categoria):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.buscar_texto(categoria)
         self.buscar_productos(categoria)
         self.buscar_recetas(categoria)
         QApplication.restoreOverrideCursor()
+
 
 if __name__ == '__main__':
 
@@ -2045,4 +2026,3 @@ if __name__ == '__main__':
     gui.showMaximized()
 
     sys.exit(app.exec_())
-    
