@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,7 +114,7 @@ border-radius:5px;</string>
              <string notr="true">color:white;</string>
             </property>
             <property name="text">
-             <string>Esta sección te permitira seleccionar un modelo en el cual podras entrenar una carpeta que selecciones.</string>
+             <string>Esta sección te permitira seleccionar un modelo con el cual podrás testear una carpeta que selecciones.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -217,18 +217,22 @@ border-radius:20px;</string>
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_10">
-            <property name="font">
-             <font>
-              <family>NSimSun</family>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>No hay nada que mostrar</string>
-            </property>
-           </widget>
+          <item>
+           <layout class="QHBoxLayout" name="hresultados">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="lresultadosTabla">
+              <property name="font">
+               <font>
+                <family>NSimSun</family>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>No hay nada que mostrar</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -374,7 +378,7 @@ border-radius:20px;</string>
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="titulo">
+           <widget class="QLabel" name="ltitulo">
             <property name="font">
              <font>
               <family>NSimSun</family>
@@ -395,7 +399,7 @@ border-radius:20px;</string>
              </font>
             </property>
             <property name="text">
-             <string>Descripcion del algoritmo testeado</string>
+             <string>Carpeta de Testeo:</string>
             </property>
            </widget>
           </item>
