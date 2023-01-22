@@ -621,8 +621,10 @@ border-radius:5px;</string>
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color:white;
-border-radius:10px;</string>
+             <string notr="true">QComboBox{
+background-color:white;
+border-radius:10px;
+}</string>
             </property>
             <property name="iconSize">
              <size>
