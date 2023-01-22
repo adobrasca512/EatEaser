@@ -1450,7 +1450,9 @@ class Test(Index):
             # le añado todos los que esten en listbox
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                str(self.total_archivos) + ' archivos\n')
-            self.mensaje_info("Modelo Testeado correctamente.")
+            self.mensaje_info("Modelo Entrenado correctamente.")
+            #lblImgMatriz????
+            
 
     class Informacion(QWidget):
         def __init__(self):
