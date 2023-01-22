@@ -1248,6 +1248,10 @@ class Test(Index):
         self.ltablaResultadosTesting = QTableWidget()
         self.gridTablaResultados = self.findChild(QHBoxLayout, 'hresultados')
 
+        self.path_btn = self.findChild(QPushButton, 'search_path')
+        self.btn_guardar = self.findChild(QPushButton, 'guardar_modelo')
+        self.variableSeleccionCarpetaGuardarModelo = ""
+
         # eventos de botones
         self.btn_seleccion_modelo.clicked.connect(
             lambda: self.recuperarRutaModeloEntrenado())
@@ -1337,6 +1341,23 @@ class Test(Index):
             buttons=QMessageBox.Close,
             defaultButton=QMessageBox.Close,
         )
+
+    def aniadir_directorio(self):
+        r = QFileDialog.getExistingDirectory(
+            self, "Select Directory", directory=os.getcwd())
+        self.variableSeleccionCarpetaGuardarModelo = r
+
+    def guardarModelo(self):
+        if(self.variableSeleccionCarpetaGuardarModelo == ""):
+            self.mensaje_error("No hay una ruta seleccionada")
+        elif(self.formguardar.text() == ""):
+            self.mensaje_error("Pon un nombre al archivo que se va a guardar")
+        else:
+            print("guardando modelo y vectorizer")
+            self.df_resultado.to_csv(
+                self.variableSeleccionCarpetaGuardarModelo+"/"+self.formguardar.text())
+            self.mensaje_info("Modelo guardado correctamente en: " +
+                              self.variableSeleccionCarpetaGuardarModelo+" .")
 
     def cargarDF_Completo(self):
         import pandas as pd
@@ -1429,7 +1450,7 @@ class Test(Index):
             # le añado todos los que esten en listbox
             self.vista.setText(texto+'\n'+'TOTAL: ' + ': ' +
                                str(self.total_archivos) + ' archivos\n')
-            self.mensaje_info("Modelo Entrenado correctamente.")
+            self.mensaje_info("Modelo Testeado correctamente.")
 
     class Informacion(QWidget):
         def __init__(self):
