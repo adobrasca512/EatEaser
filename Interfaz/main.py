@@ -135,16 +135,21 @@ except ModuleNotFoundError:
 
 class ControladorVideo:
     def __init__(self, enlace):
+        
         fb = Firebase('recetastextos/')
         self._idvideo = fb.reenumerar()
         self.enlacevideo = enlace
+    
         self.yt = YouTube(self.enlacevideo)
         self.nombrevideo = ''
         self.titulovideo = self.yt.title
         self.autorvideo = self.yt.author
         self.fechavideo = self.yt.publish_date
         self.duracionvideo = self.yt.length
+        
+        
         self.rec = RecursosAdicionales()
+        
     """|DESCARGAR VIDEO URL: descarga el video de youtube
        |return: devuelve una ruta absoluta"""
 
@@ -282,9 +287,14 @@ class ControladorVideo:
             return None
 
     def lista(self):
+        print('haciendo lo de la lista')
         playlist_urls = Playlist(self.enlacevideo)
+        print(playlist_urls)
         for url in playlist_urls:
-            self.video(url)
+            print('enlaces',self.enlacevideo)
+            self.enlacevideo=url
+            
+            self.video()
 
 
 class RecursosAdicionales:
@@ -1671,68 +1681,104 @@ class Download(Index):
         col = 0
         fila = 0
         dp = ControladorVideo(self.enlace.text())
-        dp.video()
+        if dp.esLista() == True:
+            print('es 1 video')
+            dp.video()
+            for i in range(4):
+                # si es una lista vamos a rellenarlo todo
 
-        for i in range(4):
-            # si es una lista vamos a rellenarlo todo
+                if (col < 4):
+                    if dp.esLista() == True:
+                        frame = QFrame()
+                        self.grid.addWidget(frame, fila, col)
 
-            if (col < 4):
-                if dp.esLista() == True:
-                    frame = QFrame()
-                    self.grid.addWidget(frame, fila, col)
+                        frame_grid = QVBoxLayout()
 
-                    frame_grid = QVBoxLayout()
+                        frame.setLayout(frame_grid)
+                        grid_titulo = QVBoxLayout()
+                        grid_boton = QVBoxLayout()
+                        frame_grid.addLayout(grid_titulo)
+                        titulo = QLabel(dp.cv.nombrevideo)
+                        titulo.setStyleSheet(
+                            'font-family:"Bahnschrift Light";font-size:16px;')
+                        grid_titulo.addWidget(titulo)
+                        frame_grid.addLayout(grid_boton)
+                        ver = QPushButton('Ver texto')
+                        self.btn_group.addButton(ver, dp._idvideo)
+                        ver.setStyleSheet(
+                            'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                        ver.setFixedSize(100, 60)
+                        grid_boton.addWidget(ver)
+                        frame.setStyleSheet(
+                            'background-color:white;border-radius:20px;')
+                        col = col + 1
+                    else:
+                        
+                        frame = QFrame()
+                        self.grid.addWidget(frame, fila, col)
 
-                    frame.setLayout(frame_grid)
-                    grid_titulo = QVBoxLayout()
-                    grid_boton = QVBoxLayout()
-                    frame_grid.addLayout(grid_titulo)
-                    titulo = QLabel(dp.cv.nombrevideo)
-                    titulo.setStyleSheet(
-                        'font-family:"Bahnschrift Light";font-size:16px;')
-                    grid_titulo.addWidget(titulo)
-                    frame_grid.addLayout(grid_boton)
-                    ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver, dp._idvideo)
-                    ver.setStyleSheet(
-                        'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
-                    ver.setFixedSize(100, 60)
-                    grid_boton.addWidget(ver)
-                    frame.setStyleSheet(
-                        'background-color:white;border-radius:20px;')
-                    col = col + 1
+                        frame_grid = QVBoxLayout()
+
+                        frame.setLayout(frame_grid)
+                        grid_titulo = QVBoxLayout()
+                        grid_boton = QVBoxLayout()
+                        frame_grid.addLayout(grid_titulo)
+                        titulo = QLabel(dp.nombrevideo)
+                        titulo.setStyleSheet(
+                            'font-family:"Bahnschrift Light";font-size:16px;')
+                        grid_titulo.addWidget(titulo)
+                        frame_grid.addLayout(grid_boton)
+                        ver = QPushButton('Ver texto')
+                        self.btn_group.addButton(ver, dp._idvideo)
+                        ver.setStyleSheet(
+                            'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                        ver.setFixedSize(100, 60)
+                        grid_boton.addWidget(ver)
+                        frame.setStyleSheet(
+                            'background-color:white;border-radius:20px;')
+
+                        if col != 0:
+                            titulo.hide()
+                            ver.hide()
+                        col = col + 1
                 else:
-                    frame = QFrame()
-                    self.grid.addWidget(frame, fila, col)
+                    col = 0
+                    fila = fila + 1
+        else:
+            print('es lista')
+            dp.lista()
+            for i in range(4):
+                # si es una lista vamos a rellenarlo todo
 
-                    frame_grid = QVBoxLayout()
+                if (col < 4):
+                    if dp.esLista() == True:
+                        frame = QFrame()
+                        self.grid.addWidget(frame, fila, col)
 
-                    frame.setLayout(frame_grid)
-                    grid_titulo = QVBoxLayout()
-                    grid_boton = QVBoxLayout()
-                    frame_grid.addLayout(grid_titulo)
-                    titulo = QLabel(dp.nombrevideo)
-                    titulo.setStyleSheet(
-                        'font-family:"Bahnschrift Light";font-size:16px;')
-                    grid_titulo.addWidget(titulo)
-                    frame_grid.addLayout(grid_boton)
-                    ver = QPushButton('Ver texto')
-                    self.btn_group.addButton(ver, dp._idvideo)
-                    ver.setStyleSheet(
-                        'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
-                    ver.setFixedSize(100, 60)
-                    grid_boton.addWidget(ver)
-                    frame.setStyleSheet(
-                        'background-color:white;border-radius:20px;')
+                        frame_grid = QVBoxLayout()
 
-                    if col != 0:
-                        titulo.hide()
-                        ver.hide()
-                    col = col + 1
-            else:
-                col = 0
-                fila = fila + 1
-
+                        frame.setLayout(frame_grid)
+                        grid_titulo = QVBoxLayout()
+                        grid_boton = QVBoxLayout()
+                        frame_grid.addLayout(grid_titulo)
+                        titulo = QLabel(dp.cv.nombrevideo)
+                        titulo.setStyleSheet(
+                            'font-family:"Bahnschrift Light";font-size:16px;')
+                        grid_titulo.addWidget(titulo)
+                        frame_grid.addLayout(grid_boton)
+                        ver = QPushButton('Ver texto')
+                        self.btn_group.addButton(ver, dp._idvideo)
+                        ver.setStyleSheet(
+                            'background-color:black;color:white;font-family:"Californian FB";font-size:16px;border-radius:20px;')
+                        ver.setFixedSize(100, 60)
+                        grid_boton.addWidget(ver)
+                        frame.setStyleSheet(
+                            'background-color:white;border-radius:20px;')
+                        col = col + 1
+                else:
+                    col = 0
+                    fila = fila + 1
+       
 
 class Informacion(QMainWindow):
     def __init__(self):
