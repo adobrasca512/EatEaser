@@ -1721,11 +1721,13 @@ class Download(Index):
             self.copiar.clicked.connect(self.copiar_)
 
         def setTexto(self, id):
+            
             with open('recetastextos/receta' + str(id) + '.txt', "r") as archivo:
                 for linea in archivo:
                     resultado = linea
             self.texto.setText(resultado)
             self.nombre.setText('receta' + str(id) + '.txt')
+            
             self.show()
             width = 900
             height = 500
@@ -1737,6 +1739,7 @@ class Download(Index):
    
 
     def descargar(self):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         col = 0
         fila = 0
         dp = ControladorVideo(self.enlace.text())
@@ -1801,6 +1804,7 @@ class Download(Index):
             else:
                 col = 0
                 fila = fila + 1
+    QApplication.restoreOverrideCursor()
 
 class Informacion(QMainWindow):
     def __init__(self):
