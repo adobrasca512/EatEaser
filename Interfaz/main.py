@@ -1912,10 +1912,11 @@ class App(Index):
     def mostrar_pagina_lidl(self,id_):
         webbrowser.open(self.ws2.listaURL[id_]) 
     def mostrar_pagina(self,id_):
+        print('presiionado')
         webbrowser.open(self.ws.listaURL[id_]) 
         
     def buscar_texto(self, categoria):
-        self.txt_group=QButtonGroup()
+        
         for i in reversed(range(self.txt_frame.count())): 
             self.txt_frame.itemAt(i).widget().setParent(None)
         if os.path.exists('recetastextos/'+categoria)==True:
@@ -1981,7 +1982,7 @@ class App(Index):
 
     def buscar_productos(self, producto):
         
-        self.productos=QButtonGroup()
+       
         self.ws=WebScraping(producto)
         self.ws.conexionPaginaWebAhorraMas()
         
